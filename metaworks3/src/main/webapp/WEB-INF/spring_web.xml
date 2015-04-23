@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Copyright 2004 The Apache Software Foundation
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="WebApp_ID" version="2.5">
+
+    <!-- General description of your web application -->
+
+    <display-name>Metaworks3</display-name>
+
+    <description>
+    </description>
+
+  	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/applicationContext.xml</param-value>
+	</context-param>
+	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<!-- Spring Request Filter for servlet 2.4 higher -->    
+	<listener>
+		<listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+	</listener>
+	
+
+	<servlet>
+		<servlet-name>dwr-invoker</servlet-name>
+		<!-- display-name>DWR Servlet</display-name -->
+		<!--<servlet-class>org.directwebremoting.servlet.DwrServlet</servlet-class>-->
+			   <servlet-class>org.metaworks.dwr.TransactionalDwrServlet</servlet-class>
+
+		<init-param>
+			<param-name>debug</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<!-- Remove this unless you want to use active reverse ajax -->
+			    <init-param>
+			      <param-name>activeReverseAjaxEnabled</param-name>
+			      <param-value>true</param-value>
+			    </init-param>
+
+			    <!-- By default DWR creates application scope objects when they are first
+			    used. This creates them when the app-server is started -->
+			    <init-param>
+			      <param-name>initApplicationScopeCreatorsAtStartup</param-name>
+			      <param-value>true</param-value>
+			    </init-param>
+
+			    <!-- WARNING: allowing JSON-RPC connections bypasses much of the security
+			    protection that DWR gives you. Take this out if security is important -->
+			    <init-param>
+			      <param-name>jsonRpcEnabled</param-name>
+			      <param-value>true</param-value>
+			    </init-param>
+
+			    <!-- WARNING: allowing JSONP connections bypasses much of the security
+			    protection that DWR gives you. Take this out if security is important -->
+			    <init-param>
+			      <param-name>jsonpEnabled</param-name>
+			      <param-value>true</param-value>
+			    </init-param>
+
+			    <!-- data: URLs are good for small images, but are slower, and could OOM for
+			    larger images. Leave this out (or keep 'false') for anything but small images -->
+			    <init-param>
+			      <param-name>preferDataUrlSchema</param-name>
+			      <param-value>false</param-value>
+			    </init-param>
+
+			    <!-- This enables full streaming mode. It's probably better to leave this
+			    out if you are running across the Internet -->
+			    <init-param>
+			      <param-name>maxWaitAfterWrite</param-name>
+			      <param-value>-1</param-value>
+			    </init-param>
+
+			    <!--
+			    For more information on these parameters, see:
+			    - http://getahead.org/dwr/server/servlet
+			    - http://getahead.org/dwr/reverse-ajax/configuration
+			    -->
+			    <load-on-startup>1</load-on-startup>
+	</servlet>
+
+
+
+ 	<servlet>
+		<servlet-name>dispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/applicationContext.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<!--
+	servlet-mapping
+	Specifies the mapping between a servlet and URL pattern  
+	-->
+	<servlet-mapping>
+		<servlet-name>dwr-invoker</servlet-name>
+		<url-pattern>/dwr/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>dispatcher</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+ 
+	<servlet-mapping>
+		<servlet-name>dispatcher</servlet-name>
+		<url-pattern>/dwr/*</url-pattern>
+	</servlet-mapping>
+ 
+
+    <session-config>
+      <session-timeout>1440</session-timeout>    <!-- 30 minutes -->
+    </session-config>
+    
+    <error-page>
+		<error-code>500</error-code>
+		<location>/common/callback/errorpage.jsp</location>
+	</error-page>
+
+	<jsp-config>
+	</jsp-config>
+	
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+
+</web-app>

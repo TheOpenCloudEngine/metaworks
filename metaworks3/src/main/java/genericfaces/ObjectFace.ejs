@@ -1,0 +1,137 @@
+<%
+
+  var showNewBtn = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideNewBtn']);
+
+  if (value != null) {
+		var showTitle = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideTitle']);
+		var showViewBox = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideViewBox']);
+		
+  if(showViewBox){
+%>
+	<div class="view_box3" style="background:#fff;">
+		<div class="guide">
+			<span class="tl"></span>
+			<span class="tr"></span>
+		</div>
+<%  
+  }
+%>
+		<div class="cont" style="padding-bottom:3px;">
+<%
+  if(showTitle){
+  
+  			var objectName;
+  			
+  			if(value.__toString != null){
+				objectName = value.__toString();
+			}		
+			if(!objectName){
+				objectName = objectMetadata.displayName;
+			}
+  
+  
+%>		
+			<p class="title"><%=mw3.localize(objectName)%></p>
+<%
+  }
+%>				
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+			    <tbody><tr>
+			        <td style="padding:2px 12px 0 0;">
+			            <table width="*" border="0" cellspacing="0" cellpadding="0">
+						<tbody>
+<%	
+
+  var showLabel = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideLabels']);
+  var showEditBtn = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideEditBtn']);
+
+  for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){
+  
+  
+  	var fd = objectMetadata.fieldDescriptors[i];
+   	
+  	if(mw3.isHidden(fields[fd.name])) continue;
+  	if(fd.name == 'metaworksContext') continue;
+  	
+  	var fieldValue = value[fd.name];
+%>
+ 
+<tr height="25" valign="middle">
+<%
+ 
+ if(showLabel){
+%>
+<td bgcolor=white> <b><%=mw3.localize(fd.displayName)%></b> </td>
+
+<%}
+%>
+
+<td bgcolor=white>
+
+<%
+	if(fd.attributes && fd.attributes['imagepath']){
+		if(fieldValue){
+ 	
+%>
+ <img src="<%=fieldValue%>" width=100>
+<%
+		}
+ 
+ 	}else{
+%>
+ <%=fields[fd.name] ? fields[fd.name].here() : "XXX"%>
+<%
+ 	}
+ 	
+%> 
+
+</td></tr>
+
+
+<%
+  }
+%>
+
+
+			            </tbody></table>
+			        </td>
+			        
+			    </tr>
+			    
+			    <tr>
+			    <td <%=showLabel ? "colspan=2" : ""%>>
+			    <%
+      
+   if(objectMetadata.serviceMethodContexts)
+   for(var i=0; i<objectMetadata.serviceMethodContexts.length; i++){
+   	   		var serviceMethod = objectMetadata.serviceMethodContexts[i];
+   	   		   	   		
+   	   		if(serviceMethod.inContextMenu)
+   	   			continue;
+%><%=methods[serviceMethod.methodName].here()%> <%   
+   }
+   
+   if(mw3.when != mw3.WHEN_EDIT && showEditBtn){  
+%>
+<!-- <input type=button onclick="<%=editFunction%>" value="Edit"> -->
+
+<%}%>
+			    </td>
+			    </tr>
+			</tbody></table>
+			
+			
+		</div>
+<%
+  if(showViewBox){
+%>	
+		<div class="guide">
+			<span class="lb"></span>
+			<span class="rb"></span>
+		</div>
+	</div>
+<%
+  }
+%>
+<%}else if(showNewBtn){%>
+<%}%>

@@ -1,0 +1,41 @@
+<%
+	if(value){
+		var spacing = objectMetadata.getOptionValue('spacing', 0);
+		
+		var fieldOption = {};
+		
+		if(spacing)
+			fieldOption['htmlAttr'] = {style: 'margin-bottom:' + spacing + 'px'};
+		
+		for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){
+	  		var fd = objectMetadata.fieldDescriptors[i];
+	  	
+			if(mw3.isHidden(fields[fd.name])) continue;
+			if(fd.name == 'metaworksContext') continue;
+	  	
+			var fieldValue = value[fd.name];
+%>
+
+	<%=fields[fd.name] ? fields[fd.name].here(fieldOption):"XXX"%>
+
+<%
+		}
+%>
+<span style="float:right;">
+
+<%						   
+		if(objectMetadata.serviceMethodContexts){
+			for(var key in objectMetadata.serviceMethodContexts){
+	  	   		var serviceMethod = objectMetadata.serviceMethodContexts[key];
+						   
+%>
+<span style="display: inline-block;"><%=methods[serviceMethod.methodName].here()%></span>
+<%   
+			}
+		}
+%>
+</span>
+<div style="clear:both"></div>
+<%
+	}
+%>

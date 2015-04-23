@@ -1,0 +1,55 @@
+<%
+	if(value == null || typeof value == 'undefined')
+		return true;
+%>
+	<div id="tabs_<%=objectId%>" class="ui-layout-center tabs-min">
+
+		<ul>
+<%
+		for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){
+			var fd = objectMetadata.fieldDescriptors[i];
+			
+		  	if(mw3.isHidden(fields[fd.name])) continue;
+		  	if(fd.name == 'metaworksContext') continue;		
+%>			
+			<li>
+				<a<%if(fd.displayName != 'null'){%> id="tabIcon_<%=fd.displayName%>" <%}%>  href="#tab_<%=objectId%>_<%=i+1%>" id="title_<%=objectId%>_<%=i+1%>"><%=mw3.localize(fd.displayName)%></a>
+			</li>
+<%
+		}
+%>
+		</ul>
+		
+		<div class="ui-layout-content">
+		
+<%
+		var showLabel = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideLabels']);
+		
+		for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){
+			var fd = objectMetadata.fieldDescriptors[i];
+		  	
+		  	if(mw3.isHidden(fields[fd.name])) continue;
+		  	if(fd.name == 'metaworksContext') continue;
+%>	
+			<div id="tab_<%=objectId%>_<%=i+1%>" style="height: 100%">	
+				<%=fields[fd.name] ? fields[fd.name].here() : "XXX"%>
+			</div>
+		
+<%
+		}
+%>
+	
+			<div>
+				<span <%=showLabel ? "colspan=2":""%>>
+<%		   
+		if(objectMetadata.serviceMethodContexts)
+			for(var key in objectMetadata.serviceMethodContexts){	   
+%>   
+			<%=methods[key].here()%>
+<%	
+			}		   
+%>
+				</span>
+			</div>
+		</div>
+	</div>	

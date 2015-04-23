@@ -1,0 +1,30 @@
+<script>
+$(function() {
+	$( "#tabs" ).tabs();
+});
+</script>
+	
+<div id="tabs">
+	<ul>
+		<%
+			
+			for (var i=0; i<value.tabs.length; i++){
+		%>
+			<li><a href="#tabs-<%=i%>"><%=value.tabs[i].tabTitle%></a></li>
+		<%  } %>
+		
+	</ul>
+	
+	<%
+		for (var i=0; i<value.tabs.length; i++){
+	%>
+	
+	<div id="tabs-<%=i%>">
+	
+	<%=mw3.locateObject(value.tabs[i], value.tabs[i].__className)%>
+	
+	</div>
+	
+	<%  } %>	
+
+</div>

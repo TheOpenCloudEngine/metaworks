@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		
+		<title>Metaworks3 Tester</title>
+		
+		
+		
+		<!-- metaworks3 for ie7(json2) -->
+		<script type="text/javascript" src="dwr/metaworks/scripts/json/json2.js"></script>
+		
+		<!-- metaworks3 for dwr engine -->
+		<script type='text/javascript' src='dwr/engine.js'></script>
+		<script type='text/javascript' src='dwr/util.js'></script>
+		<script type='text/javascript' src='dwr/interface/Metaworks.js'></script>
+		
+		<!-- metaworks3 for jQuery -->
+		<!-- <script type="text/javascript" src="dwr/metaworks/scripts/jquery/jquery-1.8.3.min.js"></script>  -->
+		<script type="text/javascript" src="lib/jquery-1.11.1/jquery-1.11.1.min.js"></script>
+		
+		<!-- metaworks3 for keyboard mapping -->
+		<script type="text/javascript" src="dwr/metaworks/scripts/event/shortcut.js"></script>
+		
+		<!-- metaworks3 for context menu, import YUI -->
+		<link rel="stylesheet" type="text/css" href="dwr/metaworks/style/menu/reset.css">
+		<link rel="stylesheet" type="text/css" href="dwr/metaworks/style/menu/container.css">
+		<link rel="stylesheet" type="text/css" href="dwr/metaworks/style/menu/sam/menu.css">
+		
+		<script type="text/javascript" src="dwr/metaworks/scripts/yui-3.2.0-min.js"></script>
+		<script type="text/javascript" src="dwr/metaworks/scripts/yui/build/utilities/utilities.js"></script>
+		<script type="text/javascript" src="dwr/metaworks/scripts/yui/build/container/container.js"></script>
+		<script type="text/javascript" src="dwr/metaworks/scripts/yui/build/menu/menu.js"></script>
+		 
+		<!-- metaworks3 for ejs templete engine -->
+		<script type="text/javascript" src="dwr/metaworks/scripts/ejs/ejs_production.js"></script>
+		<script type="text/javascript" src="dwr/metaworks/scripts/ejs/ejs_debugger.js"></script>
+		<script type="text/javascript" src="dwr/metaworks/scripts/ejs/view.js"></script>
+		
+		<!-- metaworks3 engine -->
+		<script type="text/javascript" src="dwr/metaworks/scripts/metaworks.js"></script>
+		
+		<script type="text/javascript" src="lib/jquery/jquery.contextMenu.js"></script>
+		
+		<script type="text/javascript" src="scripts/OpenGraph-0.1-SNAPSHOT.js"></script>
+		<script type="text/javascript" src="lib/jquery-ui-1.11.0.custom/jquery-ui.js"></script>
+		<script type="text/javascript" src="lib/jquery/jquery.layout-latest.js"></script>
+		
+		<link rel="stylesheet" type="text/css" href="lib/jquery-ui-1.11.0.custom/jquery-ui.min.css" />
+
+			
+		<script type="text/javascript">
+		//google.load("visualization", "1", {packages:["corechart", "gauge", "table", "treemap", "geochart"]});
+		/* 	      google.load('visualization', '1', {packages:['corechart']});
+			      google.load('visualization', '1', {packages:['gauge']});
+		 */
+					var Request = function()
+					{
+					    this.getParameter = function( name )
+					    {
+					        var rtnval = "";
+					        var nowAddress = unescape(location.href);
+					        var parameters = (nowAddress.slice(nowAddress.indexOf("?")+1,nowAddress.length)).split("&");
+			
+					        for(var i = 0 ; i < parameters.length ; i++)
+					        {
+					            var varName = parameters[i].split("=")[0];
+					            if(varName.toUpperCase() == name.toUpperCase())
+					            {
+					                rtnval = parameters[i].split("=")[1];
+					                break;
+					            }
+					        }
+					        return rtnval;
+					    }
+					}
+				
+					var mainPage
+
+					$(document).ready(function() {
+						mw3.setBase("/metaworks-sample")
+				 		mw3.setWhen(mw3.WHEN_EDIT);
+						
+						mw3.template_error = function(e, actualFace) {
+							if(e.lineNumber){
+								if(e.lineText)
+									var message = "["+actualFace+"] at line "+e.lineNumber+": "+e.lineText+": "+e.message;
+								else
+									var message = "["+actualFace+"] at line "+e.lineNumber+": "+e.message;
+							}else
+								var message = "["+actualFace+"] "+e.message;
+								
+							alert(message);	
+			 			}				
+
+						var request = new Request();
+
+						var object = {
+							fullClassName: request.getParameter("className"),
+							classOwner: request.getParameter("classOwner"),
+								
+							__className: 'org.metaworks.GatewayRunner'
+						};
+										
+				 		mw3.locateObject(object, null, 'body').call('run');
+					});
+					</script>				 		
+	</head>
+	<body>
+	</body>
+</html>

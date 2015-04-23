@@ -1,0 +1,29 @@
+<% 
+    if(value){
+            var checkboxName = "checkBox_" + objectId;
+%>
+ <%
+            for(var i in value.optionValues){
+                var selectedVal = value.selected;
+                var isSelected = false;
+                if( selectedVal != null && selectedVal != "" ){
+                    var tempVal = selectedVal.split(",");
+                    for( var v = 0 ; v < tempVal.length ; v++ ){
+                        if( tempVal[v] == value.optionValues[i] ){
+                            isSelected = true;
+                        }
+                    }
+                }
+                
+ %>          
+           <% if( value.vertical ){ %><div><% }else{ %> <span> <% } %>
+                <input type="checkbox" name="<%=checkboxName%>" value=<%=value.optionValues[i]%> <%=(isSelected ? "checked" : "")%> <%=(mw3.when != mw3.WHEN_EDIT && mw3.when != mw3.WHEN_NEW) ? "disabled" : "" %> ><%=mw3.localize(value.optionNames[i])%></input>
+           <% if( value.vertical ){ %></div><% }else{ %> </span> <% } %>
+<% 
+            }
+%>
+ <% 
+%>
+ <% 
+    }
+%>

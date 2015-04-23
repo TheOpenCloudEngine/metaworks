@@ -1,0 +1,31 @@
+<%
+	if(value != null && typeof value != 'undefined'){		
+%>
+
+<%
+		var sub = false;
+		var context = false;
+		
+		if(value.sub != null && typeof value.sub != 'undefined' && value.sub)
+			sub = true;
+	
+		if(value.context != null && typeof value.context != 'undefined' && value.context)
+			context = true;
+
+		if(!sub && !context){
+%>
+	
+<div class="c9-left"></div>
+<div class="c9-label"><%=value.name%></div>
+<div class="c9-right"></div>
+<div class="c9-fix"></div>
+
+<%
+		}
+%>
+
+<%=fields.menu.here()%>
+
+<%
+	}
+%>

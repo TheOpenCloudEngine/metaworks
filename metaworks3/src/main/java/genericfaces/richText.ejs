@@ -1,0 +1,22 @@
+<%  
+ if(value == null){
+ 	value = "";
+ }
+	
+	var cols = descriptor.getOptionValue('cols');
+	var rows = descriptor.getOptionValue('rows');
+	
+	if(cols==null) cols = 80;
+	if(rows==null) rows = 10;
+	
+	if(mw3.when == mw3.WHEN_EDIT || mw3.when == mw3.WHEN_NEW){
+%>
+<textarea id="<%=mw3.createInputId(objectId)%>" class="form-control" cols=<%=cols%> rows=<%=rows%>><%=value%></textarea>
+<%
+
+	}else{
+%>
+	 "<%=value%>"
+<%
+	}
+%> 

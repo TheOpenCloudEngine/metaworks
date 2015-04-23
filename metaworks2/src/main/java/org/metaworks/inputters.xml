@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<java version="1.4.0_01" class="java.beans.XMLDecoder"> 
+ <object class="java.util.ArrayList"> 
+  <void method="add"> 
+   <string>org.metaworks.inputter.SelectInput</string> 
+  </void> 
+  <void method="add"> 
+   <string>org.metaworks.inputter.RadioInput</string> 
+  </void> 
+  <void method="add"> 
+   <string>org.metaworks.inputter.TextAreaInput</string> 
+  </void> 
+  <void method="add"> 
+   <string>org.metaworks.inputter.ReferenceInput</string> 
+  </void> 
+
+ </object> 
+</java> 

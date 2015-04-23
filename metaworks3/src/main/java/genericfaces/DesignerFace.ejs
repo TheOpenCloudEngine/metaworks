@@ -1,0 +1,53 @@
+	<div class="view_box" style="background:#fff">
+		<div class="guide">
+			<span class="tl"></span>
+			<span class="tr"></span>
+		</div>
+		<div class="cont">
+			<p class="title" style="font-size:14px; font-weight:bolder;  position:absolute; top:-24px; left:15px; background:#fff; padding:0 10px;"><%=objectMetadata.displayName%></p>
+			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+			    <tbody><tr>
+			        <td style="padding:2px 12px 0 0;">
+			            <table width="*" border="0" cellspacing="0" cellpadding="0">
+						<tbody>
+<%	
+	mw3.setWhen('__design-depth2');
+
+  for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){
+  
+  
+  	var fd = objectMetadata.fieldDescriptors[i];
+
+	if(!fd.attributes['resource']) continue;
+	
+  	
+  	var fieldValue = value[fd.name];
+%>
+ 
+<tr height="25" valign="middle">
+<%
+ 
+%>
+<td bgcolor=white> <b><%=fd.displayName%></b> </td>
+<td bgcolor=white> <%=fields[fd.name] ? fields[fd.name].here() : "XXX"%></td></tr>
+
+
+<%
+  }
+%>
+
+
+			            </tbody></table>
+			        </td>
+			        
+			    </tr>
+			    
+			</tbody></table>
+			
+			
+		</div>
+		<div class="guide">
+			<span class="lb"></span>
+			<span class="rb"></span>
+		</div>
+	</div>

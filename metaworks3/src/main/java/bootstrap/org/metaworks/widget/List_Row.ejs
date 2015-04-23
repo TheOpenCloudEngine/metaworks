@@ -1,0 +1,43 @@
+<%
+	if(value == null || typeof value == 'undefined')
+		return true;
+%>
+	
+	<td class="demo_iphone___description fabrik_element fabrik_list_45_group_54 hidden-phone">
+		<input type="checkbox" name="check_<%=options['parentId']%>" objectId="<%=objectId%>" />
+	</td>
+<%
+	for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){
+	  	var fd = objectMetadata.fieldDescriptors[i];
+	  	
+//	  	if(mw3.isHidden(fields[fd.name])) continue;
+//	  	if(fd.name == 'metaworksContext') continue;
+
+		var responsive = "";
+		var aMedia = fd.attributes['available.media'];
+		var hMedia = fd.attributes['hidden.media'];
+		
+		if(aMedia != null){
+			for(o in aMedia){
+				if(o == mw3.MEDIA_PC){
+					responsive = "visible-desktop";
+				}
+			}
+		}else if(hMedia != null){
+			for(o in hMedia){
+				if(o == mw3.MEDIA_MOBILE){
+					responsive = "hidden-phone";
+				}
+			}
+		}
+	%>
+		<td class="demo_iphone___id fabrik_element fabrik_list_45_group_54 <%=responsive%>">
+		<%=value[fd.name]%>
+		</td>
+<%		
+	}		
+%>
+
+<td class="demo_iphone___description fabrik_element fabrik_list_45_group_54 hidden-phone">
+	<input type="button" id="edit_<%=objectId%>" value="edit" onClick="mw3.getFaceHelper(<%=objectId%>).editItem();" />
+</td>

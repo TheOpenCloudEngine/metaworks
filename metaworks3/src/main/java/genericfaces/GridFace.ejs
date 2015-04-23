@@ -1,0 +1,188 @@
+<%
+	if(value != null && typeof value != 'undefined'){
+		var listOrderValue = objectMetadata.getOptionValue('listOrder');
+		var listOrder = [];
+		
+		if(listOrderValue && listOrderValue.length>0){
+			var tempOrder = [];
+			
+			if(listOrderValue.indexOf(',')>0){
+				tempOrder = listOrderValue.split(',');
+			}else{
+				tempOrder.push(listOrderValue);
+			}
+			
+			for (var i=0; i<tempOrder.length; i++){
+				for(var j=0; j<objectMetadata.fieldDescriptors.length; j++){
+					var fd = objectMetadata.fieldDescriptors[j];
+					 
+					if(tempOrder[i] == fd.name){
+						listOrder.push(j);
+					} 
+				}
+			}
+			
+		}else{
+			for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){
+				listOrder.push(i);
+			}
+		}
+		
+		var showRownum = !objectMetadata.getOptionValue('hideRownum', false);
+	
+		var showAddBtn = !objectMetadata.getOptionValue('hideAddBtn', false);
+		var showRemoveBtn = !objectMetadata.getOptionValue('hideRemoveBtn', false);
+		var showEditBtn = !objectMetadata.getOptionValue('hideEditBtn', false);
+
+		var addBtnName = mw3.localize(objectMetadata.getOptionValue('addBtnName', '$Add'));
+		var removeBtnName = mw3.localize(objectMetadata.getOptionValue('removeBtnName', '$Remove'));
+		var editBtnName = mw3.localize(objectMetadata.getOptionValue('editBtnName', '$Edit'));
+
+		var gridButtons = objectMetadata.getOptionValue('gridButtons', '');
+		var gridRowBtn = objectMetadata.getOptionValue('gridRowBtn', false);
+		
+		var platMode = objectMetadata.getOptionValue('platMode', false);
+		var showCheckBox = !objectMetadata.getOptionValue('hideCheckBox', false);
+		
+		if(mw3.when == mw3.WHEN_EDIT || mw3.when == mw3.WHEN_NEW){
+			var editObject = {
+				__className : objectTypeName,
+				metaworksContext : {when : mw3.WHEN_EDIT}
+			};
+			
+			var constructor = null;
+		
+			for(var i=0; i<objectMetadata.serviceMethodContexts.length; i++){
+				var smc = objectMetadata.serviceMethodContexts[i];
+				
+				if(smc.constructor)
+					constructor = smc.methodName;
+			}
+%>
+
+<div id="edititem_<%=objectId%>" <%=platMode?'':'style=\"display:none\"'%>>
+	<%=mw3.locateObject(editObject, objectTypeName)%>
+</div>
+<%
+			if(constructor)
+				mw3.call(editObject.__objectId, constructor);
+				
+			if(!platMode){
+				if(!showCheckBox || showCheckBox == null)
+					showRemoveBtn = false;
+			}
+			
+%>
+<div class="positionRight">
+<%	   		   	
+				if(showAddBtn){
+%>	
+<a id="wBtn" style="cursor: pointer" onClick="mw3.getFaceHelper(<%=objectId%>).addItem();"><span><%=addBtnName%></span></a>
+<%
+				}
+				if(showRemoveBtn){
+%>
+<a id="wBtn" style="cursor: pointer" onClick="mw3.getFaceHelper(<%=objectId%>).removeItem();"><span><%=removeBtnName%></span></a>	
+<%
+				}
+				if(showEditBtn && platMode){
+%>
+<a id="wBtn" style="cursor: pointer" onClick="mw3.getFaceHelper(<%=objectId%>).modifyItem();"><span><%=editBtnName%></span></a>	
+<%
+				}
+			
+				var buttons = [];
+				if(gridButtons.indexOf(',')>0){
+					buttons = gridButtons.split(',');
+				}else{
+					buttons.push(gridButtons);
+				}
+						
+				for(var i=0; i<buttons.length; i++){
+					for(var key in objectMetadata.serviceMethodContexts){
+	   		   			var serviceMethod = objectMetadata.serviceMethodContexts[key];
+	   		   		
+	   		   			if(buttons[i] == serviceMethod.methodName){
+%>
+<a id="wBtn" style="cursor: pointer" onClick="mw3.call(<%=editObject.__objectId%>, '<%=serviceMethod.methodName%>');"><span><%=mw3.localize(serviceMethod.displayName)%></span></a>
+<%	   		   			
+	   		   				break;
+	   		   			}
+	   		   		}
+	   		   	}
+%>
+</div>	
+<div class="clear"></div>
+<%
+		}
+%>
+
+<table id="listitem_<%=objectId%>" border="1" class="tbl_type" style="width: 100%;">
+
+	<thead>
+		<tr>
+		
+<%
+		if(showCheckBox){
+%>			
+			<th style="width: 10px; text-align: center;"><input type="checkbox" name="checkall_<%=objectId%>" onClick="javascript:mw3.getFaceHelper(<%=objectId%>).toogleCheck();" /></th>
+<%
+		}
+	
+		if(showRownum){
+%>			
+			<th style="width: 50px"><%=mw3.localize('$no')%></th>
+<%
+		}
+				
+		var when = mw3.when;
+		var how = mw3.how;
+		
+		mw3.when = mw3.WHEN_VIEW;
+		mw3.how = mw3.HOW_IN_LIST;
+	
+		for(var i=0; i<listOrder.length; i++){
+			var fd = objectMetadata.fieldDescriptors[listOrder[i]];
+			
+			if(mw3.isHidden(fields[fd.name])) continue;
+			if(fd.name == 'metaworksContext') continue;
+%>
+			<th><%=mw3.localize(fd.displayName)%></th>
+<%
+		}
+	
+	mw3.when = when;
+	mw3.how = how;
+	
+	if(showEditBtn || gridButtons){
+%>
+		<th></th>	
+<%					
+		}
+%>
+		</tr>
+	</thead>
+	
+<%
+		if(value != null){
+			if(typeof options == 'undefined') 
+				options = objectMetadata;
+				
+			options['htmlTag'] =  'tr';
+			options['ejsPath'] =  'dwr/metaworks/genericfaces/GridFace_Row.ejs';
+				
+			for(var i=0; i<value.length; i++){
+%>
+	<%=mw3.locateObject(value[i], value[i].__className, null, options)%>
+<%
+			}
+		
+			mw3.onLoadFaceHelperScript();		
+		}	
+%>		
+	</tbody>		
+</table>
+
+<%		
+	}
+%>

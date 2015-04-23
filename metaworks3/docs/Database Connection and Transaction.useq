@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence-diagram version="1.1.6" icons="true" automaticImage="PNG">  
+  <object id="1" language="java" name="org.metaworks.dwr.TransactionalDwrServlet" project="metaworks3" 
+    file="/metaworks3/src/main/java/org/metaworks/dwr/TransactionalDwrServlet.java" binary="false" 
+    label="&lt;static&gt;" type="class" autoSize="true">    
+    <position height="-1" width="-1" x="185" y="0"/>    
+    <execution id="2">      
+      <position height="352" width="190" x="5" y="107"/>    
+    </execution>    
+    <execution id="4">      
+      <position height="289" width="190" x="5" y="149"/>    
+    </execution>    
+    <execution id="17">      
+      <position height="780" width="190" x="5" y="461"/>    
+    </execution>    
+    <execution id="19">      
+      <position height="717" width="190" x="5" y="503"/>    
+    </execution>  
+  </object>  
+  <object id="42" language="java" name="javax.servlet.ServletConfig" project="metaworks3" 
+    file="/Users/kimsh/.m2/repository/javax/servlet/javax.servlet-api/3.0.1/javax.servlet-api-3.0.1.jar" binary="true" 
+    type="interface" autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="6">      
+      <position height="21" width="0" x="0" y="181"/>    
+    </execution>  
+  </object>  
+  <object id="43" language="java" name="org.metaworks.dao.JDBCConnectionFactory" project="metaworks3" 
+    file="/metaworks3/src/main/java/org/metaworks/dao/JDBCConnectionFactory.java" binary="false" label="cf" type="class" 
+    autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="8">      
+      <position height="21" width="0" x="0" y="262"/>    
+    </execution>    
+    <execution id="10">      
+      <position height="21" width="0" x="0" y="300"/>    
+    </execution>    
+    <execution id="12">      
+      <position height="21" width="0" x="0" y="334"/>    
+    </execution>    
+    <execution id="14">      
+      <position height="21" width="0" x="0" y="368"/>    
+    </execution>    
+    <execution id="16">      
+      <position height="21" width="0" x="0" y="396"/>    
+    </execution>  
+  </object>  
+  <object id="44" language="java" name="org.metaworks.dao.TransactionContext" project="metaworks3" 
+    file="/metaworks3/src/main/java/org/metaworks/dao/TransactionContext.java" binary="false" label="tx" type="class" 
+    autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="21">      
+      <position height="21" width="0" x="0" y="533"/>    
+    </execution>    
+    <execution id="23">      
+      <position height="21" width="0" x="0" y="575"/>    
+    </execution>    
+    <execution id="25">      
+      <position height="21" width="0" x="0" y="617"/>    
+    </execution>    
+    <execution id="27">      
+      <position height="21" width="0" x="0" y="659"/>    
+    </execution>    
+    <execution id="29">      
+      <position height="21" width="0" x="0" y="701"/>    
+    </execution>    
+    <execution id="31">      
+      <position height="21" width="0" x="0" y="743"/>    
+    </execution>    
+    <execution id="37">      
+      <position height="21" width="0" x="0" y="1078"/>    
+    </execution>    
+    <execution id="39">      
+      <position height="21" width="0" x="0" y="1120"/>    
+    </execution>    
+    <execution id="41">      
+      <position height="21" width="0" x="0" y="1178"/>    
+    </execution>    
+    <execution id="45">      
+      <position height="21" width="0" x="0" y="949"/>    
+    </execution>    
+    <execution id="46">      
+      <position height="63" width="159" x="516" y="995"/>    
+    </execution>  
+  </object>  
+  <object id="49" language="java" name="org.metaworks.dwr.MetaworksRemoteService" project="metaworks3" 
+    file="/metaworks3/src/main/java/org/metaworks/dwr/MetaworksRemoteService.java" binary="false" label="&lt;static&gt;" 
+    type="class" autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="33">      
+      <position height="21" width="0" x="0" y="788"/>    
+    </execution>  
+  </object>  
+  <object id="50" language="java" name="org.metaworks.dwr.MetaworksRemoteService" project="metaworks3" 
+    file="/metaworks3/src/main/java/org/metaworks/dwr/MetaworksRemoteService.java" binary="false" 
+    label="metaworksRemoteService" type="class" autoSize="true">    
+    <position height="0" width="0" x="0" y="0"/>    
+    <execution id="35">      
+      <position height="161" width="0" x="0" y="830"/>    
+    </execution>    
+    <execution id="52">      
+      <position height="21" width="0" x="0" y="904"/>    
+    </execution>  
+  </object>  
+  <object id="54" language="java" name="org.metaworks.spring.SpringConnectionFactory" project="metaworks3" 
+    file="/metaworks3/src/main/java/org/metaworks/spring/SpringConnectionFactory.java" binary="false" 
+    label="springConnectionFactory" type="class" autoSize="true">    
+    <position height="-1" width="-1" x="672" y="0"/>  
+  </object>  
+  <object id="55" language="java" name="java.lang.Object" project="metaworks3" 
+    file="/Library/Java/JavaVirtualMachines/jdk1.7.0_09.jdk/Contents/Home/jre/lib/rt.jar" binary="true" 
+    label="Service Object" type="class" autoSize="true">    
+    <position height="-1" width="-1" x="660" y="0"/>    
+    <execution id="48">      
+      <position height="21" width="86" x="1289" y="1016"/>    
+    </execution>  
+  </object>  
+  <note id="56">    
+    <position height="153" width="168" x="305" y="98"/>    
+    <text><![CDATA[if (connectionString!=null) then creates a JDBC Connection Factory and provides it to the MetaworksRemoteService. if not (maybe in case that Spring will  inject the connection), skip it.
+    ]]>
+    </text>  
+  </note>  
+  <note id="57">    
+    <position height="77" width="200" x="410" y="401"/>    
+    <text><![CDATA[managedTransaction=false
+autoCloseConnection=true
+    ]]>
+    </text>  
+  </note>  
+  <note id="58">    
+    <position height="124" width="200" x="648" y="590"/>    
+    <text><![CDATA[Once MetaworksRemoteService created, it ramains as a singleton object.
+
+It maybe created by Spring by configuring dwr.xml.]]>
+    </text>  
+  </note>  
+  <note id="59">    
+    <position height="100" width="200" x="347" y="894"/>    
+    <text><![CDATA[Commit if success, rollback if not, releaseResources always]]>
+    </text>  
+  </note>  
+  <note id="60">    
+    <position height="100" width="200" x="901" y="673"/>    
+    <text><![CDATA[if MetaworksRemoteService instance has connectionFactory which is injected by Spring]]>
+    </text>  
+  </note>  
+  <note id="61">    
+    <position height="400" width="268" x="964" y="183"/>    
+    <text><![CDATA[SpringConnectionFactory may (TransactionalDwrServlet option should be set to use spring in web.xml) created by Spring and is injected to MetaworksRemoteService: 
+
+<bean id="springConnectionFactoryForMetaworks" class="org.metaworks.spring.SpringConnectionFactory">
+		<property name="dataSource" ref="dataSource"/>	
+</bean>
+	
+<bean id="MetaworksRemoteService" class="org.uengine.codi.mw3.CodiMetaworksRemoteService" scope="singleton">
+		<property name="connectionFactory" ref="springConnectionFactoryForMetaworks"/>
+</bean>
+
+]]>
+    </text>  
+  </note>  
+  <note id="62">    
+    <position height="235" width="200" x="520" y="85"/>    
+    <text><![CDATA[set by web.xml, options are:
+
+1. useSpring: if true, database connection settings are may set by spring injection
+
+2. connectionString: if not null, will provide connection factory by option entry keys: driverClass, userId, password ]]>
+    </text>  
+  </note>  
+  <message id="3" operation="init(javax.servlet.ServletConfig):void">    
+    <end type="SOURCE" refId="2"/>    
+    <end type="TARGET" refId="4"/>  
+  </message>  
+  <message id="5" operation="getInitParameter(java.lang.String):java.lang.String">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="6"/>  
+  </message>  
+  <message id="7" operation="JDBCConnectionFactory()">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="8"/>  
+  </message>  
+  <message id="9" operation="setConnectionString(java.lang.String):void">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="10"/>  
+  </message>  
+  <message id="11" operation="setDriverClass(java.lang.String):void">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="12"/>  
+  </message>  
+  <message id="13" operation="setUserId(java.lang.String):void">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="14"/>  
+  </message>  
+  <message id="15" operation="setPassword(java.lang.String):void">    
+    <end type="SOURCE" refId="4"/>    
+    <end type="TARGET" refId="16"/>  
+  </message>  
+  <message id="18" operation="doPost(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse):void">    
+    <end type="SOURCE" refId="17"/>    
+    <end type="TARGET" refId="19"/>  
+  </message>  
+  <message id="20" operation="TransactionContext()">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="21"/>  
+  </message>  
+  <message id="22" operation="setManagedTransaction(boolean):void">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="23"/>  
+  </message>  
+  <message id="24" operation="setAutoCloseConnection(boolean):void">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="25"/>  
+  </message>  
+  <message id="26" operation="setRequest(javax.servlet.http.HttpServletRequest):void">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="27"/>  
+  </message>  
+  <message id="28" operation="setResponse(javax.servlet.http.HttpServletResponse):void">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="29"/>  
+  </message>  
+  <message id="30" operation="setConnectionFactory(org.metaworks.dao.ConnectionFactory):void">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="31"/>  
+  </message>  
+  <message id="32" operation="getInstance():org.metaworks.dwr.MetaworksRemoteService">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="33"/>  
+  </message>  
+  <message id="34" 
+    operation="callMetaworksService(java.lang.String,java.lang.Object,java.lang.String,java.util.Map&lt;java.lang.String,java.lang.Object&gt;):java.lang.Object">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="35"/>  
+  </message>  
+  <message id="36" operation="commit():void">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="37"/>  
+  </message>  
+  <message id="38" operation="rollback():void">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="39"/>  
+  </message>  
+  <message id="40" operation="releaseResources():void">    
+    <end type="SOURCE" refId="19"/>    
+    <end type="TARGET" refId="41"/>  
+  </message>  
+  <message id="47">    
+    <end type="SOURCE" refId="46"/>    
+    <end type="TARGET" refId="48"/>  
+  </message>  
+  <message id="51" operation="autowire(java.lang.Object,boolean):java.util.Map&lt;Class,Object&gt;">    
+    <end type="SOURCE" refId="35"/>    
+    <end type="TARGET" refId="52"/>  
+  </message>  
+  <message id="53" operation="setConnectionFactory(org.metaworks.dao.ConnectionFactory):void">    
+    <end type="SOURCE" refId="35"/>    
+    <end type="TARGET" refId="45"/>  
+  </message>  
+  <text-link id="63">    
+    <link-end type="SOURCE" refId="56"/>    
+    <link-end type="TARGET" refId="30"/>  
+  </text-link>  
+  <text-link id="64">    
+    <link-end type="SOURCE" refId="56"/>    
+    <link-end type="TARGET" refId="7"/>  
+  </text-link>  
+  <text-link id="65">    
+    <link-end type="SOURCE" refId="60"/>    
+    <link-end type="TARGET" refId="53"/>  
+  </text-link>  
+  <text-link id="66">    
+    <link-end type="SOURCE" refId="57"/>    
+    <link-end type="TARGET" refId="24"/>  
+  </text-link>  
+  <text-link id="67">    
+    <link-end type="SOURCE" refId="61"/>    
+    <link-end type="TARGET" refId="50"/>  
+  </text-link>  
+  <text-link id="68">    
+    <link-end type="SOURCE" refId="61"/>    
+    <link-end type="TARGET" refId="54"/>  
+  </text-link>  
+  <text-link id="69">    
+    <link-end type="SOURCE" refId="57"/>    
+    <link-end type="TARGET" refId="22"/>  
+  </text-link>  
+  <text-link id="70">    
+    <link-end type="SOURCE" refId="62"/>    
+    <link-end type="TARGET" refId="42"/>  
+  </text-link>  
+  <text-link id="71">    
+    <link-end type="SOURCE" refId="59"/>    
+    <link-end type="TARGET" refId="38"/>  
+  </text-link>  
+  <text-link id="72">    
+    <link-end type="SOURCE" refId="58"/>    
+    <link-end type="TARGET" refId="32"/>  
+  </text-link>  
+  <text-link id="73">    
+    <link-end type="SOURCE" refId="59"/>    
+    <link-end type="TARGET" refId="36"/>  
+  </text-link>  
+  <text-link id="74">    
+    <link-end type="SOURCE" refId="59"/>    
+    <link-end type="TARGET" refId="40"/>  
+  </text-link>  
+  <text-link id="75">    
+    <link-end type="SOURCE" refId="56"/>    
+    <link-end type="TARGET" refId="5"/>  
+  </text-link>
+</sequence-diagram>

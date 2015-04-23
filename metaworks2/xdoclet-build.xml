@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="_generation_" name="XDoclet Generator">
+<path id="xdoclet.classpath"><pathelement location="C:/Java/eclipse21sdk/eclipse/workspace/metaWorks/bin"/>
+<pathelement location="C:/pongsor/dosqllatest/lib/classes12.zip"/>
+<pathelement location="C:/pongsor/dosqllatest/lib/servlet.jar"/>
+
+<fileset dir="C:/Java/eclipse21sdk/eclipse/plugins/org.jboss.ide.eclipse.xdoclet.core_1.2.2/">
+<include name="*.jar"/>
+</fileset>
+</path>
+<target name="_generation_" depends=""/>
+</project>

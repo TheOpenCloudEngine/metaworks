@@ -1,0 +1,135 @@
+<%
+	if (value) {
+		var fieldOrderValue = (objectMetadata.faceOptions ? (objectMetadata.faceOptions['fieldOrder']?objectMetadata.faceOptions['fieldOrder']:'') : '');
+		var fieldOrder = [];
+		var cols = 2;
+		
+		if(fieldOrderValue && fieldOrderValue.length>0){
+			if(fieldOrderValue.indexOf(',')>0){
+				fieldOrder = fieldOrderValue.split(',');
+			}else{
+				fieldOrder.push(fieldOrderValue);
+			}
+			
+			for (var i=0; i<fieldOrder.length; i++){		
+				var tempOrder = [];
+		
+				if(fieldOrder[i].indexOf('-') > -1){
+					tempOrder = fieldOrder[i].split('-');						
+				}else{
+					tempOrder.push(fieldOrder[i]);
+				}
+				
+				var separator = '';
+				var tempField = '';
+				var cnt = 0;
+				
+				for (var j=0; j<tempOrder.length; j++){
+					if(fields[tempOrder[j]]){
+						var fd = fields[tempOrder[j]].fieldDescriptor;
+						
+						if(mw3.isHidden(fields[fd.name])) continue;
+						
+						tempField += separator + tempOrder[j];
+						separator = '-';
+							
+						cnt++;
+					}
+				}
+				
+				fieldOrder[i] = tempField;
+				
+				if(cols < (cnt * 2))
+					cols = cnt * 2;
+			}			
+		}else{
+			for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){
+				var fd = objectMetadata.fieldDescriptors[i];
+	   		   							
+				if(fd.name == 'metaworksContext') continue;
+							
+				if(mw3.isHidden(fields[fd.name])) continue;
+
+				/*
+				if(value[fd.name] == null
+				   && fd.className != 'java.lang.String'
+				   && fd.className != 'java.lang.Number'
+				   && fd.className != 'java.lang.Boolean'
+				   )
+					continue;
+				*/
+				
+				fieldOrder.push(fd.name);
+			}
+		}	
+%>
+	<div class="form_table"> 
+		<table border="0" cellspacing="0"  class="table table-bordered table-hover">	
+			<tbody>
+<%	
+		for (var i=0; i<fieldOrder.length; i++){
+			if(fieldOrder[i].length == 0)
+				continue;
+				
+			var tempOrder = [];
+			
+			if(fieldOrder[i].indexOf('-') > -1){
+				tempOrder = fieldOrder[i].split('-');
+			}else{
+				tempOrder.push(fieldOrder[i]);
+			}
+%>
+		<tr>
+<%				
+			for (var j=0; j<tempOrder.length; j++){					
+				var fd = fields[tempOrder[j]].fieldDescriptor;
+				var colspan = null;
+				
+				if(j == tempOrder.length-1)
+					colspan = cols - (j*2) - 1;
+					
+				var hideLabel = (fd.getOptionValue('hideLabel')?fd.getOptionValue('hideLabel'):false);
+				if(hideLabel){
+					if(colspan == null)
+						colspan = cols - (j*2) - 1;
+						
+					colspan = colspan + 1; 
+				}else{
+%>
+			<th scope="row" <%=(mw3.when=='new' || mw3.when=='edit')?(fd.getOptionValue('required')?'class=\"vCheck\"':''):''%>><%=fd.displayName%></th>
+<%
+				}
+				 			
+%>
+			<td <%=colspan?'colspan=\"'+colspan+'\"':''%>><%=fields[fd.name] ? fields[fd.name].here() : "XXX"%></td>
+<%				
+			}
+%>
+		</tr>
+<%			
+		}
+%>
+			</tbody>
+		</table>
+	</div>
+<%		
+		
+	   	if(objectMetadata.serviceMethodContexts){
+%>
+		
+		<div class="positionRight">
+<%			   	
+			for(var key in objectMetadata.serviceMethodContexts){
+	   		   	var serviceMethod = objectMetadata.serviceMethodContexts[key];	   		   	
+%>
+				<%=methods[serviceMethod.methodName].here()%>
+<%	   	   	
+			}
+%>			
+			<div class="clear"></div>
+		</div>
+		<div class="clear"></div>
+<%			
+		}
+  	}
+%>

@@ -1,0 +1,715 @@
+package org.metaworks.dwr;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.ServletContext;
+
+import org.directwebremoting.Browser;
+import org.directwebremoting.ScriptSession;
+import org.directwebremoting.ScriptSessionFilter;
+import org.directwebremoting.ScriptSessions;
+import org.directwebremoting.ServerContextFactory;
+import org.directwebremoting.WebContext;
+import org.directwebremoting.WebContextFactory;
+import org.directwebremoting.proxy.dwr.Util;
+//import org.javatuples.Tuple;
+//import org.javatuples.Unit;
+import org.metaworks.*;
+import org.metaworks.annotation.AutowiredFromClient;
+import org.metaworks.dao.ConnectionFactory;
+import org.metaworks.dao.IDAO;
+import org.metaworks.dao.TransactionContext;
+import org.metaworks.widget.ReturnWrapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.SystemPropertyUtils;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+public class MetaworksRemoteService {
+	
+
+
+//    public static ThreadLocal<String> callingObjectTypeName = new ThreadLocal<String>();
+
+	static Hashtable<String, WebObjectType> metadataStorage = new Hashtable<String, WebObjectType>();
+	
+	protected static MetaworksRemoteService instance;
+		protected static void setInstance(MetaworksRemoteService instance) {
+			MetaworksRemoteService.instance = instance;
+		}
+		public static MetaworksRemoteService getInstance() {
+
+			if(instance==null){
+
+					instance = new MetaworksRemoteService();
+			}
+			
+			return instance;
+		}
+	
+	public static void pushTargetScript(String sessionId, final String script, final Object[] object){
+		 Browser.withSession(sessionId, new Runnable(){
+			   @Override
+			   public void run() {
+				   ScriptSessions.addFunctionCall(script, object);
+			   }			  
+		});
+	}
+	
+	public static void pushTargetScriptFiltered(ScriptSessionFilter filter, final String script, final Object[] object){
+		
+		Browser.withAllSessionsFiltered(
+				filter,
+				new Runnable(){
+					@Override
+					public void run() {
+						ScriptSessions.addFunctionCall(script, object);
+					}			  
+				});
+	}
+	
+	public static void pushClientObjects(final Object[] object){
+		 Browser.withAllSessions(new Runnable(){
+			   @Override
+			   public void run() {
+			    ScriptSessions.addFunctionCall("mw3.locateObject", new Object[]{object, null, "body"});
+			    ScriptSessions.addFunctionCall("mw3.onLoadFaceHelperScript", new Object[]{});
+
+			   }			  
+		});
+	}
+	
+	public static void pushTargetClientObjects(String sessionId, final Object[] object){
+		 Browser.withSession(sessionId, new Runnable(){
+			   @Override
+			   public void run() {
+			    ScriptSessions.addFunctionCall("mw3.locateObject", new Object[]{object, null, "body"});
+			    ScriptSessions.addFunctionCall("mw3.onLoadFaceHelperScript", new Object[]{});
+
+			   }			  
+		});
+	}
+		
+	public static void pushOtherClientObjects(final String sessionId, final Object[] object){
+		
+		Browser.withAllSessionsFiltered(
+				new ScriptSessionFilter(){
+					@Override
+					public boolean match(ScriptSession session)
+					{
+						if(session.getId().equals(sessionId))
+							return false;
+						else
+							return true;
+					}			
+				},
+
+				new Runnable(){
+					@Override
+					public void run() {
+						ScriptSessions.addFunctionCall("mw3.locateObject", new Object[]{object, null, "body"});
+						ScriptSessions.addFunctionCall("mw3.onLoadFaceHelperScript", new Object[]{});
+
+					}			  
+				});
+	}
+	
+	public static void pushClientObjectsFiltered(ScriptSessionFilter filter, final Object[] object){
+		
+		Browser.withAllSessionsFiltered(
+				filter,
+
+				new Runnable(){
+					@Override
+					public void run() {
+						ScriptSessions.addFunctionCall("mw3.locateObject", new Object[]{object, null, "body"});
+						ScriptSessions.addFunctionCall("mw3.onLoadFaceHelperScript", new Object[]{});
+
+					}			  
+				});
+	}
+	
+	public void clearMetaworksType(String className) throws Exception {
+		
+		if("*".equals(className))
+			metadataStorage.clear();
+		
+		if(metadataStorage.containsKey(className))
+			metadataStorage.remove(className);
+		
+		
+		
+		////////// alert to other session users :  COMET //////////
+		
+		WebContext wctx = WebContextFactory.get();
+		String currentPage = wctx.getCurrentPage();
+
+	   // For all the browsers on the current page:
+	   Collection sessions = wctx.getScriptSessionsByPage(currentPage);
+
+	   //TODO: filter other topic's postings;
+	   Util utilAll = new Util(sessions);
+	   utilAll.addFunctionCall("mw3.clearMetaworksType('"+ className +"')");
+
+	}
+
+
+	public WebObjectType getMetaworksType(String className) throws Exception {
+		try{
+				
+			//TODO: this is debug mode option
+			if(metadataStorage.containsKey(className))
+				return metadataStorage.get(className);
+			
+			
+		//	if(className.length() == 0) return null;
+			WebObjectType objType = new WebObjectType(Thread.currentThread().getContextClassLoader().loadClass(className));
+
+			
+			
+			metadataStorage.put(className, objType);
+
+			//TODO: this will be better performance but, it is little different information between realization object and DAO's field 
+//			if(objType.iDAOClass()!=null)
+//				metadataStorage.put(objType.iDAOClass().getName(), objType);
+
+			
+			return objType;
+		}catch(Exception e){
+			throw new Exception("viewer tried to get metadata for class "+ className +" but failed.", e);
+		}
+	}
+	
+	public ArrayList<WebObjectType> getMetaworksTypes(String[] classNames) throws Exception {
+		
+		ArrayList<WebObjectType> metadataArray = new ArrayList<WebObjectType>();
+		
+		for(int i=0; i<classNames.length; i++){
+			if(classNames[i].endsWith("*")){
+				List<Class> classes = findMyTypes(classNames[i]);
+				
+				for(Class clsInPkg : classes){
+					metadataArray.add(getMetaworksType(clsInPkg.getName()));
+				}
+			}else{
+				try{
+					metadataArray.add(getMetaworksType(classNames[i]));
+				}catch(Exception e){e.printStackTrace();}
+			}
+		}
+		
+		return metadataArray;
+		
+	}
+	
+	private List<Class> findMyTypes(String basePackage) throws IOException, ClassNotFoundException
+	{
+	    ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+	    MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(resourcePatternResolver);
+
+	    List<Class> candidates = new ArrayList<Class>();
+	    String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
+	                               resolveBasePackage(basePackage) + ".class";
+	    Resource[] resources = resourcePatternResolver.getResources(packageSearchPath);
+	    for (Resource resource : resources) {
+            MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(resource);
+            candidates.add(Class.forName(metadataReader.getClassMetadata().getClassName()));
+            
+//	        if (resource.isReadable()) {
+//	            if (isCandidate(metadataReader)) {
+//	                candidates.add(Class.forName(metadataReader.getClassMetadata().getClassName()));
+//	            }
+//	        }
+	    }
+	    return candidates;
+	}
+
+	private String resolveBasePackage(String basePackage) {
+	    return ClassUtils.convertClassNameToResourcePath(SystemPropertyUtils.resolvePlaceholders(basePackage));
+	}
+
+//	private boolean isCandidate(MetadataReader metadataReader) throws ClassNotFoundException
+//	{
+//	    try {
+//	        Class c = Class.forName(metadataReader.getClassMetadata().getClassName());
+//	        if (c.getAnnotation(XmlRootElement.class) != null) {
+//	            return true;
+//	        }
+//	    }
+//	    catch(Throwable e){
+//	    }
+//	    return false;
+//	}
+	
+//	protected InvocationContext prepareToCall(String objectTypeName, Object object, String methodName, Map<String, Object> autowiredFields) throws Throwable{
+//
+//		Class serviceClass = Thread.currentThread().getContextClassLoader().loadClass(objectTypeName);
+//		InvocationContext invocationContext = new InvocationContext();
+//
+//		
+//    	//getBeanFactory().getBean(arg0)
+//    	
+////		callingObjectTypeName.set(objectTypeName);
+//		
+//		//if the requested value object is IDAO which need to be converted to implemented one so that it can be invoked by its methods
+//		//Another case this required is when Spring is used since the spring base object should be auto-wiring operation
+//		WebApplicationContext springAppContext = null;
+//		if(TransactionalDwrServlet.useSpring) springAppContext = getBeanFactory();
+//		Object springBean = null;
+//		if(springAppContext!=null)
+//		try{
+//			//springBean = getBeanFactory().getBean(serviceClass);
+//			Map beanMap = springAppContext.getBeansOfType(serviceClass);
+//			Set keys = beanMap.keySet();			
+//			for (Object key : keys) {
+//			    if(springBean != null) {
+//			    	System.err.println("====== Warnning : MetaworksRemoteService.callMetaworksService get only one bean object of one class.");
+//					break;
+//			    }
+//			    springBean = beanMap.get(key);
+//			}
+//		}catch(Exception e){
+//			//TODO: check if there's any occurrence of @Autowired in the field list, it is required to check and shows some WARNING to the developer.
+//		}
+//		
+//		if(serviceClass.isInterface() || springBean!=null){
+//			String serviceClassNameOnly = WebObjectType.getClassNameOnly(serviceClass);
+//			
+//			if(serviceClass.isInterface()){
+//				serviceClassNameOnly = serviceClassNameOnly.substring(1, serviceClassNameOnly.length());
+//				serviceClass = Thread.currentThread().getContextClassLoader().loadClass(serviceClass.getPackage().getName() + "." + serviceClassNameOnly);
+//			}
+//			
+//			if(springAppContext!=null)
+//				try{
+//					springBean = getBeanFactory().getBean(serviceClass);
+//				}catch(Exception e){
+//					//TODO: check if there's any occurrence of @Autowired in the field list, it is required to check and shows some WARNING to the developer.
+//				}
+//
+//			
+//			WebObjectType wot = getMetaworksType(serviceClass.getName());
+//			
+//			//Convert to service object from value object (IDAO)
+//			ObjectInstance srcInst = (ObjectInstance) wot.metaworks2Type().createInstance();
+//			srcInst.setObject(object);
+//			ObjectInstance targetInst = (ObjectInstance) wot.metaworks2Type().createInstance();
+//			
+//			if(springBean!=null){
+//				targetInst.setObject(springBean);
+//			}
+//			
+//			for(FieldDescriptor fd : wot.metaworks2Type().getFieldDescriptors()){
+//				Object srcFieldValue = srcInst.getFieldValue(fd.getName());
+//
+//				//MetaworksObject need to initialize the property MetaworksContext if there's no data.
+//				if("MetaworksContext".equals(fd.getName()) && srcFieldValue==null && IDAO.class.isAssignableFrom(serviceClass)){
+//					srcFieldValue = new MetaworksContext();
+//				}
+//				
+//				boolean isSpringAutowiredField = false;
+//				try{
+//					isSpringAutowiredField = ((serviceClass.getMethod( "get"+ fd.getName(), new Class[]{})).getAnnotation(Autowired.class) != null);
+//				}catch(Exception e){					
+//				}
+//				
+//				if(!isSpringAutowiredField)
+//					targetInst.setFieldValue(fd.getName(), srcFieldValue);
+//			}
+//			
+//			object = targetInst.getObject();
+//			
+//		}
+//		
+//		//injecting autowired fields from client
+//		if(autowiredFields!=null){
+//			for(String fieldName : autowiredFields.keySet()){
+//				Object autowiringValue = autowiredFields.get(fieldName);
+//				serviceClass.getField(fieldName).set(object, autowiringValue);
+//			}
+//		}
+//		
+//		Map autowiredObjects = autowire(object, false);
+//		
+//		TransactionContext tx = TransactionContext.getThreadLocalInstance();
+//		if(connectionFactory!=null)
+//			tx.setConnectionFactory(getConnectionFactory());
+//		
+//		invocationContext.setObject(object);
+//		invocationContext.setAutowiredObjects(autowiredObjects);
+//		invocationContext.setMethodName(methodName);
+//		
+//		WebObjectType wot = getMetaworksType(serviceClass.getName());
+//		for(ServiceMethodContext smc: wot.getServiceMethodContexts()){ //TODO: [Performance] looking in array
+//			if(smc.getMethodName().equals(methodName)){
+//				invocationContext.setMethod(smc.getMethod());
+//			}
+//		}
+//
+//		
+//		return invocationContext;
+//	}
+
+	private void fireAfterConvertertedEvent(Object object) throws Exception {
+		if(object == null || object.getClass().getPackage().getName().equals("java.lang")) return;
+
+		if(object instanceof ConverterEventListener){
+			autowire(object);
+			((ConverterEventListener)object).beforeConverted();
+		}
+
+		ObjectType ot = (ObjectType) getMetaworksType(object.getClass().getName()).metaworks2Type();{
+			ObjectInstance instance = (ObjectInstance) ot.createInstance();
+			instance.setObject(object);
+			for(FieldDescriptor fd : ot.getFieldDescriptors()){
+				Object propertyValue = instance.getFieldValue(fd.getName());
+				fireAfterConvertertedEvent(propertyValue);
+			}
+		}
+	}
+
+    public Object callMetaworksService(String objectTypeName, Object clientObject, String methodName, Map<String, Object> autowiredFields) throws Throwable{
+
+		Class serviceClass = Thread.currentThread().getContextClassLoader().loadClass(objectTypeName);
+//		InvocationContext invocationContext = new InvocationContext();
+
+		//replace clientObject with faceClass in case the one of faceClass' method is called since the dataFaceMap is added by MetaworksConverter already.
+		Map<Object,Face> dataFaceMap = (Map<Object, Face>) TransactionContext.getThreadLocalInstance().getSharedContext("dataFaceMap");
+		if(dataFaceMap!=null && dataFaceMap.containsKey(System.identityHashCode(clientObject)))
+			clientObject = dataFaceMap.get(System.identityHashCode(clientObject));
+
+		//getBeanFactory().getBean(arg0)
+    	
+//		callingObjectTypeName.set(objectTypeName);
+		
+		//if the requested value object is IDAO which need to be converted to implemented one so that it can be invoked by its methods
+		//Another case this required is when Spring is used since the spring base object should be auto-wiring operation
+		WebApplicationContext springAppContext = null;
+		if(TransactionalDwrServlet.useSpring) springAppContext = getBeanFactory();
+		Object springBean = null;
+		if(springAppContext!=null)
+		try{
+			//springBean = getBeanFactory().getBean(serviceClass);
+			Map beanMap = springAppContext.getBeansOfType(serviceClass);
+			Set keys = beanMap.keySet();			
+			for (Object key : keys) {
+			    if(springBean != null) {
+			    	System.err.println("====== Warnning : MetaworksRemoteService.callMetaworksService get only one bean object of one class.");
+					break;
+			    }
+			    springBean = beanMap.get(key);
+			}
+		}catch(Exception e){
+			//TODO: check if there's any occurrence of @Autowired in the field list, it is required to check and shows some WARNING to the developer.
+		}
+
+		//firing ConverterEventListener.afterConverted()
+		//fireAfterConvertertedEvent(clientObject);  //disabled due to performance issue
+
+
+		if(serviceClass.isInterface() || springBean!=null){
+			String serviceClassNameOnly = WebObjectType.getClassNameOnly(serviceClass);
+			
+			if(serviceClass.isInterface()){
+				serviceClassNameOnly = serviceClassNameOnly.substring(1, serviceClassNameOnly.length());
+				serviceClass = Thread.currentThread().getContextClassLoader().loadClass(serviceClass.getPackage().getName() + "." + serviceClassNameOnly);
+			}
+			
+			if(springAppContext!=null)
+				try{
+					springBean = getBeanFactory().getBean(serviceClass);
+				}catch(Exception e){
+					//TODO: check if there's any occurrence of @Autowired in the field list, it is required to check and shows some WARNING to the developer.
+				}
+
+			
+			WebObjectType wot = getMetaworksType(serviceClass.getName());
+			
+			//Convert to service object from value object (IDAO)
+			ObjectInstance srcInst = (ObjectInstance) wot.metaworks2Type().createInstance();
+			srcInst.setObject(clientObject);
+			ObjectInstance targetInst = (ObjectInstance) wot.metaworks2Type().createInstance();
+			
+			if(springBean!=null){
+				targetInst.setObject(springBean);
+			}
+			
+			for(FieldDescriptor fd : wot.metaworks2Type().getFieldDescriptors()){
+				Object srcFieldValue = srcInst.getFieldValue(fd.getName());
+
+				//MetaworksObject need to initialize the property MetaworksContext if there's no data.
+				if("MetaworksContext".equals(fd.getName()) && srcFieldValue==null && IDAO.class.isAssignableFrom(serviceClass)){
+					srcFieldValue = new MetaworksContext();
+				}
+				
+				boolean isSpringAutowiredField = false;
+				try{
+					isSpringAutowiredField = ((serviceClass.getMethod( "get"+ fd.getName(), new Class[]{})).getAnnotation(Autowired.class) != null);
+				}catch(Exception e){					
+				}
+				
+				if(!isSpringAutowiredField)
+					targetInst.setFieldValue(fd.getName(), srcFieldValue);
+			}
+			
+			clientObject = targetInst.getObject();
+			
+		}
+		
+		//injecting autowired fields from client
+		if(autowiredFields!=null){
+			for(String fieldName : autowiredFields.keySet()){
+				Object autowiringValue = autowiredFields.get(fieldName);
+				
+				if(!fieldName.startsWith(ServiceMethodContext.WIRE_PARAM_CLS)) //if the autowired field is not a @AutowiredFromClient in Parameterized call, means normal case in the field injection.
+					serviceClass.getField(fieldName).set(clientObject, autowiringValue);
+			}
+		}
+		
+		Map autowiredObjects = autowire(clientObject, false);
+		
+		TransactionContext tx = TransactionContext.getThreadLocalInstance();
+		if(connectionFactory!=null)
+			tx.setConnectionFactory(getConnectionFactory());
+		
+//		invocationContext.setObject(object);
+//		invocationContext.setAutowiredObjects(autowiredObjects);
+//		invocationContext.setMethodName(methodName);
+		
+		Method theMethod = null;
+		boolean parameterizedInvoke = false;
+		ServiceMethodContext theSMC = null;
+		
+		WebObjectType wot = getMetaworksType(serviceClass.getName());
+		for(ServiceMethodContext smc: wot.getServiceMethodContexts()){ //TODO: [Performance] looking in array
+			if(smc.getMethodName().equals(methodName)){
+				theSMC = smc;
+				theMethod = smc._getMethod();
+				parameterizedInvoke = theSMC._getPayloadParameterIndexes()!=null && theSMC._getPayloadParameterIndexes().size() > 0;
+			}
+		}
+		
+		
+
+//		object = invocationContext.getObject();
+
+		///put autowiring objects all including the object from client itself.
+		TransactionContext.getThreadLocalInstance().setAutowiringObjectsFromClient(autowiredFields);
+		if(TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient()==null){
+			TransactionContext.getThreadLocalInstance().setAutowiringObjectsFromClient(new HashMap());
+		}
+		TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient().put("this", clientObject);
+
+		if(theMethod == null)
+			theMethod = clientObject.getClass().getMethod(methodName, new Class[]{});
+		
+		try{
+			
+			Object[] parameters = new Object[theMethod.getParameterTypes().length];
+			if(parameterizedInvoke){
+				
+				for(String key : theSMC._getPayloadParameterIndexes().keySet()){
+					int parameterIndex = theSMC._getPayloadParameterIndexes().get(key);
+					
+					Object fieldValue = null;
+					if(key.startsWith(ServiceMethodContext.WIRE_PARAM_CLS)){
+						fieldValue = autowiredFields.get(key);
+					}else{
+						try{
+							fieldValue = serviceClass.getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[]{}).invoke(clientObject, new Object[]{});
+						}catch(Exception ex){
+							throw new RuntimeException("Error when to get field value for inserting parametered metaworks object", ex);
+						}						
+					}
+					
+					parameters[parameterIndex] = fieldValue;
+
+				}
+				
+			}
+			
+			Object returned = theMethod.invoke(clientObject, parameters);
+			
+			if(theMethod.getReturnType()==void.class) //if void is return type, apply clientobject back to the browser.  
+				returned = clientObject;
+			
+			
+	    	Object wrappedReturn = TransactionContext.getThreadLocalInstance().getSharedContext("wrappedReturn");
+	    	if(wrappedReturn!=null)
+	    		returned = wrappedReturn;
+
+
+			
+			return returned;
+
+    	} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			if(!(e.getTargetException() instanceof MetaworksException))
+				e.printStackTrace();
+			
+			throw e.getTargetException();
+		}
+				
+	}
+
+    public WebApplicationContext getBeanFactory()
+    {
+        try {
+			ServletContext srvCtx = ServerContextFactory.get().getServletContext();
+
+			return WebApplicationContextUtils.getWebApplicationContext(srvCtx);
+		} catch (Exception e) {
+		//	e.printStackTrace();
+			
+			return null;
+		}
+    }
+    
+    public static boolean metaworksCall(){
+    	StackTraceElement[] stack = Thread.currentThread().getStackTrace();
+    	
+    	return stack[1].getClassName().equals(MetaworksRemoteService.class.getName());
+    }
+
+    
+    public static void wrapReturn(Object object){
+    	TransactionContext.getThreadLocalInstance().setSharedContext("wrappedReturn", object);
+    }
+    public static void wrapReturn(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7){
+    	wrapReturn(new Object[]{o1, o2, o3, o4, o5, o6, o7});
+    }
+    public static void wrapReturn(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6){
+    	wrapReturn(new Object[]{o1, o2, o3, o4, o5, o6});
+    }
+    public static void wrapReturn(Object o1, Object o2, Object o3, Object o4, Object o5){
+    	wrapReturn(new Object[]{o1, o2, o3, o4, o5});
+    }
+    public static void wrapReturn(Object o1, Object o2, Object o3, Object o4){
+    	wrapReturn(new Object[]{o1, o2, o3, o4});
+    }
+    public static void wrapReturn(Object o1, Object o2, Object o3){
+    	wrapReturn(new Object[]{o1, o2, o3});
+    }
+    public static void wrapReturn(Object o1, Object o2){
+    	wrapReturn(new Object[]{o1, o2});
+    }
+    
+
+    
+	public static Map<Class, Object> autowire(Object object) {
+		try {
+			return getInstance().autowire(object, true);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public Map<Class, Object> autowire(Object object, boolean autowiringFromClient) throws IllegalAccessException {
+		Map<Class, Object> autowiredObjects = new HashMap<Class, Object>();
+
+		if(object==null)
+			return autowiredObjects;
+		
+		WebApplicationContext springAppContext = null;
+		if(TransactionalDwrServlet.useSpring) springAppContext = MetaworksRemoteService.getInstance().getBeanFactory();
+		else return autowiredObjects;
+		
+		if(springAppContext==null)
+			return autowiredObjects;
+		
+		
+		Map<Class, Object> autowiringObjectFromClientMapByClassTypes = null;
+		if(autowiringFromClient){
+			
+			if(TransactionContext.getThreadLocalInstance()==null || TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient()==null){
+				autowiringFromClient = false;
+			}else{
+			
+				autowiringObjectFromClientMapByClassTypes = new HashMap<Class, Object>();
+				for(Object key : TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient().keySet()){
+					Object autowiringObjectFromClient = TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient().get(key);
+					
+					if(autowiringObjectFromClient!=null)
+						autowiringObjectFromClientMapByClassTypes.put(autowiringObjectFromClient.getClass(), autowiringObjectFromClient);
+				}
+			}
+		}
+		
+		
+		for(Field field: object.getClass().getFields()){
+			if(field.getAnnotation(Autowired.class)!=null){
+				
+
+				Object springBean = null;
+				if(springAppContext!=null)
+				try{
+					//springBean = getBeanFactory().getBean(serviceClass);
+					Map beanMap = springAppContext.getBeansOfType(field.getType());
+					Set keys = beanMap.keySet();			
+					for (Object key : keys) {
+					    springBean = beanMap.get(key);
+					    
+					    if(springBean != null) {
+					    	break;
+					    }
+					}
+				}catch(Exception e){
+					//TODO: check if there's any occurrance of @Autowired in the field list, it is required to check and shows some WARNING to the developer.
+				}
+				
+				if(springBean!=null){
+					field.set(object, springBean);
+					autowiredObjects.put(springBean.getClass(), springBean);
+				}
+
+			}else if(autowiringFromClient && field.getAnnotation(AutowiredFromClient.class)!=null){
+				if(autowiringObjectFromClientMapByClassTypes.containsKey(field.getType())){
+					
+					Object autowiringFromClientObject = autowiringObjectFromClientMapByClassTypes.get(field.getType());
+					field.set(object, autowiringFromClientObject);
+					autowiredObjects.put(autowiringFromClientObject.getClass(), autowiringFromClientObject);
+				}
+				
+			}
+		}
+		
+		return autowiredObjects;
+	}
+
+	ConnectionFactory connectionFactory;
+		public ConnectionFactory getConnectionFactory() {
+			return connectionFactory;
+		}
+	
+		public void setConnectionFactory(ConnectionFactory connectionFactory) {
+			this.connectionFactory = connectionFactory;
+		}
+		
+	boolean debugMode;
+		public boolean isDebugMode() {
+			return debugMode;
+		}
+		public void setDebugMode(boolean debugMode) {
+			this.debugMode = debugMode;
+		}
+		
+
+}

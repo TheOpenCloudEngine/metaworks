@@ -1,0 +1,83 @@
+<%
+	if(value){
+		if(mw3.where == 'mobile'){		
+%>
+
+	<div  data-role="dialog" id="popup_<%=objectId%>">
+	
+		<div data-role="header" data-theme="d">
+			<h1>Dialog</h1>
+		</div>
+		<div data-role="content" data-theme="c">
+  			<%=fields.panel.here()%>
+		</div>
+	</div>
+
+
+<%
+		}else{		
+			if(value.type == 'samsungPhone'){			
+%>
+
+
+<div id="samsungPhone">
+	<div class="s_panel">    
+        <%=fields.panel.here({where: "mobile"})%>
+	</div>
+	<div id="home_btn" style="top:670px; left:160px;" onclick="mw3.getFaceHelper('<%=objectId%>').close();"></div>
+</div>
+
+<%
+			}else if(value.type == 'samsungPad'){	
+%>			
+			
+<div id="samsungPad">
+	<div class="s_panel">    
+        <%=fields.panel.here({where: "mobile"})%>
+	</div>
+	<div id="home_btn" style="top:570px; left:100px;" onclick="mw3.getFaceHelper('<%=objectId%>').close();"></div>
+</div>
+
+<%
+			}else if(value.type == 'windowsPad'){	
+%>	
+
+<div id="windowsPad">
+	<div class="s_panel">    
+        <%=fields.panel.here({where: "mobile"})%>
+	</div>
+	<div id="home_btn" style="top:270px; left:900px;" onclick="mw3.getFaceHelper('<%=objectId%>').close();"></div>
+</div>
+
+<%
+			}else{	
+%>	
+
+<div id="iphone_wrap">
+    <div id="view">
+        <div id="iphone_status"> </div>
+        <div id="safari_address">
+            <div id="safari_title">MW3 - iPhone Simulator</div>
+            <div id="safari_plus"></div>
+            <div id="safari_addressbglt" class="loadingAoff"></div>
+            <div id="safari_inputw">
+                <label id="safari_input" class="loadingBoff">
+                    <input value="<%=value.url%>" type="text" id="safari_location" />
+                </label>
+            </div>
+            <div id="safari_addressbgrt" class="loadingCoff" ></div>
+            <a href="/" id="safari_refresh" onclick=""><img src="images/simulator/x.png" width="24" height="24" alt="Refresh" border="0" /></a> </div>
+        <div id="safari_window" frameborder="0" marginWidth="0" scrolling="auto">
+            <%=fields.panel.here({where: "mobile"})%>
+        </div>
+        <div id="safari_toolbar"> </div>
+        <div id="home_btn" onclick="mw3.getFaceHelper('<%=objectId%>').close();"></div>
+    </div>
+</div>
+
+
+<%
+			}		
+		}		
+	}		
+%>

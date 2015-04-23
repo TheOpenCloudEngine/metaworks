@@ -1,0 +1,73 @@
+<%
+	if(value){
+		if(value.center){
+%>
+
+<%
+		if(value.north && !mw3.isHidden(fields['north'])){
+%>
+	<div class="pane ui-layout-north" layoutName="north"><%=fields.north.here()%></div>
+<%
+		}
+%>
+
+
+	<div class="pane ui-layout-center" layoutName="center">
+<%	
+	if(value.west && !mw3.isHidden(fields['west'])){
+%>
+		<div class="show_west_btn"></div>
+<%	
+	}
+%>
+		<%=fields.center.here()%>
+<%	
+	if(value.east && !mw3.isHidden(fields['east'])){
+%>
+		<div class="show_east_btn"></div>
+<%	
+	}
+%>
+	</div>
+<%
+		}
+%>
+	
+<%
+		if(value.west && !mw3.isHidden(fields['west'])){
+%>
+	<div class="pane ui-layout-west" layoutName="west">
+		<div class="hide_west_btn"></div>
+		<%=fields.west.here()%>
+	</div>
+<%
+		}
+%>
+
+
+
+
+<%
+		if(value.south && !mw3.isHidden(fields['south'])){
+%>
+	<div class="pane ui-layout-south" layoutName="south"><%=fields.south.here()%></div>
+<%
+		}
+%>
+
+
+<%
+		if(value.east && !mw3.isHidden(fields['east'])){
+%>
+	<div class="pane ui-layout-east" layoutName="east">
+		<div class="hide_east_btn"></div>
+		<%=fields.east.here()%>
+	</div>
+<%
+		}
+%>
+<%
+	}
+%>
+
+

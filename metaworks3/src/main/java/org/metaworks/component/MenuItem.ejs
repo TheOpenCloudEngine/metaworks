@@ -1,0 +1,13 @@
+<%
+	if(value != null && typeof value != 'undefined'){
+		if(value.type == 'menu_item'){ 
+%>
+
+	<span><%=value.shortcut?value.shortcut:''%></span><u> </u><%=mw3.localize(value.name)%>
+
+	<%=fields.subMenu.here()%>
+
+<%
+		}
+	}
+%>

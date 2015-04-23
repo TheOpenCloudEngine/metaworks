@@ -1,0 +1,81 @@
+<%
+	if(value != null && typeof value != 'undefined'){
+		var listOrderValue = (objectMetadata.faceOptions ? (objectMetadata.faceOptions['listOrder']?objectMetadata.faceOptions['listOrder']:'') : '');
+		var listOrder = [];
+		
+		if(listOrderValue && listOrderValue.length>0){
+			var tempOrder = [];
+			
+			if(listOrderValue.indexOf(',')>0){
+				tempOrder = listOrderValue.split(',');
+			}else{
+				tempOrder.push(listOrderValue);
+			}
+				
+			for (var i=0; i<tempOrder.length; i++){
+				for(var j=0; j<objectMetadata.fieldDescriptors.length; j++){
+					var fd = objectMetadata.fieldDescriptors[j];
+					 
+					if(tempOrder[i] == fd.name){
+						listOrder.push(j);
+					} 
+				}
+			}
+			
+		}else{
+			for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){
+				listOrder.push(i);
+			}
+		}
+			
+		var showRownum = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideRownum']);
+		var showEditBtn = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideEditBtn']);
+		var showCheckBox = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideCheckBox']);
+		var showExtraBtn = objectMetadata.getOptionValue('showExtraBtn', false);
+		
+		if(showCheckBox){
+%>
+	<td style="text-align: center;"><input type="checkbox" objectId="<%=objectId%>" <%=mw3.how=='checked'?'checked':''%> /></td>
+<%				
+		}
+		
+		if(showRownum){
+%>
+	<td id="rownum_<%=objectId%>" style="text-align:right"></td>
+<%				
+		}
+			
+	for(var i=0; i<listOrder.length; i++){
+		var fd = objectMetadata.fieldDescriptors[listOrder[i]];
+	   	
+	  	if(mw3.isHidden(fields[fd.name])) continue;
+	  	if(fd.name == 'metaworksContext') continue;
+	  	
+	  	var align = 'left';
+	  	if(fd.className == 'java.lang.Integer')
+	  		align = 'right'; 
+%>
+	<td style="text-align: <%=align%>"><%=fields[fd.name].here()%></td>
+<%		
+	}		
+	
+		if(showEditBtn || showExtraBtn){
+%>
+
+	<td>
+<%			
+			if(showEditBtn){
+%>
+		<input type="button" id="edit_<%=objectId%>" value="edit" onClick="mw3.getFaceHelper(<%=objectId%>).editItem();" /></td>
+<%
+			}else{
+				for(var key in objectMetadata.serviceMethodContexts){
+	   		   		var serviceMethod = objectMetadata.serviceMethodContexts[key];	   		   	
+%>
+			<%=methods[serviceMethod.methodName].here()%>
+<%	   	   	
+				}
+			}
+		}
+	}
+%>

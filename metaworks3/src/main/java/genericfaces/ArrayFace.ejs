@@ -1,0 +1,46 @@
+<%
+	if(value){
+		var horizontal = false;
+		var margin_right;
+
+		if(descriptor!=null)
+			horizontal = descriptor.getOptionValue('alignment') == 'horizontal';
+		
+		if(options){
+			if(options['alignment'])
+				horizontal = (options['alignment'] == 'horizontal');
+				
+			if(options['margin_right'])
+				margin_right = options['margin_right'];
+		}
+		
+		var style = '';
+		if(horizontal)
+			style += 'float: left;';
+		if(margin_right)
+		 	style += 'margin-right:' + margin_right + ';';
+		
+		mw3.newBeanProperty(objectId);
+		
+		if(horizontal){
+%>
+		 <div>
+<%	
+		}
+			 	
+		for (var i=0; i<value.length; i++){
+			objectTypeName = value[i].__className;
+%>
+			<%=horizontal?'<span':'<div'%> style="<%=style%>">
+			<%=mw3.locateObject(value[i], objectTypeName, null, null, {objectId: objectId, name: '[' + i + ']'})%>
+			<%=horizontal?'</span>':'</div>'%>
+<%	
+		}
+		
+		if(horizontal){
+%>
+		 </div>
+<%	
+		}
+	}
+%>

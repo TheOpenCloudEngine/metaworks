@@ -1,0 +1,18 @@
+<%if(mw3.device == mw3.DEVICE_PC){%>  
+<a href="#modal_<%=objectId%>" role="button" class="btn" data-toggle="modal">test</a>
+
+<div id="modal_<%=objectId%>" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="myModalLabel"><%=value.title%></h3>
+	</div>
+	<div class="modal-body">
+		<%if(value.panel){%>
+			<%=mw3.locateObject(value.panel, value.panel.__className)%>
+		<%}else{%>
+			<div style="width:400px;height:300px;">&nbsp;</div>
+		<%}%>
+	</div>
+	<div class="modal-footer"></div>
+</div>
+<%  } %>

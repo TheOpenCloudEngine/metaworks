@@ -1,0 +1,45 @@
+<table cellspacing="0"  class="sub_table">
+<colgroup>  
+	<col width="7" />  
+	<col width="#"/> 
+	<col width="14" />  
+</colgroup>
+<tr class="sub_topheight">
+	<td class="sub_topleft"></td>
+	<td class="sub_top"></td>
+	<td class="sub_topright"></td>
+</tr>
+<tr>
+	<td class="sub_left"></td>
+	<td class="sub_contents_sub">
+
+<%
+	if(value){
+		if(value.items){
+			for(var key in value.items){
+			
+				var value = value.items[key].value;
+				var label = value.items[key].label;
+				
+				label = label.replace("\&", "");
+%>
+		<div class="clock_no">
+			<ul>
+				<li class="text"><a href="#" onclick="mw3.getFaceHelper('<%=objectId%>').select('<%=value%>', '<%=label%>');"><span><%=label%></span></a>
+			</ul>
+		</div>
+<%
+			}
+		}
+	}
+%>
+	</td>
+	<td class="sub_right"></td>
+</tr>
+<tr class="sub_bottomheight">
+	<td class="sub_bottomleft"></td>
+	<td class="sub_bottom">
+			</td>
+	<td class="sub_bottomright"></td>
+</tr>
+</table>

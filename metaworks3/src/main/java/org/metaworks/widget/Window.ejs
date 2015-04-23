@@ -1,0 +1,100 @@
+in metaworks widget!
+
+<%
+
+	if (value != null){	
+		var width = null;
+		var height = null;
+	
+		if(descriptor!=null){
+			width = descriptor.getOptionValue('width');
+			height = descriptor.getOptionValue('height');
+		}
+		
+		var objectName; 
+
+		if(value.__toString != null){
+			objectName = value.__toString();
+		}
+		
+		if(!objectName){
+			objectName = objectMetadata.displayName;
+		}
+		
+		var resourceName = null;
+		if(objectName.indexOf('$')==0){
+			resourceName = objectName.substring(1);
+		}
+%>
+            <div class="boxtopleft">
+            	<span class="boxtopright">
+            		<div id="navigationTitle">
+            			<%if(resourceName){%>
+            				<%=resources[resourceName].here()%>
+            			<%}else{%>
+            				<%=objectName%>
+            			<%}%>
+            		</div>
+            		<div id="loader_<%=objectId%>" class="loadingarea" style="display: none; "><img src="images/waveStyle/ajax-loader.gif" border="0"></div>
+            		
+            		<div class="windowclose" onclick="mw3.getFaceHelper('<%=objectId%>').close()"></div>
+            	</span>
+            </div>
+            
+<%
+		var showHeader = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideHeader']);
+		
+		if(showHeader){    
+%>		        
+            <div class="boxmiddleright">
+                <div class="boxmiddleleft">                    
+                    <div class="worklistcontentcontainer"  style="overflow:auto;">
+<%                    
+		}
+%>
+                    
+<%	
+						
+		var showLabel = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideLabels']);
+					
+		for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){						  
+			var fd = objectMetadata.fieldDescriptors[i];
+		  	
+		  	if(fd.attributes && (fd.attributes['hidden'] || fd.attributes['resource'])) continue;
+		  	if(fd.name == 'metaworksContext') continue;
+		  	
+		  	var fieldValue = value[fd.name];
+			
+			if(showLabel){
+%>
+							<span> <b><%=fd.displayName%></b> </span>
+<%
+			}
+%>
+							<%=value[fd.name] && fields[fd.name] ? fields[fd.name].here() : "Null"%>
+<%
+		}						   
+%>							
+							
+<%						   
+		if(objectMetadata.serviceMethodContexts){
+			for(var key in objectMetadata.serviceMethodContexts){						   
+%>
+									<%=methods[key].here()%>
+<%   
+			}
+		}
+								   
+		if(showHeader){
+%>		
+                    </div>
+                </div>
+            </div>
+<%
+		}
+%>
+                        
+            <div class="boxbottomleft"><span class="boxbottomright"></span></div>
+ <%
+     }
+ %>

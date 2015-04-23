@@ -1,0 +1,35 @@
+<%
+	if(value == null || typeof value == 'undefined')
+		return true;
+		
+	
+	var width = value.fixWidth;
+	var splitterWidth = 0;
+	
+	if(value.splitter)
+		splitterWidth = value.splitter.size;
+	
+	var leftWidth;
+	var rightLeft;
+	
+	var leftRight;
+	var rightWidth;
+	
+	if('left' == value.align){
+		leftWidth = width;
+		rightLeft = width + splitterWidth;
+	}else{
+		leftRight = width + splitterWidth;
+		rightWidth = width;
+	}
+%>
+
+<div class="left" style="position: absolute; min-width: 0px; min-height: 0px; max-width: 10000px; max-height: 10000px;  left: 0px; right: <%=leftRight%>px; top: 0px; bottom: 0px; <%=(leftWidth?'width :' + leftWidth+'px;':'')%>">
+	<%=fields.left.here()%>
+</div>
+
+<%=fields.splitter.here()%>
+
+<div class="right" style="position: absolute; min-width: 0px; min-height: 0px; max-width: 10000px; max-height: 10000px;  left: <%=rightLeft%>px; right: 0px; top: 0px; bottom: 0px; <%=(rightWidth?'width :' + rightWidth+'px;':'')%>">
+	<%=fields.right.here()%>
+</div>

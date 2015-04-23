@@ -1,0 +1,22 @@
+<table width="100%">
+	<tr>
+		<td><input type="button" name="tab" value="tab" onClick="<%=methods.testTab.caller()%>"></td>
+		<td><input type="button" name="menu" value="menu" onClick="<%=methods.testMenu.caller()%>"></td>
+		<td><input type="button" name="accordian" value="accordian" onClick="<%=methods.testAccordian.caller()%>"></td>
+		<td><input type="button" name="modal" value="modal" onClick="<%=methods.testModal.caller()%>"></td>
+		<td><input type="button" name="testList" value="testList" onClick="<%=methods.testList.caller()%>"></td>
+		<td>
+			<input type="button" name="checkbox" value="checkbox" onClick="<%=methods.testCheckbox.caller()%>">
+			<input type="button" name="radio" value="radio" onClick="<%=methods.testRadio.caller()%>">
+			<input type="button" name="combobox" value="combobox" onClick="<%=methods.testCombobox.caller()%>">
+		</td>
+	</tr>
+</table>
+
+<%
+ if(value){
+%>
+ <%=fields.obj.here()%>
+<%
+ }
+%>

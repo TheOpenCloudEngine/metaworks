@@ -1,0 +1,97 @@
+<%
+	if (value != null){			
+		var layout = objectMetadata.faceOptions && objectMetadata.faceOptions['layout'];
+		
+		var objectName; 
+
+		if(value.__toString != null){
+			objectName = value.__toString();
+		}		
+		if(!objectName){
+			objectName = objectMetadata.displayName;
+		}		
+		
+		var showCloseBtn = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideCloseBtn']);
+%>
+
+<div class="tab_layout">
+	<div class="tab_boxtopleft">
+		<div id="sm_<%=objectId%>" style="margin-top:12px; padding:0px;  display:none; float:left; width:160px; position:relative;">	
+		    <div class="boxtopleft"><span class="boxtopright"><%=objectName%></span></div>
+		    <div class="boxmiddleright">
+		        <div class="boxmiddleleft">
+		            <div class="togglebtnmax" onclick="mw3.getFaceHelper('<%=objectId%>').resume('<%=layout%>')"></div>
+		            <div id="slideup<%=objectId%>" class="slideup" onclick="outerLayout.resetOverflow('north'), con031();"></div>
+		            <div id="con<%=objectId%>" class="topcontentcontainer">
+		            </div>
+		        </div>
+		    </div>
+		    
+		    <div class="miniboxbottomleft"><span class="miniboxbottomright"></span></div>
+		</div>
+
+		<div class="tab_titleover">
+			<ul>
+				<li>
+					<span id="navigationTitle"><%=objectName%></span>
+				</li>
+			</ul>
+		</div>
+		
+		<div class="tab_titlerover">		
+			
+			<%
+					if(showCloseBtn){
+			%>		
+								<div class="closeover_i">								
+									<a href="#"><img src="/uengine-web/images/ide/xicon.png" width="8" height="9"></a>
+								</div>			
+			<%
+					}
+			%>
+		</div>
+		
+		<div class="clear"></div>
+		<div class="tab_con">
+			<ul class="tab_con2">
+				<li>
+					<div class="tab_con3">
+
+<%	
+						
+		var showLabel = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideLabels']);
+					
+		for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){						  
+			var fd = objectMetadata.fieldDescriptors[i];
+		  	
+		  	if(fd.attributes && (fd.attributes['hidden'] || fd.attributes['resource'])) continue;
+		  	if(fd.name == 'metaworksContext') continue;		  	
+%>
+			<%=fields[fd.name] ? fields[fd.name].here() : "XXX"%>
+<%
+		}
+%>
+					</div>	
+				</li>
+			</ul>
+		</div>
+
+		<div class="tab_boxtopright">
+
+<%		
+		if(layout){
+%>					
+					<div class="rcion">
+						<a href="#" onclick="mw3.getFaceHelper('<%=objectId%>').minimize('<%=layout%>');"><img src="/uengine-web/images/ide/small_icon.png" width="11" height="9"></a>
+					</div>
+<%
+		}
+%>
+			</div>
+		</div>
+	</div>
+</div>
+
+ <%
+     }
+ %>

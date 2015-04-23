@@ -1,0 +1,25 @@
+<script>
+$(function() {
+	$( "#accordion" ).accordion();
+});
+</script>
+	
+<div id="accordion">
+	<ul>
+		<%
+			
+			for (var i=0; i<value.accordions.length; i++){
+			
+		%>
+			<h3><a href="#"><%=value.accordions[i].title%></a></h3>
+	
+			<div>
+	
+			<%=mw3.locateObject(value.accordions[i], value.accordions[i].__className)%>
+			
+			</div>		
+		<%  } %>
+		
+	</ul>
+	
+</div>

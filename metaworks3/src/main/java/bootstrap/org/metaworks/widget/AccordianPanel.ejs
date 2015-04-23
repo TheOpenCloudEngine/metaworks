@@ -1,0 +1,30 @@
+<%if(mw3.device == mw3.DEVICE_PC){%>  
+<div class="accordion" id="accordion_<%=objectId%>">
+	<%
+	for(var i=0; i<value.accordions.length; i++){
+	%>
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_<%=objectId%>" href="#collapse_<%=objectId%>_<%=i%>">
+				<%=value.accordions[i].title%>
+				</a>
+			</div>
+			<div id="collapse_<%=objectId%>_<%=i%>" class="accordion-body in collapse" style="height: <%if(i==0){%>auto<%}else{%>0px<%}%>;">
+				<div class="accordion-inner">
+				<%if(mw3.scrollOption == mw3.SCROLL_OPTION_N){%>  
+					<div style="overflow-y: auto; height:100px">
+						<div style="height: 100px; background-color:whiteSmoke;"> 
+				<%}%>
+                <%=value.accordions[i].content%> 
+                <%if(mw3.scrollOption == mw3.SCROLL_OPTION_N){%>
+                		</div>
+                	</div>
+                <%}%>
+                </div>
+			</div>
+		</div>
+	<%
+	}
+	%>
+</div>
+<%  } %>

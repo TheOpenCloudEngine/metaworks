@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+
+<project name="metaWorks" default="jar" basedir=".">
+
+	<property file="../settings/buld.properties"/>
+    <property environment="env"/>
+    <property name="src.dir" value="${basedir}/src"/>
+    <property name="build.dir" value="${basedir}/bin"/>
+    <property name="build.classes.dir" value="${build.dir}"/>
+    <property name="webapp.dir" value="${basedir}/webapp"/>
+    <property name="was.home" value="${env.WAS_HOME}"/>
+    <property name="webapp.jws.dir" value="${was.home}/webapps/ROOT/html/uengine-web/processmanager"/>
+
+  <!-- Build classpath -->
+  <path id="classpath">
+	<pathelement location="${build.classes.dir}"/>
+    <fileset dir="${basedir}/lib">
+        <include name="**/*.jar"/>
+        <include name="**/*.zip"/>
+    </fileset>
+    <fileset dir="${was.home}/client">
+        <include name="**/*.jar"/>
+    </fileset>
+        
+  </path>
+
+  <!-- =================================================================== -->
+  <!-- Prepares the build directory                                        -->
+  <!-- =================================================================== -->
+  <target name="prepare">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.classes.dir}"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Compiles the source code                                            -->
+  <!-- =================================================================== -->
+
+  <target name="compile" depends="prepare">
+    <javac srcdir="${src.dir}"
+           destdir="${build.classes.dir}"
+           debug="on"
+           deprecation="on"
+           optimize="off"
+           includes="**">
+            <classpath refid="classpath"/>
+    </javac>
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}">
+      	  <include name="**/*.xml"/>
+      </fileset>
+	</copy>    	
+
+  </target>
+
+  <target name="jar" depends="compile">
+    <jar jarfile="bin/metaworks.jar">
+      <fileset dir="${build.classes.dir}">
+    	  <include name="**/*.class"/>
+    	  <include name="**/*.gif"/>
+      	  <include name="**/*.xml"/>
+      </fileset>
+     </jar>
+     <copy file="${build.dir}/metaworks.jar" todir="${was.home}/webapps/ROOT/WEB-INF/lib"/>
+     	<antcall target="sign"/>
+  </target>
+
+	<target name="signjar">
+		<echo message="jarfile=${file.dir}/${file.name}"/>
+		<signjar
+			keystore="./lib/uenginestore"
+			storepass="jinyoungj"
+			keypass="jinyoungj"
+			signedjar="${webapp.jws.dir}/signed${file.name}"
+			jar="${file.dir}/${file.name}" 
+			alias="uenginetools"
+		/>
+	</target>
+	
+	<target name="sign">
+		<antcall target="signjar">
+			<param name="file.name" value="metaworks.jar"/>
+			<param name="file.dir" value="${build.dir}"/>
+		</antcall>
+	</target>
+
+  <target name="TestClass">
+    <java classname="${param.class}" fork="yes" dir=".">
+      <classpath refid="classpath"/>
+      <arg line="${param.arg} ${param.arg2} ${param.arg3} ${param.arg4} ${param.arg5} ${param.arg6}"/>
+    </java>
+  </target>
+  
+	<target name="generateTables">
+	  	<java classname="org.metaworks.wizard.reverse.TableGenerator" fork="yes" dir="${webapp.dir}">
+	      		<classpath refid="classpath"/>
+	  		<arg line="${param.connStr} ${param.userId} ${param.password} ${param.projectName}"/>
+	  	</java>
+	</target>		
+	
+  <target name="generateApplications">
+  	<java classname="org.metaworks.wizard.reverse.ApplicationGenerator" fork="yes" dir="${webapp.dir}">
+      		<classpath refid="classpath"/>
+  		<arg line="${param.projectName} -all"/>
+  	</java>
+  	<!--java classname="com.pongsor.dosql.wizard.reverse.ApplicationGenerator" fork="yes" dir=".">
+      		<classpath refid="classpath"/>
+  		<arg line="appGenCtx_legacyERP_ORDER.xml"/>
+  	</java>
+  	<java classname="com.pongsor.dosql.wizard.reverse.ApplicationGenerator" fork="yes" dir=".">
+      		<classpath refid="classpath"/>
+  		<arg line="appGenCtx_legacyERP_ORDERSUB.xml"/>
+  	</java>
+  	<java classname="com.pongsor.dosql.wizard.reverse.ApplicationGenerator" fork="yes" dir=".">
+      		<classpath refid="classpath"/>
+  		<arg line="appGenCtx_legacyERP_Worklist.xml"/>
+  	</java-->
+  </target>
+  
+  <target name="generateJavaWebStart" depends="jar">
+	<!--exec dir="${webapp.jws.dir}" executable="${env.JAVA_HOME}/bin/keytool.exe">
+	  <arg line="-genkey -alias signedmetaworks -keystore metaworksstore -keypass jinyoungj -dname cn=metaworks.org -storepass jinyoungj"/>
+	</exec-->
+	<exec dir="${basedir}" executable="${env.JAVA_HOME}/bin/jarsigner.exe">
+	  <arg line="-keystore lib/metaworksstore -storepass jinyoungj -keypass jinyoungj -signedjar ${webapp.jws.dir}/signedmetaworks.jar ${build.classes.dir}/metaworks.jar signedmetaworks"/>
+	</exec>
+  </target>
+  
+  
+  <!-- =================================================================== -->
+  <!-- test prject named 'legacyERP'                                       -->
+  <!-- =================================================================== -->
+  
+  	<target name="legacyERP">
+		<property name="param.projectName" value="legacyERP"/>
+		<property name="param.connStr" value="jdbc:oracle:thin:@localhost:1521:pongsor2"/>
+		<property name="param.userId" value="scott"/>
+		<property name="param.password" value="tiger"/>
+		
+		<antcall target="generateTables"/>
+		<antcall target="generateApplications"/>		
+	</target>
+  
+</project>
+

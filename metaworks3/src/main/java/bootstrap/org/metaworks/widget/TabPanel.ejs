@@ -1,0 +1,35 @@
+
+<%if(mw3.device == mw3.DEVICE_PC){%>  
+<div class="bs-docs-example"  id="wrapper">
+	<ul id="scroller" class="nav nav-tabs">
+		<%
+			for (var i=0; i<value.tabs.length; i++){ 
+		%>
+			<li <%if(i==0) {%>class="active"<%}%>  ><a href="#tab-<%=objectId%>-<%=value.tabs[i].tabTitle%>" data-toggle="tab"><%=value.tabs[i].tabTitle%></a></li>
+		<%  } %>
+		
+	</ul>
+	
+	<div id="myTabContent" class="tab-content">
+	<%	
+		for (var i=0; i<value.tabs.length; i++){
+	%>
+	
+		<div id="tab-<%=objectId%>-<%=value.tabs[i].tabTitle%>" <%if(i==0) {%>class="tab-pane fade in active"<%} else{%> class="tab-pane fade" <%}%>   >
+		<%if(mw3.scrollOption == mw3.SCROLL_OPTION_N){%>  
+			<div style="overflow-y: auto; height:100%">
+				<div style="height: 100%; background-color:whiteSmoke;"> 
+		<%}%>	
+				//<%=value.tabs[i].tabContent%>
+				<%=mw3.locateObject(value.tabs[i], value.tabs[i].__className)%>
+			
+		<%if(mw3.scrollOption == 'n'){%>  
+				</div> 
+			</div>
+		<%}%>
+		</div>
+	
+	<%  } %>	
+	</div>
+</div>
+<%  } %>

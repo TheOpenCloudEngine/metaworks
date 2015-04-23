@@ -1,0 +1,224 @@
+<%
+
+	if (value != null){
+
+		var width = null;
+		var height = null;
+	
+		if(descriptor!=null){
+			width = descriptor.getOptionValue('width');
+			height = descriptor.getOptionValue('height');
+		}
+		
+		var showLabel = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideLabels']);		
+		var showTitleBar = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideTitleBar']);
+		var maximize = objectMetadata.faceOptions && objectMetadata.faceOptions['maximize'];
+		var minimize = objectMetadata.faceOptions && objectMetadata.faceOptions['minimize'];
+		
+		var color = objectMetadata.getOptionValue('color', 'blue');
+		var mobile;
+				
+		var objectName; 
+		var windowTitle = value.title;
+
+		if(windowTitle){		
+		}else{
+			if(value.__toString != null){
+				objectName = value.__toString();
+			}		
+			if(!objectName){
+				objectName = objectMetadata.displayName;
+			}
+			
+			for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){						  
+				var fd = objectMetadata.fieldDescriptors[i];
+	
+				windowTitle = fd.options && (fd.getOptionValue('windowTitle'));
+							
+				if(windowTitle){
+					windowTitle = value[fd.name];
+					
+					break;
+				}
+			}
+		}		
+%>
+		<div id="sm_<%=objectId%>" style="margin-top:12px; padding:0px;  display:none; float:left; width:90px; position:relative;">	
+		    <div class="boxtopleft">
+		    	<span class="boxtopright">
+		    		<div id="navigationTitle">
+		    			<span title="<%=windowTitle?mw3.localize(windowTitle):mw3.localize(objectName)%>" style="width:95%">
+		    				<div style="margin-right:45px">
+				            <%if(windowTitle){%>
+				    			<%=mw3.localize(windowTitle)%>
+				    		<%}else{%>
+				    			<%=mw3.localize(objectName)%>
+				    		<%}%>
+				    		</div>
+		    			</span>
+		    			<div class="clear"></div>
+		    		</div>
+		    	</span>
+		    </div>
+		    <div class="boxmiddleright">
+		        <div class="boxmiddleleft">
+<%
+		if(minimize){
+%>				        	
+
+	            	<div class="togglebtnmax" onclick="mw3.getFaceHelper('<%=objectId%>').resume()"></div>
+<%
+		}
+%>		            
+		        </div>
+		    </div>
+		    
+		    <div class="miniboxbottomleft"><span class="miniboxbottomright"></span></div>
+	    </div>
+	    
+	    
+	    
+	    
+	    
+
+	    
+<%
+		if(mw3.how != null && mw3.how == 'ide'){
+%>
+            <div class="boxtopleftTab">
+            	<span class="boxtoprightTab">            	
+            		<div id="navigationTitle" class="tabCurrent mw3_window_title">
+            		
+            		
+<%
+		}else if(color == 'gray'){
+%>
+ <div class="boxtopleftTab">
+            	<span class="boxtoprightTab">            	
+            		<div id="navigationTitle" class="mw3_window_title">
+            		
+            		<span>
+						<div>
+				            <%if(windowTitle){%>
+				    			<%=mw3.localize(windowTitle)%>
+				    		<%}else{%>
+								<%=mw3.localize(objectName)%>
+				    		<%}%>
+		    			</div>
+		    		</span>
+		    		
+
+<%
+		}else if(showTitleBar == true){
+%>
+            <div class="boxtopleft">
+            	<span class="boxtopright">
+            		<div id="navigationTitle" class="mw3_window_title">
+	
+					<span>
+						<div>
+				            <%if(windowTitle){%>
+				    			<%=mw3.localize(windowTitle)%>
+				    		<%}else{%>
+								<%=mw3.localize(objectName)%>
+				    		<%}%>
+		    			</div>
+		    		</span>
+<%
+			if(mw3.how != null && mw3.how == 'ide'){
+%>
+					<div id="loader_<%=objectId%>" class="loadingarea" style="display: none; "><img src="images/waveStyle/ajax-loader_a.gif" border="0"></div>
+<%
+			}else{
+%>
+					<div id="loader_<%=objectId%>" class="loadingarea" style="display: none; "><img src="images/waveStyle/ajax-loader.gif" border="0"></div>
+<%		
+			}
+%>	
+					<div class="clear"></div>
+		    		</div>            		
+<%
+	}
+%>
+	
+<%
+			if(maximize && showTitleBar == true){
+%>	
+				<% if(mobile){ %>
+					<div class="toggleback" onclick=""><span>back<span></div>
+				<% }else{ %>		
+					<div id="window_miximize_<%=objectId%>" class="togglebtnexp" onclick="mw3.getFaceHelper('<%=objectId%>').maximize();"></div>
+				<% } %>	
+<%
+			}
+%> 	           		
+            		
+<%
+			if(minimize && showTitleBar == true){
+%>            		
+            	<% if(mobile){ %>
+					<div class="toggleback" onclick=""><span>back<span></div>
+				<% }else{ %>		
+					<div class="togglebtnmini" onclick="mw3.getFaceHelper('<%=objectId%>').minimize();"></div>
+				<% } %>	            		
+<%
+			}
+%>          
+<% 
+	if(showTitleBar == true){
+%>  		
+            	</span>
+            </div>		    		
+		
+			<div class="boxmiddleright">
+	            <div class="boxmiddleleft">
+<%
+			}
+%> 		
+					    <div class="contentcontainer">
+<%							
+					
+		for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){						  
+			var fd = objectMetadata.fieldDescriptors[i];
+		  	
+		  	if(fd.attributes && (fd.attributes['hidden'] || fd.attributes['resource'])) continue;
+		  	if(fd.name == 'metaworksContext') continue;
+		  	
+			var fieldValue = value[fd.name];
+						
+			if(showLabel){
+%>
+								<span> <b><%=fd.displayName%></b> </span>
+<%
+			}
+%>
+							<%=fields[fd.name] ? fields[fd.name].here() : "-"%>
+<%		
+		}				   
+%>							
+							
+<%						   
+		if(objectMetadata.serviceMethodContexts){
+			for(var key in objectMetadata.serviceMethodContexts){
+	  	   		var serviceMethod = objectMetadata.serviceMethodContexts[key];
+						   
+%>
+									<%=methods[serviceMethod.methodName].here()%>
+<%   
+			}
+		}
+%>
+<% 
+	if(showTitleBar == true){
+%> 
+						</div>
+				</div>
+	            
+	        </div>
+			<div class="boxbottomleft"><span class="boxbottomright"></span></div>
+<%		
+		}				   
+%>
+<%
+     }
+ %>

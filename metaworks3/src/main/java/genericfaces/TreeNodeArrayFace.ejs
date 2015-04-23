@@ -1,0 +1,17 @@
+<ul>
+<%
+	if(value){
+	
+		if(typeof options == 'undefined') 
+			options = objectMetadata;
+			
+		options['ejsPath'] =  'dwr/metaworks/genericfaces/TreeNodeFace.ejs';
+	
+		for(var i=0; i<value.length; i++){
+%>
+	<%=mw3.locateObject(value[i], value[i].__className, null, options, {objectId: objectId, name: '[' + i + ']'})%>
+<%
+		}
+	}	
+%>
+</ul>

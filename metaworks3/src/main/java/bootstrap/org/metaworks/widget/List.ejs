@@ -1,0 +1,74 @@
+<%
+	if(value == null || typeof value == 'undefined')
+		return true;
+%>
+
+<div class="fabrikDataContainer">
+	<div class="boxflex">
+		<table class="table table-striped" id="list_45_com_fabrik_45">
+
+		<thead>
+			<tr class="fabrik___heading">
+				<th class="fabrik_ordercell demo_iphone___description 341_order fabrik_list_45_group_54 hidden-phone">
+					<span class="heading">checkbox</span>
+				</th>
+				
+				<%
+				var gridMetadata = mw3.getMetadata(value[0].__className);
+				var fd = gridMetadata.fieldDescriptors
+				
+				for(var i=0; i<fd.length; i++){
+					var responsive = "";
+					var aMedia = fd[i].attributes['available.media'];
+					var hMedia = fd[i].attributes['hidden.media'];
+					
+					if(aMedia != null){
+						for(o in aMedia){
+							if(o == mw3.MEDIA_PC){
+								responsive = "visible-desktop";
+							}
+						}
+					}else if(hMedia != null){
+						for(o in hMedia){
+							if(o == mw3.MEDIA_MOBILE){
+								responsive = "hidden-phone";
+							}
+						}
+					}
+					
+					
+					%>
+					<th class="fabrik_ordercell demo_iphone___label 340_order fabrik_list_45_group_54 <%=responsive%>">
+						<span class="heading"><%=fd[i].displayName%></span>
+					</th>
+					<%
+				}
+				%>
+				<th class="fabrik_ordercell demo_iphone___description 341_order fabrik_list_45_group_54 hidden-phone">
+					<span class="heading">수정</span>
+				</th>
+			</tr>
+		</thead>	
+			
+		<tbody class="fabrik_groupdata">
+	<%
+		if(typeof options == 'undefined') 
+			options = objectMetadata;
+			
+		options['htmlTag'] =  'tr';
+		options['ejsPath'] =  'dwr/metaworks/bootstrap/org/metaworks/widget/List_Row.ejs';
+		options['parentId'] =  this.objectId;
+		
+		for(var i=0; i<value.length; i++){
+	%>
+			<tr id="list_45_com_fabrik_45_row_<%=i%>" class="fabrik_row oddRow<%=i%>">
+			<%=mw3.locateObject(value[i], value[i].__className, null, options, {objectId: value.__objectId, name: 'boardList[' + i + ']'})%>
+			</tr>
+	<%
+		}	
+	%>		
+		</tbody>
+	
+		</table>
+	</div>
+</div>

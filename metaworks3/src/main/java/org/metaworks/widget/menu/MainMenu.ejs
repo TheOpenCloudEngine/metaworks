@@ -1,0 +1,27 @@
+<ul style="padding-left:0px;">
+<%
+	if(value){
+		if(objectMetadata.serviceMethodContexts){
+			for(var key in objectMetadata.serviceMethodContexts){
+				var serviceMethod = objectMetadata.serviceMethodContexts[key];
+				
+					
+				var methodName = serviceMethod.methodName;
+				var menuName = methodName;
+
+				if(mw3.isHiddenMethod(methods[methodName]))
+					continue;
+				
+				if(serviceMethod.displayName)
+					menuName = serviceMethod.displayName;			
+			
+				menuName = menuName.replace("\&", "");
+%>
+				<li class="main-menu menu-<%=methodName%>" style="float: left; list-style:none; padding-left:0px; margin-right: 5px;"><a href="#" onclick="mw3.getFaceHelper('<%=objectId%>').callMethod(this, '<%=methodName%>');"><span><%=menuName%></span></a></li>					
+<%
+			}
+		}
+	}
+%>
+	<div style="clear:both" />
+</ul>

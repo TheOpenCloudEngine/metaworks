@@ -1,0 +1,46 @@
+<%	
+	if(value){
+		if(mw3.when == "selected"){
+%>
+	<%=value.selected%>
+<%
+		}else if(mw3.when == "selectedText"){
+%>	
+	<%=mw3.localize(value.selectedText)%>
+<%	
+		} else if(mw3.when == "new" || mw3.when == "edit") {
+%>
+
+	<select id="select_<%=objectId%>">
+<%	
+			for(var i in value.optionValues){
+				if(value.selected == value.optionValues[i]) {
+%>
+		<option value="<%=value.optionValues[i]%>" selected><%=mw3.localize(value.optionNames[i])%></option>
+<%
+				} else {
+%>
+		<option value="<%=value.optionValues[i]%>"><%=mw3.localize(value.optionNames[i])%></option>
+<%
+				}
+			}
+%>
+	</select>
+<%
+		} else {
+			if(value.selectedText){
+%>
+	<%=mw3.localize(value.selectedText)%>
+<%
+			}else{
+				for(var i in value.optionValues){
+					if(value.selected == value.optionValues[i]) {
+%>
+	<%=mw3.localize(value.optionNames[i])%>
+<%
+					}
+				}
+			}
+		}
+	}
+%>
