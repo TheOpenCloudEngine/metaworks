@@ -5,27 +5,26 @@
 	<parent>
 		<groupId>org.uengine</groupId>
 		<artifactId>metaworks</artifactId>
-		<version>1.0.4-SNAPSHOT</version>
+		<version>1.1-SNAPSHOT</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.uengine.metaworks</groupId>
 	<artifactId>metaworks3</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.9-SNAPSHOT</version>
 	<name>Metaworks 3</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.uengine.metaworks</groupId>
 			<artifactId>metaworks-dwr</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.uengine.metaworks</groupId>
 			<artifactId>metaworks2</artifactId>
-			<version>1.0.4-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
