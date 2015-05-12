@@ -19,7 +19,7 @@ ArrayFace.prototype = {
 				}
 			}
 		}
-
+		this.object = toBeReturned;
 		return toBeReturned;
 	},
 	addNew : function(){
