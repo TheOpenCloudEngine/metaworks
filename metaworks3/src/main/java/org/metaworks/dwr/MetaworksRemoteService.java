@@ -388,6 +388,11 @@ public class MetaworksRemoteService {
 
     public Object callMetaworksService(String objectTypeName, Object clientObject, String methodName, Map<String, Object> autowiredFields) throws Throwable{
 
+
+		if(clientObject instanceof SerializationSensitive){
+			((SerializationSensitive)clientObject).afterDeserialization();
+		}
+
 		Class serviceClass = Thread.currentThread().getContextClassLoader().loadClass(objectTypeName);
 //		InvocationContext invocationContext = new InvocationContext();
 
@@ -518,7 +523,8 @@ public class MetaworksRemoteService {
 		}
 		TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient().put("this", clientObject);
 
-		if(theMethod == null)
+		//if we failed to find method by class name, just try to get the method from object directly.
+		if(theMethod == null && clientObject!=null)
 			theMethod = clientObject.getClass().getMethod(methodName, new Class[]{});
 		
 		try{
@@ -557,6 +563,9 @@ public class MetaworksRemoteService {
 	    		returned = wrappedReturn;
 
 
+			if(returned instanceof SerializationSensitive){
+				((SerializationSensitive) returned).beforeSerialization();
+			}
 			
 			return returned;
 
