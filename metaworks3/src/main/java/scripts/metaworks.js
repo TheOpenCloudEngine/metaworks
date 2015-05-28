@@ -66,6 +66,8 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 
 				this.debugMode = false;
 
+				this.debugPoint;
+
 				
 				this.afterCall = function(methodName, result){
 					
@@ -922,7 +924,7 @@ com.abc.ClassA.methodA=입력
 			
 			Metaworks3.prototype.showObjectWithObjectId = function (objectId, objectTypeName, targetDiv, options){
 				var object = this.getObject(objectId);
-				
+
 				return this.showObject(object, objectTypeName, {targetDiv: targetDiv, objectId: objectId, options: options});
 			};
 				
@@ -1030,7 +1032,14 @@ com.abc.ClassA.methodA=입력
 
 			
 			Metaworks3.prototype.showObject = function (object, objectTypeName, target){
-					var objectId;
+
+				if(object && !object.__className){
+					if(console)
+						console.log("Object [" +  object + "] doesn't have __className property. Some classes are not registered in dwr.xml to be converted by MetaworksConverter.");
+
+				}
+
+				var objectId;
 					var targetDiv;
 					var options;
 					
@@ -2166,7 +2175,9 @@ com.abc.ClassA.methodA=입력
 				}else
 					var message = "["+actualFace+"] "+e.message;
 
-				
+				if(mw3.template_line)
+					message = message + ": Actual Line Number is " + mw3.template_line;
+
 				if(errorElement){
 					errorElement.style.display = 'block'
 					errorElement.innerHTML = "<span><font color=#FB7524>" + message + "</font></span>";
