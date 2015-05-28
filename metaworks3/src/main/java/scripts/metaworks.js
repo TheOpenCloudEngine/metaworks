@@ -3482,23 +3482,27 @@ com.abc.ClassA.methodA=입력
 				
 				if(methodContext.attributes){
 					if(methodContext.attributes['hidden.when']){
-						if(methodContext.attributes['hidden.when'][metaworksContext.when]!=null);
+						if(methodContext.attributes['hidden.when'][metaworksContext.when]!=null){
 							isHidden = true;
-					} 
-					
-					if(methodContext.attributes['hidden.where']){
-						if(methodContext.attributes['hidden.where'][metaworksContext.where]!=null)
-							isHidden = true;
-					} 
-	
-					if(methodContext.attributes['hidden.how']){
-						if(methodContext.attributes['hidden.how'][metaworksContext.how]!=null)
-							isHidden = true;
+						}
 					}
 					
-					if(methodContext.attributes['hidden']) 
-						isHidden = true;
+					if(methodContext.attributes['hidden.where']){
+						if(methodContext.attributes['hidden.where'][metaworksContext.where]!=null){
+							isHidden = true;
+						}
+					}
+	
+					if(methodContext.attributes['hidden.how']){
+						if(methodContext.attributes['hidden.how'][metaworksContext.how]!=null){
+							isHidden = true;
+						}
+					}
 					
+					if(methodContext.attributes['hidden']) {
+						isHidden = true;
+					}
+
 				}
 
 				if((methodContext.when && methodContext.when.indexOf('whenever|') == -1) || 
