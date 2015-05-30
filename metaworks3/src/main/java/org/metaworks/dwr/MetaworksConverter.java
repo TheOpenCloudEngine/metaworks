@@ -255,8 +255,12 @@ public class MetaworksConverter extends BeanConverter{
 				if(faceClassForField!=null){
 					try{
 
-						Object realValue = convert(entry.getValue(), Class.forName(faceClassForField), data.getContext(), property);
+						Class faceClass = Class.forName(faceClassForField);
+						Object realValue = convert(entry.getValue(), faceClass, data.getContext(), property);
 
+						if(faceClass.isAssignableFrom(realValue.getClass())){
+							realValue = ((Face)realValue).createValueFromFace();
+						}
 //						Object realValue = face.createValueFromFace();
 
 						property.setValue(bean, realValue);
