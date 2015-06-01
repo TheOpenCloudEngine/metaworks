@@ -60,7 +60,7 @@ public class MetaworksList<T> implements ContextAware {
         setElements(temp);
     }
 
-    private MetaworksElement createNewElement(){
+    public MetaworksElement createNewElement(){
 
         T c;
         try {

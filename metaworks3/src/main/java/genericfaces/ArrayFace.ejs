@@ -29,6 +29,8 @@
 		}
 			 	
 		for (var i=0; i<value.length; i++){
+			if(!value[i]) continue;
+
 			objectTypeName = value[i].__className;
 %>
 			<%=horizontal?'<span':'<div'%> style="<%=style%>">
