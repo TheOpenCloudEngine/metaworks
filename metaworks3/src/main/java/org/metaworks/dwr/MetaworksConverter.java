@@ -13,11 +13,7 @@ import java.util.TreeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.ConversionException;
-import org.directwebremoting.convert.ArrayConverter;
-import org.directwebremoting.convert.BasicObjectConverter;
-import org.directwebremoting.convert.BeanConverter;
-import org.directwebremoting.convert.ObjectConverter;
-import org.directwebremoting.convert.StringConverter;
+import org.directwebremoting.convert.*;
 import org.directwebremoting.extend.ArrayOutboundVariable;
 import org.directwebremoting.extend.InboundVariable;
 import org.directwebremoting.extend.ObjectOutboundVariable;
@@ -78,10 +74,17 @@ public class MetaworksConverter extends BeanConverter{
 					return stringConverter.convertInbound(String.class, data);
 
 				}else if("number".equals(data.getType())){
-					paramType = Number.class;
 
-					ObjectConverter objectConverter = new ObjectConverter();
-					return objectConverter.convertInbound(paramType, data);
+					if(!Number.class.isAssignableFrom(paramType)) {
+						//TODO: it will not properly work. we converted all the numbers as integer.
+						paramType = Integer.class;
+					}
+
+					PrimitiveConverter primitiveConverter = new PrimitiveConverter();
+
+					return primitiveConverter.convertInbound(paramType, data);
+//					ObjectConverter objectConverter = new ObjectConverter();
+//					return objectConverter.convertInbound(paramType, data);
 				}
 
 
