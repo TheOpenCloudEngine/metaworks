@@ -181,9 +181,21 @@ public class MetaworksConverter extends BeanConverter{
 					//System.out.println("----------  face is registered ------");
 					dataFaceMap.put(System.identityHashCode(realValue), face); //register for later reference in case of the Face object is used for calling method.
 
+					if(realValue instanceof SerializationSensitive){
+						((SerializationSensitive)realValue).afterDeserialization();
+					}
+
 					return realValue;
-				}else
-					return super.convertInbound(paramType, data);
+				}else{
+					Object value = super.convertInbound(paramType, data);
+
+					if(value instanceof SerializationSensitive){
+						((SerializationSensitive)value).afterDeserialization();
+					}
+
+					return value;
+
+				}
 			}
 
 		} catch (ConversionException e) {
@@ -314,6 +326,10 @@ public class MetaworksConverter extends BeanConverter{
 	public OutboundVariable convertOutbound(Object data, OutboundContext outctx) throws ConversionException
 	{
 		try {
+
+			if(data instanceof SerializationSensitive){
+				((SerializationSensitive)data).beforeSerialization();
+			}
 
 			WebObjectType wot = null;
 			try {

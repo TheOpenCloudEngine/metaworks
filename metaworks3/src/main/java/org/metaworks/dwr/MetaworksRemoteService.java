@@ -389,9 +389,10 @@ public class MetaworksRemoteService {
     public Object callMetaworksService(String objectTypeName, Object clientObject, String methodName, Map<String, Object> autowiredFields) throws Throwable{
 
 
-		if(clientObject instanceof SerializationSensitive){
-			((SerializationSensitive)clientObject).afterDeserialization();
-		}
+		/// moved to MetaworksConverter
+//		if(clientObject instanceof SerializationSensitive){
+//			((SerializationSensitive)clientObject).afterDeserialization();
+//		}
 
 		Class serviceClass = Thread.currentThread().getContextClassLoader().loadClass(objectTypeName);
 //		InvocationContext invocationContext = new InvocationContext();
@@ -562,10 +563,10 @@ public class MetaworksRemoteService {
 	    	if(wrappedReturn!=null)
 	    		returned = wrappedReturn;
 
-
-			if(returned instanceof SerializationSensitive){
-				((SerializationSensitive) returned).beforeSerialization();
-			}
+// moved to MetaworksConverter
+//			if(returned instanceof SerializationSensitive){
+//				((SerializationSensitive) returned).beforeSerialization();
+//			}
 			
 			return returned;
 
