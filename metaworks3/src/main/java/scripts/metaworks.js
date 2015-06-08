@@ -1295,6 +1295,10 @@ com.abc.ClassA.methodA=입력
 						
 						if(targetDiv == null)							
 							return html;
+
+						if(this.debugMode){
+							$(targetDiv).attr({face:actualFace});
+						}
 						
 						//#DEBUG POINT
 						$(targetDiv).html(html);
@@ -1893,8 +1897,10 @@ com.abc.ClassA.methodA=입력
 				
 				// 2013-07-31 DOM 생성방법 수정 및 DOM 객체에 name 설정 추가
 				var locateObjectDOM = $('<div>');
-				var mainDOM = $('<' + elementTag + '>').attr({'id': divId, 'className': className, 'objectId': objectId});
-				
+				var mainDOM = this.debugMode ?
+					$('<' + elementTag + '>').attr({'id': divId, 'className': className, 'objectId': objectId}) :
+					$('<' + elementTag + '>').attr({'id': divId});
+
 				if(elementClass)
 					mainDOM.addClass(elementClass);
 				
