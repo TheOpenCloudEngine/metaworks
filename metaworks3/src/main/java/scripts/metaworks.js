@@ -1033,11 +1033,11 @@ com.abc.ClassA.methodA=입력
 			
 			Metaworks3.prototype.showObject = function (object, objectTypeName, target){
 
-				if(object && !object.__className){
-					if(console)
-						console.log("Object [" +  object + "] doesn't have __className property. Some classes are not registered in dwr.xml to be converted by MetaworksConverter.");
-
-				}
+				//if(object && !object.__className){
+				//	if(console)
+				//		console.log("Object [" +  object + "] doesn't have __className property. Some classes are not registered in dwr.xml to be converted by MetaworksConverter.");
+                //
+				//}
 
 				var objectId;
 					var targetDiv;
@@ -1539,6 +1539,10 @@ com.abc.ClassA.methodA=입력
 						 */
 					   
 					} catch(e) {
+
+						e.targetObject = object;
+						e.targetObjectId = objectId;
+
 						this.template_error(e, actualFace)
 						return
 					} finally{
@@ -2174,6 +2178,15 @@ com.abc.ClassA.methodA=입력
 						var message = "["+actualFace+"] at line "+e.lineNumber+": "+e.message;
 				}else
 					var message = "["+actualFace+"] "+e.message;
+
+				if(e.targetObjectId) {
+					message = message + "\n - objectId is [" + e.targetObjectId + "]";
+					//mw3.debugPoint = actualFace;
+				}
+
+				if(e.targetObject){
+					message = message + "\n - object value is [" + JSON.stringify(e.targetObject) + "]";
+				}
 
 				if(mw3.template_line)
 					message = message + ": Actual Line Number is " + mw3.template_line;

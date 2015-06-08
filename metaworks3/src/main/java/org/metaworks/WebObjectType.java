@@ -933,8 +933,22 @@ public class WebObjectType{
 
 		serviceMethodContexts = new ArrayList<ServiceMethodContext>();
 
-		
+
+		Map<String, Method> methods = new HashMap<String, Method>();
+
 		for(Method method : actCls.getMethods()){
+			if(methods.containsKey(method.getName())){
+				if(method.getClass() == actCls) {
+					methods.put(method.getName(), method);
+				}
+			}else{
+				methods.put(method.getName(), method);
+			}
+		}
+
+
+		for(Method method : methods.values()){
+
 
 		
 //javassist version of metaworks2

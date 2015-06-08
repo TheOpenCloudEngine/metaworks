@@ -14,24 +14,23 @@ import java.util.List;
 public class MetaworksList<T> implements ContextAware {
 
     transient MetaworksContext metaworksContext;
-    @Override
-    public MetaworksContext getMetaworksContext() {
-        return metaworksContext;
-    }
-    @Override
-    public void setMetaworksContext(MetaworksContext metaworksContext) {
-        this.metaworksContext = metaworksContext;
-    }
+        @Override
+        public MetaworksContext getMetaworksContext() {
+            return metaworksContext;
+        }
+        @Override
+        public void setMetaworksContext(MetaworksContext metaworksContext) {
+            this.metaworksContext = metaworksContext;
+        }
 
     private List<MetaworksElement> elements;
-
-    @Order(1)
-    public List<MetaworksElement> getElements() {
-        return elements;
-    }
-    public void setElements(List<MetaworksElement> elements) {
-        this.elements = elements;
-    }
+        @Order(1)
+        public List<MetaworksElement> getElements() {
+            return elements;
+        }
+        public void setElements(List<MetaworksElement> elements) {
+            this.elements = elements;
+        }
 
     public MetaworksList(){
         setElements(new ArrayList<MetaworksElement>());
