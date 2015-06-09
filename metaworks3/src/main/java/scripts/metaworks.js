@@ -1033,11 +1033,11 @@ com.abc.ClassA.methodA=입력
 			
 			Metaworks3.prototype.showObject = function (object, objectTypeName, target){
 
-				if(object && !object.__className){
+				/*if(object && !object.__className){
 					if(console)
 						console.log("Object [" +  object + "] doesn't have __className property. Some classes are not registered in dwr.xml to be converted by MetaworksConverter.");
 
-				}
+				}*/
 
 				var objectId;
 					var targetDiv;
