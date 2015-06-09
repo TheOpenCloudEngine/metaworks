@@ -14,24 +14,23 @@ import java.util.List;
 public class MetaworksList<T> implements ContextAware {
 
     transient MetaworksContext metaworksContext;
-    @Override
-    public MetaworksContext getMetaworksContext() {
-        return metaworksContext;
-    }
-    @Override
-    public void setMetaworksContext(MetaworksContext metaworksContext) {
-        this.metaworksContext = metaworksContext;
-    }
+        @Override
+        public MetaworksContext getMetaworksContext() {
+            return metaworksContext;
+        }
+        @Override
+        public void setMetaworksContext(MetaworksContext metaworksContext) {
+            this.metaworksContext = metaworksContext;
+        }
 
     private List<MetaworksElement> elements;
-
-    @Order(1)
-    public List<MetaworksElement> getElements() {
-        return elements;
-    }
-    public void setElements(List<MetaworksElement> elements) {
-        this.elements = elements;
-    }
+        @Order(1)
+        public List<MetaworksElement> getElements() {
+            return elements;
+        }
+        public void setElements(List<MetaworksElement> elements) {
+            this.elements = elements;
+        }
 
     public MetaworksList(){
         setElements(new ArrayList<MetaworksElement>());
@@ -64,8 +63,18 @@ public class MetaworksList<T> implements ContextAware {
 
         T c;
         try {
-            c = (T)((Class)((ParameterizedType)this.getClass().
-                    getGenericSuperclass()).getActualTypeArguments()[0]).newInstance();//getConstructor(new Class[]{getClass()}).newInstance(new Object[]{this});
+
+            ParameterizedType parameterizedType;
+
+            try {
+                parameterizedType = (ParameterizedType) this.getClass().
+                        getGenericSuperclass();
+            }catch (ClassCastException cce){
+                throw new RuntimeException("MetaworksList must have parameterized type.", cce);
+            }
+
+
+            c = (T)((Class)(parameterizedType).getActualTypeArguments()[0]).newInstance();//getConstructor(new Class[]{getClass()}).newInstance(new Object[]{this});
 
             if(c instanceof ContextAware) {
                 if(((ContextAware)c).getMetaworksContext() == null)

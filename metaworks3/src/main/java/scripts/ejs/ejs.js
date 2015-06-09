@@ -405,7 +405,7 @@ EJS.Compiler.prototype = {
 	}
 	buff.close();
 	this.out = buff.script + ";";
-	var to_be_evaled = '/*'+name+'*/this.process = function(_CONTEXT,_VIEW) { try { with(_VIEW) { with (_CONTEXT) {if(name.indexOf(mw3.debugPoint)>-1) debugger;'+this.out+"return ___ViewO.join('');}}}catch(e){throw e;}};";
+	var to_be_evaled = '/*'+name+'*/this.process = function(_CONTEXT,_VIEW) { try { with(_VIEW) { with (_CONTEXT) {if(name.indexOf(mw3.debugPoint)>-1 || objectId == mw3.debugPoint) debugger;'+this.out+"return ___ViewO.join('');}}}catch(e){throw e;}};";
 	
 	try{
 		eval(to_be_evaled);
