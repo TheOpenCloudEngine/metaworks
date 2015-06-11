@@ -2195,12 +2195,12 @@ com.abc.ClassA.methodA=입력
 					//mw3.debugPoint = actualFace;
 				}
 
-				if(e.targetObject){
-					message = message + "\n - object value is [" + JSON.stringify(e.targetObject) + "]";
-				}
+				//if(e.targetObject){
+				//	message = message + "\n - object value is [" + JSON.stringify(e.targetObject) + "]";
+				//}
 
-				if(mw3.template_line)
-					message = message + ": Actual Line Number is " + mw3.template_line;
+				//if(mw3.template_line)
+				//	message = message + ": Actual Line Number is " + mw3.template_line;
 
 				if(errorElement){
 					errorElement.style.display = 'block'

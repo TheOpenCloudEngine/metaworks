@@ -20,11 +20,7 @@ import org.directwebremoting.extend.ObjectOutboundVariable;
 import org.directwebremoting.extend.OutboundContext;
 import org.directwebremoting.extend.OutboundVariable;
 import org.directwebremoting.extend.Property;
-import org.metaworks.Face;
-import org.metaworks.FieldDescriptor;
-import org.metaworks.ObjectInstance;
-import org.metaworks.WebFieldDescriptor;
-import org.metaworks.WebObjectType;
+import org.metaworks.*;
 import org.metaworks.dao.Database;
 import org.metaworks.dao.IDAO;
 import org.metaworks.dao.MetaworksDAO;
@@ -271,10 +267,11 @@ public class MetaworksConverter extends BeanConverter{
 					try{
 
 						Class faceClass = Class.forName(faceClassForField);
-						Object realValue = convert(entry.getValue(), faceClass, data.getContext(), property);
+						Object faceValue = convert(entry.getValue(), faceClass, data.getContext(), property);
 
-						if(faceClass.isAssignableFrom(realValue.getClass())){
-							realValue = ((Face)realValue).createValueFromFace();
+						Object realValue = null;
+						if(faceValue!=null && faceClass.isAssignableFrom(faceValue.getClass())){
+							realValue = ((Face)faceValue).createValueFromFace();
 						}
 //						Object realValue = face.createValueFromFace();
 
@@ -325,6 +322,13 @@ public class MetaworksConverter extends BeanConverter{
 
 	public OutboundVariable convertOutbound(Object data, OutboundContext outctx) throws ConversionException
 	{
+
+
+		String originalDataClassName = null;
+
+		if(data!=null)
+			originalDataClassName = data.getClass().getName();
+System.out.println();
 		try {
 
 			if(data instanceof SerializationSensitive){
@@ -333,17 +337,30 @@ public class MetaworksConverter extends BeanConverter{
 
 			WebObjectType wot = null;
 			try {
-				try{
+				try {
 					wot = MetaworksRemoteService.getInstance().getMetaworksType(data.getClass().getName());
-				}catch(Exception e2){}
-
-				if(wot!=null && wot.getFaceOptions()!=null && wot.getFaceOptions().get("faceClass")!=null){
-
-					Face face = (Face) Class.forName(wot.getFaceOptions().get("faceClass")).newInstance();
-					MetaworksRemoteService.autowire(face);
-					face.setValueToFace(data);
-					data = face;
+				} catch (Exception e2) {
 				}
+
+//TODO: DO_NOT_SWAP_WITH_FACE
+				if(outctx.get("DO_NOT_SWAP_WITH_FACE")==null) {
+					if (wot != null && wot.getFaceOptions() != null && wot.getFaceOptions().get("faceClass") != null) {
+
+						Face face = (Face) Class.forName(wot.getFaceOptions().get("faceClass")).newInstance();
+						MetaworksRemoteService.autowire(face);
+
+						face.setValueToFace(data);
+
+
+						data = face;
+					}
+
+//TODO: DO_NOT_SWAP_WITH_FACE
+				}else{
+					outctx.put("DO_NOT_SWAP_WITH_FACE", null);
+				}
+
+
 			} catch (Exception e1) {
 				throw new RuntimeException("Can't replace with face class: " + e1.getMessage(), e1);
 			}
@@ -420,19 +437,58 @@ public class MetaworksConverter extends BeanConverter{
 							WebFieldDescriptor wfd = wot.getFieldDescriptor(name);
 							if(wfd!=null){
 								String faceClassForField = (String) wfd.getAttribute("faceclass");
-								if(faceClassForField!=null){
+								if(faceClassForField!=null
+
+										//**** important:  to avoid recursive field swapping
+//										&& !faceClassForField.equals(originalDataClassName)
+
+										){
 									try{
 										Face face = (Face) Class.forName(faceClassForField).newInstance();
 										MetaworksRemoteService.autowire(face);
+
+										if(face instanceof FieldFace){
+											((FieldFace)face).visitHolderObjectOfField(data);
+										}
+
 										face.setValueToFace(value);
 										value = face;
 									}catch(Exception e){
 										throw new Exception("Can't replace with face class: " + e.getMessage(), e);
 									}
 								}
+
+
 							}
 						}
 
+
+						//TODO: DO_NOT_SWAP_WITH_FACE
+						//Boolean hidden = (Boolean) wfd.getAttribute("hidden");
+						if(value !=null && value.getClass().getName().equals(originalDataClassName)){
+							//just for signal the child never be swapped with face class
+							outctx.put("DO_NOT_SWAP_WITH_FACE", new OutboundVariable() {
+								@Override
+								public OutboundVariable getReferenceVariable() {
+									return null;
+								}
+
+								@Override
+								public String getDeclareCode() {
+									return null;
+								}
+
+								@Override
+								public String getBuildCode() {
+									return null;
+								}
+
+								@Override
+								public String getAssignCode() {
+									return null;
+								}
+							});
+						}
 
 						OutboundVariable nested = getConverterManager().convertOutbound(value, outctx);
 
