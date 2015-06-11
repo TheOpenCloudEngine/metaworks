@@ -194,7 +194,7 @@ public class MetaworksRemoteService {
 			
 			return objType;
 		}catch(Exception e){
-			e.printStackTrace();
+			//e.printStackTrace();
 
 			throw new Exception("viewer tried to get metadata for class "+ className +" but failed.", e);
 		}
