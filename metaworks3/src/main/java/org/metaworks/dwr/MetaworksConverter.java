@@ -172,10 +172,11 @@ public class MetaworksConverter extends BeanConverter{
 					}
 
 //					MetaworksRemoteService.autowire(face);
-					Object realValue = face.createValueFromFace();
-
-					//System.out.println("----------  face is registered ------");
-					dataFaceMap.put(System.identityHashCode(realValue), face); //register for later reference in case of the Face object is used for calling method.
+					Object realValue = null;
+					if(face!=null) {
+						realValue = face.createValueFromFace();
+						dataFaceMap.put(System.identityHashCode(realValue), face); //register for later reference in case of the Face object is used for calling method.
+					}
 
 					if(realValue instanceof SerializationSensitive){
 						((SerializationSensitive)realValue).afterDeserialization();
@@ -273,6 +274,11 @@ public class MetaworksConverter extends BeanConverter{
 						if(faceValue!=null && faceClass.isAssignableFrom(faceValue.getClass())){
 							realValue = ((Face)faceValue).createValueFromFace();
 						}
+
+						//sometimes the converted value is realValue
+						if(faceValue!=null && property.getPropertyType().isAssignableFrom(faceValue.getClass())){
+							realValue = faceValue;
+						}
 //						Object realValue = face.createValueFromFace();
 
 						property.setValue(bean, realValue);
@@ -328,7 +334,7 @@ public class MetaworksConverter extends BeanConverter{
 
 		if(data!=null)
 			originalDataClassName = data.getClass().getName();
-System.out.println();
+
 		try {
 
 			if(data instanceof SerializationSensitive){
@@ -353,6 +359,8 @@ System.out.println();
 
 
 						data = face;
+
+						wot = MetaworksRemoteService.getInstance().getMetaworksType(data.getClass().getName());
 					}
 
 //TODO: DO_NOT_SWAP_WITH_FACE

@@ -659,8 +659,15 @@ public class MetaworksRemoteService {
 				for(Object key : TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient().keySet()){
 					Object autowiringObjectFromClient = TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient().get(key);
 					
-					if(autowiringObjectFromClient!=null)
-						autowiringObjectFromClientMapByClassTypes.put(autowiringObjectFromClient.getClass(), autowiringObjectFromClient);
+					if(autowiringObjectFromClient!=null){
+						Class theClass = autowiringObjectFromClient.getClass();
+
+						//register class hierarchy.
+						while(theClass != Object.class) {
+							autowiringObjectFromClientMapByClassTypes.put(theClass, autowiringObjectFromClient);
+							theClass = theClass.getSuperclass();
+						}
+					}
 				}
 			}
 		}
