@@ -1040,7 +1040,12 @@ public class WebObjectType{
 									payloadParameterIndexes.put(payloadName, new Integer(parameterIndex));
 								}
 							}else if(parameterAnnotation instanceof AutowiredFromClient){
-								Class paramType = method.getParameterTypes()[parameterIndex];
+								Class paramType = null;
+								try {
+									paramType = method.getParameterTypes()[parameterIndex];
+								}catch (ArrayIndexOutOfBoundsException e){
+									e.printStackTrace();
+								}
 								String payloadName = ServiceMethodContext.WIRE_PARAM_CLS + paramType.getName();
 
 								payloads.put(payloadName, payloadName);
