@@ -1897,9 +1897,14 @@ com.abc.ClassA.methodA=입력
 				
 				// 2013-07-31 DOM 생성방법 수정 및 DOM 객체에 name 설정 추가
 				var locateObjectDOM = $('<div>');
-				var mainDOM = this.debugMode ?
-					$('<' + elementTag + '>').attr({'id': divId, 'className': className, 'objectId': objectId}) :
-					$('<' + elementTag + '>').attr({'id': divId});
+
+				/////// TODO: later this is healthy for html DOM size
+				//var mainDOM = this.debugMode ?
+				//	$('<' + elementTag + '>').attr({'id': divId, 'className': className, 'objectId': objectId}) :
+				//	$('<' + elementTag + '>').attr({'id': divId});
+
+				var mainDOM =
+					$('<' + elementTag + '>').attr({'id': divId, 'className': className, 'objectId': objectId});
 
 				if(elementClass)
 					mainDOM.addClass(elementClass);
@@ -2190,12 +2195,12 @@ com.abc.ClassA.methodA=입력
 					//mw3.debugPoint = actualFace;
 				}
 
-				if(e.targetObject){
-					message = message + "\n - object value is [" + JSON.stringify(e.targetObject) + "]";
-				}
+				//if(e.targetObject){
+				//	message = message + "\n - object value is [" + JSON.stringify(e.targetObject) + "]";
+				//}
 
-				if(mw3.template_line)
-					message = message + ": Actual Line Number is " + mw3.template_line;
+				//if(mw3.template_line)
+				//	message = message + ": Actual Line Number is " + mw3.template_line;
 
 				if(errorElement){
 					errorElement.style.display = 'block'

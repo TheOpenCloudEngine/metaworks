@@ -11,6 +11,8 @@ public class ListFace<T> extends MetaworksList<T> implements Face<List<T>> {
     @Override
     public void setValueToFace(List<T> elements) {
         List<MetaworksElement> list = new ArrayList<MetaworksElement>();
+
+        if(elements!=null)
         for(T element : elements){
             MetaworksElement me = new MetaworksElement();
             me.setValue(element);
