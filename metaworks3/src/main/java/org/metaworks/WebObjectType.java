@@ -1043,6 +1043,10 @@ public class WebObjectType{
 								Class paramType = method.getParameterTypes()[parameterIndex];
 								String payloadName = ServiceMethodContext.WIRE_PARAM_CLS + paramType.getName();
 
+								if(((AutowiredFromClient)parameterAnnotation).select()!=null && ((AutowiredFromClient)parameterAnnotation).select().length() > 0){
+									payloadName = payloadName + ":" + ((AutowiredFromClient)parameterAnnotation).select();
+								}
+
 								payloads.put(payloadName, payloadName);
 								payloadParameterIndexes.put(payloadName, new Integer(parameterIndex));
 							}

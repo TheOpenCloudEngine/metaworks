@@ -2610,8 +2610,20 @@ com.abc.ClassA.methodA=입력
 					if(serviceMethodContext && serviceMethodContext.payload){
 						for(var keyName in serviceMethodContext.payload){
 							if(keyName.indexOf(prefixForWireParamCls) == 0){
+
+
+								var wireParamClsName = keyName.substring(prefixForWireParamCls.length);
+
+								var selection;
+								if(wireParamClsName.indexOf(":") > 0){
+									var clsNameAndSelect = wireParamClsName.split(":");
+									wireParamClsName = clsNameAndSelect[0];
+									selection = clsNameAndSelect[1];
+								}
+
 								autowiringTargets[keyName] = {
-									field: keyName.substring(prefixForWireParamCls.length)
+									field: wireParamClsName,
+									select: selection
 								};
 
 							}
@@ -2644,10 +2656,12 @@ com.abc.ClassA.methodA=입력
 						    			 
 						    			 if(sameClass){
 							    			 var isSelect = false;
-							    			 with(object){
-							    				 var autowiredObject = this.objects[i];
-							    				 isSelect = eval(autowiredSelect);
-							    			 }
+											 try {
+												 with (mw3.getObject(objId)) {
+													 var autowiredObject = this.objects[i];
+													 isSelect = eval(autowiredSelect);
+												 }
+											 }catch(e){};
 
 							    			 if(isSelect){
 							    				 autowiredObjects[fieldName] = this.getObject(i);
