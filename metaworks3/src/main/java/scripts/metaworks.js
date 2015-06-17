@@ -2441,15 +2441,6 @@ com.abc.ClassA.methodA=입력
 				if(arguments.length > 1){
 					objId = svcNameAndMethodName;
 					svcNameAndMethodName = arguments[1];
-					if("newDefiner" == svcNameAndMethodName){
-						mw3.startLoading();
-					}
-					//if("open" == svcNameAndMethodName){
-					//	mw3.startLoading();
-					//}
-					if("newComposer" == svcNameAndMethodName){
-						mw3.startLoading();
-					}
 
 				}else if(arguments.length ==1 ){
 					objId = this.targetObjectId;
@@ -2756,7 +2747,6 @@ com.abc.ClassA.methodA=입력
 					if(serviceMethodContext.target=="popup" || serviceMethodContext.target=="stick"){
 						return this;
 					}
-					//mw3.endLoading();
 					return this._withTarget(objId);
 					
 				}
