@@ -2434,7 +2434,6 @@ com.abc.ClassA.methodA=입력
     		
 			Metaworks3.prototype.call = function (svcNameAndMethodName){
 				mw3.loaded = false;
-				
 //				mw3.debug("call start");
 
 				var objId;
@@ -2442,6 +2441,7 @@ com.abc.ClassA.methodA=입력
 				if(arguments.length > 1){
 					objId = svcNameAndMethodName;
 					svcNameAndMethodName = arguments[1];
+
 				}else if(arguments.length ==1 ){
 					objId = this.targetObjectId;
 				}
@@ -2710,7 +2710,6 @@ com.abc.ClassA.methodA=입력
 							}
 						}
 					}
-					
 					var returnValue;
 					
 					var objectKey = this._createObjectKey(object);
@@ -2745,9 +2744,9 @@ com.abc.ClassA.methodA=입력
 					
 //					mw3.debug("call render done");
 					
-					if(serviceMethodContext.target=="popup" || serviceMethodContext.target=="stick")
+					if(serviceMethodContext.target=="popup" || serviceMethodContext.target=="stick"){
 						return this;
-
+					}
 					return this._withTarget(objId);
 					
 				}
@@ -2757,7 +2756,6 @@ com.abc.ClassA.methodA=입력
 				//$(infoDivId).html("<font color=red> LOADING... </font>");
 
 				eval(svcNameAndMethodName+"(object, {async: false, callback: function(obj){mw3.setObject(objId, obj)}});");
-				
 				return this._withTarget(objId);
 
 			};
