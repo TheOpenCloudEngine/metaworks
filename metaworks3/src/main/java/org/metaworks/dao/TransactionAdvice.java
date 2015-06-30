@@ -48,7 +48,10 @@ public class TransactionAdvice {
     public void commitTransaction() throws Exception {
 
         if(TransactionContext.getThreadLocalInstance()!=null)
-            TransactionContext.getThreadLocalInstance().beforeCommit();  //we only need to call beforeCommit which flushes the changes
+            TransactionContext.getThreadLocalInstance().commit(); //we only need to call beforeCommit which flushes the changes
+
+
+
     }
 
     @AfterThrowing("@annotation(org.springframework.transaction.annotation.Transactional)")
@@ -56,7 +59,7 @@ public class TransactionAdvice {
 
         if(TransactionContext.getThreadLocalInstance()!=null)
             try{
-                TransactionContext.getThreadLocalInstance().beforeRollback();
+                TransactionContext.getThreadLocalInstance().rollback();
             }catch(Exception e){
 
             }
