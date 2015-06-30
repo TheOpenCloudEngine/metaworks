@@ -37,7 +37,7 @@ org_metaworks_Refresh.prototype = {
 					   exist = true;
 					   this.refresh(i);
 					   
-					   break;
+					   //break;
 				   }
 				}
 			}
