@@ -13,6 +13,11 @@ mvn archetype:generate \
 -DarchetypeVersion=1.1-SNAPSHOT \
 -DarchetypeRepository=https://oss.sonatype.org/content/repositories/snapshots
 ```
+
+## maven 이 없고, 이클립스만 사용할 수 있다면, 다음 위치에서 이클립스 프로젝트를 다운받는다:
+
+https://github.com/TheOpenCloudEngine/metaworks/tree/master/doc/mw3-eclipse-sample-project.zip
+
  
 #Step 2. 프로젝트 설정
 
