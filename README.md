@@ -7,10 +7,10 @@ metaworks
 ## maven 이 있다면, 다음과 같이 쉽게 기본 프로젝트를 생성할 수 있다
 
 ```
-mvn archetype:generate 
--DarchetypeGroupId=org.uengine
--DarchetypeArtifactId=metaworks-sample-archetype
--DarchetypeVersion=1.1-SNAPSHOT
+mvn archetype:generate \
+-DarchetypeGroupId=org.uengine \
+-DarchetypeArtifactId=metaworks-sample-archetype \
+-DarchetypeVersion=1.1-SNAPSHOT \
 -DarchetypeRepository=https://oss.sonatype.org/content/repositories/snapshots
 ```
  
