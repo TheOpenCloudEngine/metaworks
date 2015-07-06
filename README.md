@@ -14,12 +14,20 @@ mvn archetype:generate \
 -DarchetypeRepository=https://oss.sonatype.org/content/repositories/snapshots
 ```
 
+## 생성된 기본 maven 프로젝트에서 빌드후 바로 실행해보기
+
+```
+mvn package
+mvn tomcat:run-war
+
+```
+
 ## maven 이 없고, 이클립스만 사용할 수 있다면, 다음 위치에서 이클립스 프로젝트를 다운받는다:
 
 https://github.com/TheOpenCloudEngine/metaworks/tree/master/doc/mw3-eclipse-sample-project.zip
 
  
-#Step 2. 프로젝트 설정
+#Step 2. 이클립스의 프로젝트 설정
 
 * 이클립스의 경우, 프로젝트를 Maven Project 로 전환하기 위하여 프로젝트명에 우측마우스클릭을 한후, Configure > Convert To Maven Project 해준다. (이때 M2Eclipse 플러그인이 설치되어있어야 한다. 설치방법 - http://blog.doortts.com/59)
 
@@ -30,7 +38,7 @@ https://github.com/TheOpenCloudEngine/metaworks/tree/master/doc/mw3-eclipse-samp
 * src 폴더의 소스코드들이 정상적으로 컴파일이 되었다면 정확히 설정을 마친것이다. 
 
 #Step 3. 기본 샘플의 정상작동 확인
-* 프로젝트 명을 우클릭한후 Run As > Run on Server 를 선택하여 톰캣을 실행한다.
+* [이클립스에서] 프로젝트 명을 우클릭한후 Run As > Run on Server 를 선택하여 톰캣을 실행한다.
 * localhost:8080/metaworks-sample/runner.html?classname=Login 으로 접속한다.
 * 기본 샘플 화면이 들어오면 정상이다.
 * 화면이 열리지 않으며 deploy 한 포트넘버와 컨텍스트명을 확인한다.
