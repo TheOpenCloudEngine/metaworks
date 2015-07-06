@@ -30,7 +30,7 @@ mvn archetype:generate -DarchetypeGroupId=org.uengine -DarchetypeArtifactId=meta
  
 간단한 샘플 애플리케이션 - Hello.java
 
-'''
+```
 package metaworks.test;
  
 import org.metaworks.ServiceMethodContext;
@@ -76,11 +76,11 @@ public class Hello{
     }
  
 }
-'''
+```
  
 #Hello.ejs
-'''
+```
 <h1><%=value.message%></h1>
 <%=methods.sayHello.here()%>
-'''
+```
 
