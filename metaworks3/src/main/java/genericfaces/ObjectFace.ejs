@@ -2,6 +2,13 @@
 
   var showNewBtn = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideNewBtn']);
 
+  var groups = [];
+
+  $.each(objectMetadata.fieldDescriptors, function(index, value){
+		if(groups.indexOf(value.attributes.group) == -1 && !mw3.isHidden(fields[value.name]){
+			groups.push(value.attributes.group);
+		}
+  });
 
   if (value != null) {
 		var showTitle = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideTitle']);
