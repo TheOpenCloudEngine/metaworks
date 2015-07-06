@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.uengine.metaworks:metaworks-dwr:1.1-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/uengine/metaworks/metaworks-dwr/1.1-SNAPSHOT/metaworks-dwr-1.1-20150630.071623-2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/uengine/metaworks/metaworks-dwr/1.1-SNAPSHOT/metaworks-dwr-1.1-20150630.071623-2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/uengine/metaworks/metaworks-dwr/1.1-SNAPSHOT/metaworks-dwr-1.1-20150630.071623-2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -25,7 +25,7 @@
 	<repositories>
 		<repository>
 			<id>org.uengine</id>
-			<url>http://maven.opencloudengine.org/content/repositories/snapshots/</url>
+			<url>https://oss.sonatype.org/content/groups/public</url>
 			<releases>
 				<enabled>true</enabled>
 			</releases>
@@ -40,7 +40,7 @@
 		 <dependency>
 			 <groupId>org.uengine.metaworks</groupId>
 			 <artifactId>metaworks3</artifactId>
-			 <version>1.0.3-SNAPSHOT</version>
+			 <version>1.2-SNAPSHOT</version>
 		 </dependency>
 
 		 <dependency>

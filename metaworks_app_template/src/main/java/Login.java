@@ -4,13 +4,13 @@ import org.metaworks.annotation.ServiceMethod;
 public class Login {
 
 	String name;
-	String message;
 		public String getName() {
 			return name;
 		}
 		public void setName(String name) {
 			this.name = name;
 		}
+	String message;
 		public String getMessage() {
 			return message;
 		}
@@ -18,7 +18,6 @@ public class Login {
 			this.message = message;
 		}
 	String password;
-		
 		public String getPassword() {
 			return password;
 		}
