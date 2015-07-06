@@ -93,3 +93,8 @@ public class Hello{
 <%=methods.sayHello.here()%>
 ```
 
+
+#동적으로 변경된 메타데이터 반영하기
+
+1. JRebel 을 사용
+2. http://localhost:8080/runner.html?classname=org.metaworks.Admin 를 호출하여 변경하고자 하는 클래스명을 넣은 후, refreshMetadata 버튼을 클릭함. 모든 클래스를 재반영하려면, * 를 입력함.
