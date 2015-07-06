@@ -1,12 +1,14 @@
 <%
 
+	debugger;
+
   var showNewBtn = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideNewBtn']);
 
   var groups = [];
 
-  $.each(objectMetadata.fieldDescriptors, function(index, value){
-		if(groups.indexOf(value.attributes.group) == -1 && !mw3.isHidden(fields[value.name]){
-			groups.push(value.attributes.group);
+  $.each(objectMetadata.fieldDescriptors, function(index, field){
+		if(groups.indexOf(field.attributes.group) == -1 && !mw3.isHidden(fields[field.name])){
+			groups.push(field.attributes.group);
 		}
   });
 
