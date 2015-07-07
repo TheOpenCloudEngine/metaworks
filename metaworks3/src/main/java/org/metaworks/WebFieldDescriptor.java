@@ -17,7 +17,7 @@ public class WebFieldDescriptor {
 
 	public WebFieldDescriptor(org.metaworks.FieldDescriptor oldFd){
 		setName(oldFd.getName().substring(0, 1).toLowerCase() + oldFd.getName().substring(1));
-		setDisplayName(oldFd.getDisplayName());
+		setDisplayName(oldFd.getDisplayName().replaceAll("(.)([A-Z])", "$1 $2"));
 		setClassName(oldFd.getClassType().getName());
 		
 		if(oldFd.getViewer()!=null){

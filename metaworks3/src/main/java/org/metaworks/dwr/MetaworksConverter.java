@@ -464,6 +464,51 @@ public class MetaworksConverter extends BeanConverter{
 									}catch(Exception e){
 										throw new Exception("Can't replace with face class: " + e.getMessage(), e);
 									}
+								}else{
+
+									WebObjectType typeOfField = null;
+
+									try {
+										typeOfField = MetaworksRemoteService.getInstance().getMetaworksType(value.getClass().getName());
+									} catch (Exception e2) {
+									}
+
+									if (typeOfField != null && typeOfField.getFaceOptions() != null && typeOfField.getFaceOptions().get("faceClass") != null) {
+
+										String faceClassName = typeOfField.getFaceOptions().get("faceClass");
+
+										if(!faceClassName.equals(originalDataClassName)) {
+											Face face = (Face) Class.forName(faceClassName).newInstance();
+											MetaworksRemoteService.autowire(face);
+
+											face.setValueToFace(value);
+
+											value = face;
+										}else{
+											outctx.put("DO_NOT_SWAP_WITH_FACE", new OutboundVariable() {
+												@Override
+												public OutboundVariable getReferenceVariable() {
+													return null;
+												}
+
+												@Override
+												public String getDeclareCode() {
+													return null;
+												}
+
+												@Override
+												public String getBuildCode() {
+													return null;
+												}
+
+												@Override
+												public String getAssignCode() {
+													return null;
+												}
+											});
+
+										}
+									}
 								}
 
 

@@ -897,7 +897,7 @@ com.abc.ClassA.methodA=입력
 					}
 					
 					if(!serviceMethod.displayName)
-						serviceMethod.displayName = serviceMethod.methodName.substr(0,1).toUpperCase() + serviceMethod.methodName.substr(1, serviceMethod.methodName.length-1);
+						serviceMethod.displayName = serviceMethod.methodName.substr(0,1).toUpperCase() + serviceMethod.methodName.substr(1, serviceMethod.methodName.length-1).replace(/([a-z])([A-Z])/g, '$1 $2');
 					
 					
 					if(serviceMethod.nameGetter){
