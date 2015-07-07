@@ -102,3 +102,15 @@ public class Hello{
 
 1. JRebel 을 사용
 2. http://localhost:8080/runner.html?classname=org.metaworks.Admin 를 호출하여 변경하고자 하는 클래스명을 넣은 후, refreshMetadata 버튼을 클릭함. 모든 클래스를 재반영하려면, * 를 입력함.
+
+
+# Tutorial Videos
+* press HD when you see the movies
+
+1. Install and build:  https://www.facebook.com/1401720840/videos/o.219096314846012/10205019275227194/?type=2&theater
+2. First Metaworks Application:  https://www.facebook.com/1401720840/videos/o.219096314846012/10205021538603777/?type=2&theater
+3. Context, Hidden, Available, and ejs file:    https://www.facebook.com/1401720840/videos/o.219096314846012/10205021546243968/?type=2&theater
+4. ServiceMethod, target, popup:    https://www.facebook.com/1401720840/videos/o.219096314846012/10205021632086114/?type=2&theater
+5. Developing Custom widgets (ejs.js) : https://www.facebook.com/1401720840/videos/o.219096314846012/10205021633926160/?type=2&theater
+6. Database Application:  
+https://www.facebook.com/1401720840/videos/o.219096314846012/10205021646446473/?type=2&theater&notif_t=video_processed
