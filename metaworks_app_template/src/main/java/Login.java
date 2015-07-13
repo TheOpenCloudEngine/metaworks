@@ -27,13 +27,19 @@ public class Login {
 		
 		
 	@ServiceMethod(callByContent=true)
-	public Main login(){
+	public Object login(){
 		
 		if(getName().equals(getPassword()))
 		
 			return new Main();
 		
-		else throw new RuntimeException("암호가 틀렸");
+		else{
+
+			setMessage("암호가 틀렸습니다.");
+
+			return this;
+//			throw new RuntimeException("암호가 틀렸");
+		}
 	}
 		
 	

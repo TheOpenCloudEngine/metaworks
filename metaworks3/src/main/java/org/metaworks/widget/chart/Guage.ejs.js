@@ -1,7 +1,7 @@
 var lastRowId;
 var lastColId;
 
-var org _metaworks_widget_grid_Grid= function(objectId, className){
+var org_metaworks_widget_grid_Grid= function(objectId, className){
 	this.objectId = objectId;
 	var grid = mw3.objects[objectId];
 	
