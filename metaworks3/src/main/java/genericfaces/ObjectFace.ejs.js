@@ -5,5 +5,4 @@ var ObjectFace = function(objectId, className){
 
 ObjectFace.prototype.newObject = function(){
 	mw3.setObject(this.objectId, {__className: this.className});
-	
 }

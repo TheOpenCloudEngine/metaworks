@@ -446,6 +446,12 @@ public class WebObjectType{
 			if(getAnnotationDeeply(tryingClasses, fd.getName(), NonLoadable.class)!=null)
 				fd.setLoadable(false);
 
+			Group group = (Group)getAnnotationDeeply(tryingClasses, fd.getName(), Group.class);
+
+			if(group != null){
+				fd.setAttribute("group", group.name());
+			}
+
 			Hidden hidden = (Hidden) getAnnotationDeeply(tryingClasses, fd.getName(), Hidden.class);
 			if(hidden !=null){
 				/*

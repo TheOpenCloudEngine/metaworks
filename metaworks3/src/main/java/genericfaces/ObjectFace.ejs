@@ -1,7 +1,32 @@
 <%
-
   var showNewBtn = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideNewBtn']);
+  var showLabel = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideLabels']);
+  var showEditBtn = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideEditBtn']);
 
+  var groups = [];
+
+  $.each(objectMetadata.fieldDescriptors, function(index, field){
+  		if(mw3.isHidden(fields[field.name]) || field.name == 'metaworksContext'){
+  			return true;
+  		}
+
+		var group = field.attributes.group;
+
+		if(group == undefined){
+			group = "undefined";
+		}
+
+		if(groups.indexOf(group) == -1){
+			groups.push(group);
+		}
+
+		if(groups[group] == undefined){
+			groups[group] = [];
+			groups[group].push(field);
+		}else{
+			groups[group].push(field);
+		}
+  });
 
   if (value != null) {
 		var showTitle = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideTitle']);
@@ -39,61 +64,97 @@
 			<table width="100%" border="0" cellspacing="0" cellpadding="0">
 			    <tbody><tr>
 			        <td style="padding:2px 12px 0 0;">
-			            <table width="*" border="0" cellspacing="0" cellpadding="0">
-						<tbody>
-<%	
 
-  var showLabel = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideLabels']);
-  var showEditBtn = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideEditBtn']);
+		<!-- field를 화명에 뿌려줌 -->
+		<% if(groups.length>1){ %>
+			<div class="tabbable"> <!-- Only required for left/right tabs -->
+				<!-- Group 이름으로 Tab을 만듬 -->
+				<ul class="nav nav-tabs">
+				<%
+					$.each(groups, function(index, group){
+						if(index == 0){ %>
+							<li class="active"><a href="#<%=group%>" data-toggle="tab"><%=group%></a></li>
+						<% }else{ %>
+							<li><a href="#<%=group%>" data-toggle="tab"><%=group%></a></li>
+						<% }
+					});
+				%>
+				</ul>
+				<!-- Group 이름으로 Tab을 만듬 -->
 
-  for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){
-  
-  
-  	var fd = objectMetadata.fieldDescriptors[i];
-   	
-  	if(mw3.isHidden(fields[fd.name])) continue;
-  	if(fd.name == 'metaworksContext') continue;
-  	
-  	var fieldValue = value[fd.name];
-%>
+				<!-- Tab에 있는 내용을 만듬 -->
+				<div class="tab-content">
+					<% $.each(groups, function(index, group){
+						if(group == undefined){
+                			group = "undefined";
+                		}
+                	%>
+                		<!-- 첫번째 탭을 활성화하기 위해선 active가 필요하다. -->
+						<div class="tab-pane <%=index==0?'active':''%>" id="<%=group%>">
+							<table width="*" border="0" cellspacing="0" cellpadding="0">
+                        		<tbody>
+						<% $.each(groups[group], function(fieldIndex, fieldDescriptor){ %>
+							<tr height="25" valign="middle">
+
+								<% if(showLabel){ %>
+									<td bgcolor=white> <b><%=mw3.localize(fieldDescriptor.displayName)%></b> </td>
+								<% } %>
+
+								<td bgcolor=white>
+
+								<% var fieldValue = value[fieldDescriptor.name];
+
+								if(fieldDescriptor.attributes && fieldDescriptor.attributes['imagepath']){
+
+									if(fieldValue){ %>
+										<img src="<%=fieldValue%>" width=100>
+									<% }
+
+								}else{ %>
+									<%=fields[fieldDescriptor.name] ? fields[fieldDescriptor.name].here() : "XXX"%>
+								<% } %>
+
+							</td></tr>
+					<%	}); %>
+							</tbody>
+						</table>
+					</div>
+					<% }); %>
+				</div>
+				<!-- Tab에 있는 내용을 만듬 -->
+			</div>
+		<% }else { %>
+			<table width="*" border="0" cellspacing="0" cellpadding="0">
+        		<tbody>
+			<% for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){
+
+				var fd = objectMetadata.fieldDescriptors[i];
+
+				if(mw3.isHidden(fields[fd.name])) continue;
+				if(fd.name == 'metaworksContext') continue;
+
+				var fieldValue = value[fd.name];
+		%>
  
-<tr height="25" valign="middle">
-<%
- 
- if(showLabel){
-%>
-<td bgcolor=white> <b><%=mw3.localize(fd.displayName)%></b> </td>
+				<tr height="25" valign="middle">
 
-<%}
-%>
+				<% if(showLabel){ %>
+				<td bgcolor=white> <b><%=mw3.localize(fd.displayName)%></b> </td>
+				<% } %>
 
-<td bgcolor=white>
+				<td bgcolor=white>
 
-<%
-	if(fd.attributes && fd.attributes['imagepath']){
-		if(fieldValue){
- 	
-%>
- <img src="<%=fieldValue%>" width=100>
-<%
-		}
- 
- 	}else{
-%>
- <%=fields[fd.name] ? fields[fd.name].here() : "XXX"%>
-<%
- 	}
- 	
-%> 
+				<%	if(fd.attributes && fd.attributes['imagepath']){
+						if(fieldValue){ %> <img src="<%=fieldValue%>" width=100> <% }
+					}else{ %>  <%=fields[fd.name] ? fields[fd.name].here() : "XXX"%> <% } %>
 
-</td></tr>
+				</td></tr>
 
-
-<%
-  }
-%>
-
-
+			<%
+				}
+			}
+			%>
+		<!-- field를 화명에 뿌려줌 -->
 			            </tbody></table>
 			        </td>
 			        
