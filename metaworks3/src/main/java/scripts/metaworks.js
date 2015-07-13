@@ -3563,19 +3563,24 @@ com.abc.ClassA.methodA=입력
 					if(methodContext.how.indexOf(metaworksContext.how + '|') > -1)
 						isHidden = false;						
 				}
-				
+
 				if(methodContext.attributes && methodContext.attributes['available.condition'] && object){
 					for(var key in methodContext.attributes['available.condition']){
-						var condition = methodContext.attributes['available.condition'][key]; 
-						var validateCondition = true;
-		    			if(condition != null){
-		    				with(object)
-		    					validateCondition = eval(condition);
-		    			}			
-						
-		    			if(validateCondition){
-		    				isHidden = false;
-		    			}
+						var condition = methodContext.attributes['available.condition'][key];
+						var validateCondition = false;
+						if(condition != null){
+
+							try{
+								with(object)
+									validateCondition = eval(condition);
+							}catch(e){
+
+							}
+						}
+
+						if(validateCondition){
+							isHidden = false;
+						}
 					}
 				}
 				
