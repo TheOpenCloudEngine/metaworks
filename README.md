@@ -33,7 +33,7 @@ mvn archetype:generate \
 
 ```
 mvn package
-mvn tomcat:run-war
+mvn tomcat7:run-war
 ```
 
 접속 테스트를 하실때는 생성할때의 artifactId 를 참고하여 다음의 주소로 접속이 가능합니다:
