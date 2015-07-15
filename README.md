@@ -43,6 +43,14 @@ mvn tomcat7:run-war
 localhost:8080/<artifactId>
 ```
 
+# [인텔리J에서 메이븐 명령 실행시] maven.multiModuleProjectDirectory 오류가 나시면
+File > Settings > Maven >> Runner 에서
+VMOptions에 다음을 입력
+```
+-Dmaven.multiModuleProjectDirectory=C:\apache-maven-3.3.1-bin\apache-maven-3.3.1
+```
+
+
 ## 기본 샘플의 정상작동 확인
 * localhost:8080/metaworks-sample/runner.html?classname=Login 으로 접속한다.
 * 기본 샘플 화면이 들어오면 정상이다.
