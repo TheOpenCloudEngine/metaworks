@@ -16,9 +16,30 @@ mvn archetype:generate \
 
 ## 생성된 기본 maven 프로젝트에서 빌드후 바로 실행해보기
 
+톰캣 서버를 설치 없이 바로 테스트 하시려면 아래의 Tomcat plugin 설정을 pom.xml의 plugins 구역에 추가해주셔야 합니다:
+
+```
+<plugin>
+     <groupId>org.apache.tomcat.maven</groupId>
+     <artifactId>tomcat7-maven-plugin</artifactId>
+     <version>2.2</version>
+     <configuration>
+         <url>http://localhost:8080/user</url>
+     </configuration>
+ </plugin>
+```
+
+위와 같이 편집을 완료한 후에 다음과 같이 패키징과 실행이 가능합니다:
+
 ```
 mvn package
 mvn tomcat:run-war
+```
+
+접속 테스트를 하실때는 생성할때의 artifactId 를 참고하여 다음의 주소로 접속이 가능합니다:
+
+```
+localhost:8080/<artifactId>
 ```
 
 ## 기본 샘플의 정상작동 확인
