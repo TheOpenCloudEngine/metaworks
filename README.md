@@ -24,8 +24,8 @@ mvn archetype:generate \
      <artifactId>tomcat7-maven-plugin</artifactId>
      <version>2.2</version>
      <configuration>
-         <server>local</server>
-        	<port>8089</port>
+       <server>local</server>
+       <port>8080</port>
      </configuration>
  </plugin>
 ```
