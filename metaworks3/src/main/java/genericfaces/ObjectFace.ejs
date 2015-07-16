@@ -1,37 +1,34 @@
 <%
-if(value == null) return;
-  var showNewBtn = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideNewBtn']);
-  var showLabel = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideLabels']);
-  var showEditBtn = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideEditBtn']);
+	if (value != null) {
+		var groups = [];
 
-  var groups = [];
+		$.each(objectMetadata.fieldDescriptors, function(index, field){
+			if(mw3.isHidden(fields[field.name]) || field.name == 'metaworksContext'){
+				return true;
+			}
 
-  $.each(objectMetadata.fieldDescriptors, function(index, field){
-  		if(mw3.isHidden(fields[field.name]) || field.name == 'metaworksContext'){
-  			return true;
-  		}
+			var group = field.attributes.group;
 
-		var group = field.attributes.group;
+			if(group == undefined){
+				group = "undefined";
+			}
 
-		if(group == undefined){
-			group = "undefined";
-		}
+			if(groups.indexOf(group) == -1){
+				groups.push(group);
+			}
 
-		if(groups.indexOf(group) == -1){
-			groups.push(group);
-		}
-
-		if(groups[group] == undefined){
-			groups[group] = [];
-			groups[group].push(field);
-		}else{
-			groups[group].push(field);
-		}
-  });
-
-  if (value != null) {
+			if(groups[group] == undefined){
+				groups[group] = [];
+				groups[group].push(field);
+			}else{
+				groups[group].push(field);
+			}
+		});
 		var showTitle = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideTitle']);
 		var showViewBox = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideViewBox']);
+		var showNewBtn = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideNewBtn']);
+       	var showLabel = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideLabels']);
+      	var showEditBtn = !(objectMetadata.faceOptions && objectMetadata.faceOptions['hideEditBtn']);
 		
   if(showViewBox){
 %>
