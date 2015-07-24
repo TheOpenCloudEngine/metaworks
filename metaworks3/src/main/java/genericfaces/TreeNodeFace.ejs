@@ -6,6 +6,13 @@
 		
 		if(objectMetadata.nameFieldDescriptor)
 			nameField = fields[objectMetadata.nameFieldDescriptor.name];
+
+		if(!nameField){
+			console.log("Please add @Name for the nameField to " + objectMetadata.name);
+
+			if(objectMetadata.fieldDescriptors.length > 0)
+				nameField = fields[objectMetadata.fieldDescriptors[0].name];
+		}
 		
 		if(objectMetadata.childrenFieldDescriptor)
 			childrenField = fields[objectMetadata.childrenFieldDescriptor.name];

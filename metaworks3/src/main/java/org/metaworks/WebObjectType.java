@@ -257,12 +257,17 @@ public class WebObjectType{
 				
 				setFaceOptions(optionMap);
 			}
-			
+
 			if(typeFace.faceClass() != org.metaworks.Face.class){
 				if(getFaceOptions()==null) setFaceOptions(new HashMap<String, String>());
 				getFaceOptions().put("faceClass", typeFace.faceClass().getName());
 			}
-	
+
+			if(typeFace.faceClassName().length() > 0){
+				if(getFaceOptions()==null) setFaceOptions(new HashMap<String, String>());
+				getFaceOptions().put("faceClass", typeFace.faceClassName());
+			}
+
 			if(typeFace.ejsPath().length() > 0)
 				setFaceComponentPath(typeFace.ejsPath());
 			
@@ -882,6 +887,12 @@ public class WebObjectType{
 				if(face.faceClass()!=org.metaworks.Face.class){ //if the face class is meaningful 
 					fd.setAttribute("faceclass", face.faceClass().getName());
 				}
+
+				if(face.faceClassName().length() > 0){
+					if(getFaceOptions()==null) setFaceOptions(new HashMap<String, String>());
+					fd.setAttribute("faceClass", face.faceClassName());
+				}
+
 			}
 		
 			Range range = (Range) getAnnotationDeeply(tryingClasses, fd.getName(), Range.class);
@@ -1497,6 +1508,11 @@ public class WebObjectType{
 						@Override
 						public Class<? extends org.metaworks.Face> faceClass() {
 							return face!=null ? face.faceClass() : org.metaworks.Face.class;
+						}
+
+						@Override
+						public String faceClassName() {
+							return face!=null ? face.faceClassName() : "";
 						}
 					};
 				}				

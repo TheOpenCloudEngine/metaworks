@@ -17,7 +17,8 @@ public @interface Face {
 	public String[] values() default {};
 	
 	public String[] ejsPathMappingByContext() default {};
-	
-	
+
+
 	public Class<? extends org.metaworks.Face> faceClass() default org.metaworks.Face.class;
+	public String faceClassName() default "";
 }
