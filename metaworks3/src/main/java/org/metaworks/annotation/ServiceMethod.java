@@ -11,7 +11,25 @@ import org.metaworks.dao.IDAO;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ServiceMethod {
-	
+
+	public final static String TARGET_AUTO 		= "auto";
+	public final static String TARGET_SELF 		= "self";
+	public final static String TARGET_APPEND 	= "append";
+	public final static String TARGET_PREPEND 	= "prepend";
+	public final static String TARGET_STICK 	= "stick";
+	public final static String TARGET_POPUP 	= "popup";
+	public final static String TARGET_POPUP_OVER_POPUP 	= "popupOverPopup";
+	//	public final static String TARGET_WINDOW 	= "window";
+	public final static String TARGET_NONE 		= "none";
+	public final static String TARGET_TOP 		= "top";
+	public final static String TARGET_OPENER 	= "opener";
+
+	public final static String MOUSEBINDING_LEFTCLICK 	= "left";
+	public final static String MOUSEBINDING_RIGHTCLICK 	= "right";
+	public final static String MOUSEBINDING_ONOVER 		= "over";
+	public final static String MOUSEBINDING_ONOUT 		= "out";
+
+
 	String when() 				default IDAO.WHEN_EVER;
 	String where() 				default IDAO.WHERE_EVER;
 	String how() 				default IDAO.HOW_EVER;

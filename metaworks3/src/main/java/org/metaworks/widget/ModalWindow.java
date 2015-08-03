@@ -8,10 +8,10 @@ import org.metaworks.EventContext;
 import org.metaworks.MetaworksContext;
 import org.metaworks.Remover;
 import org.metaworks.ServiceMethodContext;
-import org.metaworks.annotation.Face;
-import org.metaworks.annotation.Hidden;
-import org.metaworks.annotation.Id;
-import org.metaworks.annotation.ServiceMethod;
+import org.metaworks.annotation.*;
+import org.metaworks.dwr.MetaworksRemoteService;
+
+import javax.xml.ws.Service;
 
 @Face(displayName="ModalWindow")
 public class ModalWindow implements ContextAware {
@@ -139,6 +139,15 @@ public class ModalWindow implements ContextAware {
 	@ServiceMethod(eventBinding=EventContext.EVENT_CLOSE, bindingHidden=true)
 	public Object close() {
 		return new Remover(ServiceMethodContext.TARGET_SELF);
+	}
+
+	@Available(how="full-fledged")
+	@ServiceMethod(target = ServiceMethod.TARGET_OPENER, callByContent = true)
+	public Object ok(){
+
+		MetaworksRemoteService.getInstance().wrapReturn(getPanel(), new Remover(new ModalWindow()));
+
+		return getPanel();
 	}
 
 }

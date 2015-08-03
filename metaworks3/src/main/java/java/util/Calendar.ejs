@@ -1,0 +1,13 @@
+<%
+	if(mw3.when == 'new' || mw3.when == 'edit'){
+%>
+		<input type="text" id="<%=mw3.createInputId(objectId)%>" style="width:80px; color:#666;float:left" when="<%=mw3.when%>" readonly />
+		<a href="javascript:mw3.getFaceHelper(<%=objectId%>).clear()" style="float:left;padding-top:4px;">초기화</a>
+		<div style="clear:both" />
+<%	
+	}else{
+%>		
+	<%= value.format("yyyy년 MM월 dd일 a/p hh시 mm분 ss초") %>
+<%				
+	}
+%>
