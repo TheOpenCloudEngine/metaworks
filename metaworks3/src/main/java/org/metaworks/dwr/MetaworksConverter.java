@@ -260,33 +260,35 @@ public class MetaworksConverter extends BeanConverter{
 
 
 			//Replacing with Face class if applicable
-			WebFieldDescriptor wfd = wot.getFieldDescriptor(key);
+			if(wot!=null) {
+				WebFieldDescriptor wfd = wot.getFieldDescriptor(key);
 
-			if(wot!=null && wfd!=null){
-				String faceClassForField = (String) wfd.getAttribute("faceclass");
-				if(faceClassForField!=null){
-					try{
+				if (wot != null && wfd != null) {
+					String faceClassForField = (String) wfd.getAttribute("faceclass");
+					if (faceClassForField != null) {
+						try {
 
-						Class faceClass = Class.forName(faceClassForField);
-						Object faceValue = convert(entry.getValue(), faceClass, data.getContext(), property);
+							Class faceClass = Class.forName(faceClassForField);
+							Object faceValue = convert(entry.getValue(), faceClass, data.getContext(), property);
 
-						Object realValue = null;
-						if(faceValue!=null && faceClass.isAssignableFrom(faceValue.getClass())){
-							realValue = ((Face)faceValue).createValueFromFace();
+							Object realValue = null;
+							if (faceValue != null && faceClass.isAssignableFrom(faceValue.getClass())) {
+								realValue = ((Face) faceValue).createValueFromFace();
+							}
+
+							//sometimes the converted value is realValue
+							if (faceValue != null && property.getPropertyType().isAssignableFrom(faceValue.getClass())) {
+								realValue = faceValue;
+							}
+							//						Object realValue = face.createValueFromFace();
+
+							property.setValue(bean, realValue);
+
+							continue;
+
+						} catch (Exception e) {
+							throw new RuntimeException("Can't replace with face class: " + e.getMessage(), e);
 						}
-
-						//sometimes the converted value is realValue
-						if(faceValue!=null && property.getPropertyType().isAssignableFrom(faceValue.getClass())){
-							realValue = faceValue;
-						}
-//						Object realValue = face.createValueFromFace();
-
-						property.setValue(bean, realValue);
-
-						continue;
-
-					}catch(Exception e){
-						throw new RuntimeException("Can't replace with face class: " + e.getMessage(), e);
 					}
 				}
 			}
