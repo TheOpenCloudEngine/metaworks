@@ -31,6 +31,7 @@ import org.metaworks.dao.ConnectionFactory;
 import org.metaworks.dao.IDAO;
 import org.metaworks.dao.TransactionContext;
 import org.metaworks.widget.ReturnWrapper;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -711,6 +712,24 @@ public class MetaworksRemoteService {
 		}
 		
 		return autowiredObjects;
+	}
+
+	public static <T> T getComponent(Class<T> clazz) {
+		T t = null;
+
+		try {
+			t = getInstance().getBeanFactory().getBean(clazz);
+			getInstance().autowire(t);
+		} catch (NoSuchBeanDefinitionException e) {
+			//System.out.printf("No qualifying bean of type [%s] is defined", clazz.toString());
+			try {
+				t = clazz.newInstance();
+			} catch (Exception e1) {
+				throw new RuntimeException(e1);
+			}
+		}
+
+		return t;
 	}
 
 	ConnectionFactory connectionFactory;
