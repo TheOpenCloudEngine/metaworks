@@ -33,6 +33,7 @@ import org.metaworks.dao.TransactionContext;
 import org.metaworks.widget.ReturnWrapper;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -411,7 +412,7 @@ public class MetaworksRemoteService {
 		
 		//if the requested value object is IDAO which need to be converted to implemented one so that it can be invoked by its methods
 		//Another case this required is when Spring is used since the spring base object should be auto-wiring operation
-		WebApplicationContext springAppContext = null;
+		ApplicationContext springAppContext = null;
 		if(TransactionalDwrServlet.useSpring) springAppContext = getBeanFactory();
 		Object springBean = null;
 		if(springAppContext!=null)
@@ -583,7 +584,7 @@ public class MetaworksRemoteService {
 				
 	}
 
-    public WebApplicationContext getBeanFactory()
+    public ApplicationContext getBeanFactory()
     {
         try {
 			ServletContext srvCtx = ServerContextFactory.get().getServletContext();
@@ -641,7 +642,7 @@ public class MetaworksRemoteService {
 		if(object==null)
 			return autowiredObjects;
 		
-		WebApplicationContext springAppContext = null;
+		ApplicationContext springAppContext = null;
 		if(TransactionalDwrServlet.useSpring) springAppContext = MetaworksRemoteService.getInstance().getBeanFactory();
 		else return autowiredObjects;
 		
@@ -718,6 +719,10 @@ public class MetaworksRemoteService {
 		T t = null;
 
 		try {
+			if(getInstance().getBeanFactory()==null){
+				throw new RuntimeException("There's no configured Spring application context. if you invoke this in some Test Code, Please declare \"new TestMetaworksRemoteService(new ClassPathXmlApplicationContext(...));\" in the beginning of the 'setUp()' method in the test.");
+			}
+
 			t = getInstance().getBeanFactory().getBean(clazz);
 			getInstance().autowire(t);
 		} catch (NoSuchBeanDefinitionException e) {
