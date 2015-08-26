@@ -920,6 +920,73 @@ com.abc.ClassA.methodA=입력
 				};
 
 			};
+
+
+
+
+			Metaworks3.prototype.isSuperClassOf = function(superClassName, className){
+			
+				var metadata = mw3.getMetadata(className);
+
+				if(metadata){
+					for(var i=0; i<metadata.superClasses.length; i++){
+						if(metadata.superClasses[i] == superClassName){
+							return true;
+						}
+					}
+				}
+
+				return false;
+
+			}
+
+			Metaworks3.prototype.getClosestObject = function(fromObjectId, findElementClassName) {
+				var resultObject;
+				var resultObjectDistance = 0;
+				var parentDivs = $('#objDiv_' + fromObjectId).parents();
+
+				parentDivs.each(function(index) {
+
+					var classNameOfDiv = $(this).attr('classname');
+
+					if(classNameOfDiv){
+
+						parentObjectId = $(this).attr('objectid');
+						var parent = mw3.getObject(parentObjectId);
+
+
+						if(mw3.isSuperClassOf(findElementClassName, classNameOfDiv)) {
+							resultObject = parent;
+
+							// return false == break in jQuery each
+							return false;
+						}else{//finding in childs in parent (siblings)
+
+							var parentMetadata = mw3.getMetadata(parent.__className);
+							if(parentMetadata){
+								parentMetadata.fieldDescriptors
+
+								for(var fdIdx in parentMetadata.fieldDescriptors){
+									var field = parentMetadata.fieldDescriptors[fdIdx];
+									var fieldObject = parent[field.name];
+
+									if(fieldObject && fieldObject.__className && mw3.isSuperClassOf(findElementClassName, fieldObject.__className)){
+										resultObject = fieldObject;
+
+										return false;
+									}
+								}
+							}
+
+
+						}
+
+					}
+
+				});
+
+				return resultObject;
+			}
 			
 			
 			Metaworks3.prototype.showObjectWithObjectId = function (objectId, objectTypeName, targetDiv, options){
@@ -2674,28 +2741,42 @@ com.abc.ClassA.methodA=입력
 							}else{
 								// The default option is that the Nearest object to be autowired
 								try{
-									var srcObjectDiv = $('#' + mw3._getObjectDivId(objId));
-									if(srcObjectDiv.length > 0){
-										var srcObjects = [];
-							
-										for(var targetClassName in this.objectId_KeyMapping){
-											if(targetClassName == autowiredClassName || targetClassName.indexOf(autowiredClassName + '@') == 0){
-												var targetObjectDiv = $('#' + mw3._getObjectDivId(this.objectId_KeyMapping[targetClassName]));
-												if(targetObjectDiv.length > 0){
-													srcObjects.push({
-														objectId: this.objectId_KeyMapping[targetClassName],
-														distance: srcObjectDiv.distanceTo(targetObjectDiv)
-													});
+
+									var try1 = mw3.getClosestObject(objId, autowiredClassName); //try logical distance firstly.
+
+									if(try1){
+
+										autowiredObjects[fieldName] = try1;
+
+									}else{  /// if fail try old logic (physical distance)
+
+										var srcObjectDiv = $('#' + mw3._getObjectDivId(objId));
+										if(srcObjectDiv.length > 0){
+											var srcObjects = [];
+
+											for(var targetClassName in this.objectId_KeyMapping){
+												if(targetClassName == autowiredClassName || targetClassName.indexOf(autowiredClassName + '@') == 0){
+													var targetObjectDiv = $('#' + mw3._getObjectDivId(this.objectId_KeyMapping[targetClassName]));
+													if(targetObjectDiv.length > 0){
+														srcObjects.push({
+															objectId: this.objectId_KeyMapping[targetClassName],
+															distance: srcObjectDiv.distanceTo(targetObjectDiv)
+														});
+													}
 												}
 											}
+
+											if(srcObjects.length > 2){
+												srcObjects.sort(function(a, b) {return a.distance - b.distance});
+
+												autowiredObjects[fieldName] = this.getObject(srcObjects[0].objectId);
+											}
 										}
-									
-										if(srcObjects.length > 2){
-											srcObjects.sort(function(a, b) {return a.distance - b.distance});
-										
-											autowiredObjects[fieldName] = this.getObject(srcObjects[0].objectId);
-										}									
+
 									}
+
+
+
 								}catch(e){
 									if(console)
 										console.log(e);
