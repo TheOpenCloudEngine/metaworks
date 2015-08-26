@@ -2672,7 +2672,7 @@ com.abc.ClassA.methodA=입력
 							    	 }
 							     }
 							}else{
-								// Nearest object to be autowired
+								// The default option is that the Nearest object to be autowired
 								try{
 									var srcObjectDiv = $('#' + mw3._getObjectDivId(objId));
 									if(srcObjectDiv.length > 0){

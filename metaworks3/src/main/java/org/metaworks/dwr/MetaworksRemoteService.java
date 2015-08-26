@@ -724,7 +724,6 @@ public class MetaworksRemoteService {
 			}
 
 			t = getInstance().getBeanFactory().getBean(clazz);
-			getInstance().autowire(t);
 		} catch (NoSuchBeanDefinitionException e) {
 			//System.out.printf("No qualifying bean of type [%s] is defined", clazz.toString());
 			try {
@@ -733,6 +732,8 @@ public class MetaworksRemoteService {
 				throw new RuntimeException(e1);
 			}
 		}
+
+		autowire(t);
 
 		return t;
 	}
