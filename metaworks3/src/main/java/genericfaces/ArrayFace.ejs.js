@@ -43,6 +43,8 @@ ArrayFace.prototype = {
 				name: '[' + (arrayObj.length-1).toString() + ']'
 			}
 		);
+
+		mw3.onLoadFaceHelperScript();
 	},
 
 	remove: function(item){
