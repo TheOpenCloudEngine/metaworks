@@ -925,7 +925,7 @@ com.abc.ClassA.methodA=입력
 
 
 			Metaworks3.prototype.isSuperClassOf = function(superClassName, className){
-			
+
 				var metadata = mw3.getMetadata(className);
 
 				if(metadata){
