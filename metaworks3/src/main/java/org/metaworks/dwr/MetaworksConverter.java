@@ -54,6 +54,16 @@ public class MetaworksConverter extends BeanConverter{
 	public Object convertInbound(Class<?> paramType, InboundVariable data) throws ConversionException
 	{
 
+		Integer depth = (Integer) TransactionContext.getThreadLocalInstance().getSharedContext("_unmarshall_depth");
+		{
+			if (depth == null)
+				depth = new Integer(0);
+
+			depth = new Integer(depth.intValue() + 1);
+
+			TransactionContext.getThreadLocalInstance().setSharedContext("_unmarshall_depth", depth);
+		}
+
 		try {
 			//System.out.println("--------------------------------------------------------");
 			//System.out.println("name : " + paramType.getName() + "-->" + IDAO.class.isAssignableFrom(paramType) + "," + Modifier.isInterface(paramType.getModifiers()) + "," + Modifier.isAbstract(paramType.getModifiers()));
@@ -165,17 +175,21 @@ public class MetaworksConverter extends BeanConverter{
 				if(Face.class.isAssignableFrom(paramType)){
 					Face face = (Face) super.convertInbound(paramType, data);
 
-					Map<Object,Face> dataFaceMap = (Map<Object, Face>) TransactionContext.getThreadLocalInstance().getSharedContext("dataFaceMap");
-					if(dataFaceMap==null){
-						dataFaceMap = new HashMap<Object, Face>();
-						TransactionContext.getThreadLocalInstance().setSharedContext("dataFaceMap", dataFaceMap);
-					}
+//					Map<Object,Face> dataFaceMap = (Map<Object, Face>) TransactionContext.getThreadLocalInstance().getSharedContext("dataFaceMap");
+//					if(dataFaceMap==null){
+//						dataFaceMap = new HashMap<Object, Face>();
+//						TransactionContext.getThreadLocalInstance().setSharedContext("dataFaceMap", dataFaceMap);
+//					}
 
-//					MetaworksRemoteService.autowire(face);
 					Object realValue = null;
 					if(face!=null) {
 						realValue = face.createValueFromFace();
-						dataFaceMap.put(System.identityHashCode(realValue), face); //register for later reference in case of the Face object is used for calling method.
+
+						if(depth.intValue()==1){
+							TransactionContext.getThreadLocalInstance().setSharedContext("_real_callee_object", face);
+						}
+
+//						dataFaceMap.put(System.identityHashCode(realValue), face); //register for later reference in case of the Face object is used for calling method.
 					}
 
 					if(realValue instanceof SerializationSensitive){

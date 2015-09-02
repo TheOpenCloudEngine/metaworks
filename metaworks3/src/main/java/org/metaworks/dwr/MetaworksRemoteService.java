@@ -399,12 +399,32 @@ public class MetaworksRemoteService {
 //		}
 
 		Class serviceClass = Thread.currentThread().getContextClassLoader().loadClass(objectTypeName);
+
+
+		TransactionContext.getThreadLocalInstance().setSharedContext("_calledClassName", objectTypeName);
+		TransactionContext.getThreadLocalInstance().setSharedContext("_calledMethodName", methodName);
 //		InvocationContext invocationContext = new InvocationContext();
 
+//		if(clientObject==null){
+//			try {
+//				clientObject = serviceClass.newInstance();
+//			}catch (InstantiationException e){
+//				throw new Exception(serviceClass + " must have a constructor with empty parameter to be instantiated automatically.");
+//			}
+//		}
+
+		//real callee object is set by MetaworksConverter once the called object is replaced with Face.
+		Object realCalleeObject = TransactionContext.getThreadLocalInstance().getSharedContext("_real_callee_object");
+
+		if(realCalleeObject!=null)
+			clientObject = realCalleeObject;
+
 		//replace clientObject with faceClass in case the one of faceClass' method is called since the dataFaceMap is added by MetaworksConverter already.
-		Map<Object,Face> dataFaceMap = (Map<Object, Face>) TransactionContext.getThreadLocalInstance().getSharedContext("dataFaceMap");
-		if(dataFaceMap!=null && dataFaceMap.containsKey(System.identityHashCode(clientObject)))
-			clientObject = dataFaceMap.get(System.identityHashCode(clientObject));
+//		Map<Object,Face> dataFaceMap = (Map<Object, Face>) TransactionContext.getThreadLocalInstance().getSharedContext("dataFaceMap");
+//
+//		int identityHashCode = System.identityHashCode(clientObject);
+//		if(dataFaceMap!=null && dataFaceMap.containsKey(identityHashCode))
+//			clientObject = dataFaceMap.get(identityHashCode);
 
 		//getBeanFactory().getBean(arg0)
     	
@@ -599,8 +619,16 @@ public class MetaworksRemoteService {
     
     public static boolean metaworksCall(){
     	StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-    	
-    	return stack[1].getClassName().equals(MetaworksRemoteService.class.getName());
+
+		String calledClassName = (String) TransactionContext.getThreadLocalInstance().getSharedContext("_calledClassName");
+		String calledMethodNAme = (String) TransactionContext.getThreadLocalInstance().getSharedContext("_calledMethodName");
+
+		if(stack[2].getClassName().equals(calledClassName) && stack[2].getMethodName().equals(calledMethodNAme)){
+			return true;
+		}else{
+			return false;
+		}
+
     }
 
     
@@ -635,7 +663,7 @@ public class MetaworksRemoteService {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public Map<Class, Object> autowire(Object object, boolean autowiringFromClient) throws IllegalAccessException {
 		Map<Class, Object> autowiredObjects = new HashMap<Class, Object>();
 
