@@ -2279,6 +2279,12 @@ com.abc.ClassA.methodA=입력
 					else
 						alert(message);
 				}
+
+				if(actualFace.indexOf('?') > 0){
+					mw3.debugPoint = actualFace.split('?')[0];
+				}else{
+					mw3.debugPoint = actualFace;
+				}
 			};
 				
 			Metaworks3.prototype.createInputId = function(objectId){
