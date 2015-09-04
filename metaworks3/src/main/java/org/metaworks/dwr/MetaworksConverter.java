@@ -368,7 +368,7 @@ public class MetaworksConverter extends BeanConverter{
 				if(outctx.get("DO_NOT_SWAP_WITH_FACE")==null) {
 					if (wot != null && wot.getFaceOptions() != null && wot.getFaceOptions().get("faceClass") != null) {
 
-						Face face = (Face) Class.forName(wot.getFaceOptions().get("faceClass")).newInstance();
+						Face face = (Face) MetaworksRemoteService.getComponent(Class.forName(wot.getFaceOptions().get("faceClass")));
 						MetaworksRemoteService.autowire(face);
 
 						face.setValueToFace(data);
@@ -468,7 +468,7 @@ public class MetaworksConverter extends BeanConverter{
 
 										){
 									try{
-										Face face = (Face) Class.forName(faceClassForField).newInstance();
+										Face face = (Face)MetaworksRemoteService.getComponent(Class.forName(faceClassForField));
 										MetaworksRemoteService.autowire(face);
 
 										if(face instanceof FieldFace){
@@ -494,7 +494,7 @@ public class MetaworksConverter extends BeanConverter{
 										String faceClassName = typeOfField.getFaceOptions().get("faceClass");
 
 										if(!faceClassName.equals(originalDataClassName)) {
-											Face face = (Face) Class.forName(faceClassName).newInstance();
+											Face face = (Face) MetaworksRemoteService.getComponent(Class.forName(faceClassName));
 											MetaworksRemoteService.autowire(face);
 
 											face.setValueToFace(value);
