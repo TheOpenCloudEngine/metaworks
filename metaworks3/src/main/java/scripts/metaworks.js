@@ -3574,9 +3574,17 @@ com.abc.ClassA.methodA=입력
 						for(var key in fd.attributes['available.condition']){
 							var condition = fd.attributes['available.condition'][key]; 
 							var validateCondition = true;
-							
+
+							var evaluatedObject = object;
+							if(object.__className
+								&& mw3.isSuperClassOf("org.metaworks.Face", object.__className)
+								&& object._realValue){
+
+								evaluatedObject = object._realValue;
+							}
+
 			    			if(condition != null){
-			    				with(object){
+			    				with(evaluatedObject){
 			    					try{
 			    						validateCondition = eval(condition);
 			    					}catch(e){
