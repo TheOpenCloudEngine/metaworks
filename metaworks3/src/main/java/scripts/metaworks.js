@@ -105,6 +105,9 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 			    this.dragging = false;
 			    this.dragStartX = 0;
 			    this.dragStartY = 0;
+
+
+				this.alwaysSubmittedClasses = {};
 			    
 			    /*
 			     * metaworks service array
@@ -792,6 +795,10 @@ com.abc.ClassA.methodA=입력
 				
 				var objectTypeName = webObjectType.name;
 				mw3.metaworksMetadata[objectTypeName] = webObjectType;
+
+				if(webObjectType.alwaysSubmitted){
+					mw3.alwaysSubmittedClasses[webObjectType.name]=true;
+				}
 				
 				webObjectType['version'] = mw3._metadata_version ++;
 				
@@ -2797,6 +2804,22 @@ com.abc.ClassA.methodA=입력
 							}
 						}
 					}
+
+
+					for(var classNameForAutowiring in mw3.alwaysSubmittedClasses){
+
+						var fieldKeyName = prefixForWireParamCls + classNameForAutowiring;
+
+						if(autowiredObjects[fieldKeyName] == null){
+
+							autowiredObjects[fieldKeyName] = mw3.getClosestObject(objId, classNameForAutowiring);
+
+							if(autowiredObjects[fieldKeyName] == null){
+								autowiredObjects[fieldKeyName] = mw3.getAutowiredObject(classNameForAutowiring);
+							}
+						}
+					}
+
 					var returnValue;
 					
 					var objectKey = this._createObjectKey(object);

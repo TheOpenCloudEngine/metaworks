@@ -64,7 +64,7 @@ import com.thoughtworks.xstream.XStream;
 public class WebObjectType{
 	
 	Object resource;
-	
+
 	boolean isInterface;
 		public boolean isInterface() {
 			return isInterface;
@@ -72,8 +72,17 @@ public class WebObjectType{
 		public void setInterface(boolean isInterface) {
 			this.isInterface = isInterface;
 		}
-		
-	boolean designable;		
+
+	boolean isAlwaysSubmitted;
+		public boolean isAlwaysSubmitted() {
+			return isAlwaysSubmitted;
+		}
+		public void setIsAlwaysSubmitted(boolean isAlwaysSubmitted) {
+			this.isAlwaysSubmitted = isAlwaysSubmitted;
+		}
+
+
+	boolean designable;
 		public boolean isDesignable() {
 			return designable;
 		}
@@ -275,7 +284,13 @@ public class WebObjectType{
 				setFaceForArray(typeFace.ejsPathForArray());
 		}
 
-		
+
+		AutowiredFromClient alwaysSubmitted = (AutowiredFromClient)getAnnotationDeeply(tryingClasses, null, AutowiredFromClient.class);
+		if(alwaysSubmitted!=null) {
+			setIsAlwaysSubmitted(true);
+		}
+
+
 //		else
 //			setFaceComponentPath(getComponentLocationByEscalation(actCls, "faces"));
 //	
@@ -350,7 +365,11 @@ public class WebObjectType{
 					HashMap<String, String> autowiredField = new HashMap<String, String>();
 					autowiredField.put("field", fields[i].getType().getName());
 					autowiredField.put("select", autowiredFromClient.select());
-					
+
+//					if(autowiredFromClient.alwaysOnChildren()){
+//						autowiredField.put("alwaysOnChildren", "true");
+//					}
+
 					//autowiredFields.put(fields[i].getName(), fields[i].getType().getName());
 					autowiredFields.put(fields[i].getName(), autowiredField);
 					
