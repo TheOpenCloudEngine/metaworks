@@ -2,13 +2,7 @@ package org.metaworks.dao;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.Timestamp;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,6 +15,9 @@ import javax.sql.DataSource;
 import javax.sql.RowSet;
 import javax.sql.rowset.CachedRowSet;
 
+import javax.sql.rowset.RowSetFactory;
+import javax.sql.rowset.RowSetProvider;
+
 import org.metaworks.ContextAware;
 import org.metaworks.FieldDescriptor;
 import org.metaworks.MetaworksContext;
@@ -30,9 +27,6 @@ import org.metaworks.WebFieldDescriptor;
 import org.metaworks.WebObjectType;
 import org.metaworks.annotation.ORMapping;
 import org.metaworks.dwr.MetaworksRemoteService;
-
-import com.sun.rowset.CachedRowSetImpl;
-
 
 /**
  * Generic DAO
@@ -139,7 +133,23 @@ public abstract class AbstractGenericDAO implements InvocationHandler, IDAO {
 		}
 		public void setAutoSQLGeneration(boolean autoSQLGeneration) {
 			this.autoSQLGeneration = autoSQLGeneration;
-		}	
+		}
+
+
+	static RowSetFactory rowSetFactory;
+	protected static RowSetFactory getRowSetFactory() {
+
+		if(rowSetFactory==null){
+			try {
+				rowSetFactory = RowSetProvider.newFactory();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return rowSetFactory;
+	}
+
 
 	protected AbstractGenericDAO(Class daoClass, boolean isConnective) throws Exception{
 		initialize(daoClass, isConnective);
@@ -324,7 +334,10 @@ public abstract class AbstractGenericDAO implements InvocationHandler, IDAO {
 			pstmt = con.prepareStatement(getActualSqlStmt(getStatement()));
 		
 			lateBindProperties(getStatement(), pstmt);
-			rowSet = new CachedRowSetImpl();
+
+
+			rowSet = getRowSetFactory().createCachedRowSet();
+
 			
 			//System.out.println("=====>");
 			//System.out.println(getStatement());
