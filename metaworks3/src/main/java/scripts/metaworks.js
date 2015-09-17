@@ -2285,6 +2285,8 @@ com.abc.ClassA.methodA=입력
 				}else{
 					mw3.debugPoint = actualFace;
 				}
+
+				mw3.debugMode = true;
 			};
 				
 			Metaworks3.prototype.createInputId = function(objectId){
