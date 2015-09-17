@@ -2,7 +2,6 @@ package org.metaworks.dwr;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -279,7 +278,7 @@ public class MetaworksConverter extends BeanConverter{
 
 				if (wot != null && wfd != null) {
 					String faceClassForField = (String) wfd.getAttribute("faceclass");
-					if (faceClassForField != null) {
+					if (faceClassForField != null && !AllChildFacesAreIgnored.class.getName().equals(faceClassForField)) {
 						try {
 
 							Class faceClass = Class.forName(faceClassForField);
@@ -357,6 +356,8 @@ public class MetaworksConverter extends BeanConverter{
 				((SerializationSensitive)data).beforeSerialization();
 			}
 
+			boolean faceReplacingEnabled = true;
+
 			WebObjectType wot = null;
 			try {
 				try {
@@ -365,7 +366,8 @@ public class MetaworksConverter extends BeanConverter{
 				}
 
 //TODO: DO_NOT_SWAP_WITH_FACE
-				if(outctx.get("DO_NOT_SWAP_WITH_FACE")==null) {
+				OutboundVariable do_not_swap_with_face = outctx.get("DO_NOT_SWAP_WITH_FACE");
+				if(do_not_swap_with_face ==null) {
 					if (wot != null && wot.getFaceOptions() != null && wot.getFaceOptions().get("faceClass") != null) {
 
 						Face face = (Face) MetaworksRemoteService.getComponent(Class.forName(wot.getFaceOptions().get("faceClass")));
@@ -381,7 +383,11 @@ public class MetaworksConverter extends BeanConverter{
 
 //TODO: DO_NOT_SWAP_WITH_FACE
 				}else{
-					outctx.put("DO_NOT_SWAP_WITH_FACE", null);
+
+					if(do_not_swap_with_face.getDeclareCode()==null) // means not RECURSIVELY, release the condition.
+						outctx.put("DO_NOT_SWAP_WITH_FACE", null);
+					else
+						faceReplacingEnabled = false;	//means the option is that swapping face is recursively disabled
 				}
 
 
@@ -457,72 +463,58 @@ public class MetaworksConverter extends BeanConverter{
 
 						Object value = property.getValue(data);
 
-						if(wot!=null){
+						if(wot!=null && faceReplacingEnabled){
 							WebFieldDescriptor wfd = wot.getFieldDescriptor(name);
 							if(wfd!=null){
 								String faceClassForField = (String) wfd.getAttribute("faceclass");
-								if(faceClassForField!=null
+
+								if(AllChildFacesAreIgnored.class.getName().equals(faceClassForField)){
+									disableFaceSwapping(outctx, true);
+								}else {
+
+									if (faceClassForField != null
 
 										//**** important:  to avoid recursive field swapping
-//										&& !faceClassForField.equals(originalDataClassName)
+										//										&& !faceClassForField.equals(originalDataClassName)
 
-										){
-									try{
-										Face face = (Face)MetaworksRemoteService.getComponent(Class.forName(faceClassForField));
-										MetaworksRemoteService.autowire(face);
-
-										if(face instanceof FieldFace){
-											((FieldFace)face).visitHolderObjectOfField(data);
-										}
-
-										face.setValueToFace(value);
-										value = face;
-									}catch(Exception e){
-										throw new Exception("Can't replace with face class: " + e.getMessage(), e);
-									}
-								}else{
-
-									WebObjectType typeOfField = null;
-
-									try {
-										typeOfField = MetaworksRemoteService.getInstance().getMetaworksType(value.getClass().getName());
-									} catch (Exception e2) {
-									}
-
-									if (typeOfField != null && typeOfField.getFaceOptions() != null && typeOfField.getFaceOptions().get("faceClass") != null) {
-
-										String faceClassName = typeOfField.getFaceOptions().get("faceClass");
-
-										if(!faceClassName.equals(originalDataClassName)) {
-											Face face = (Face) MetaworksRemoteService.getComponent(Class.forName(faceClassName));
+											) {
+										try {
+											Face face = (Face) MetaworksRemoteService.getComponent(Class.forName(faceClassForField));
 											MetaworksRemoteService.autowire(face);
 
+											if (face instanceof FieldFace) {
+												((FieldFace) face).visitHolderObjectOfField(data);
+											}
+
 											face.setValueToFace(value);
-
 											value = face;
-										}else{
-											outctx.put("DO_NOT_SWAP_WITH_FACE", new OutboundVariable() {
-												@Override
-												public OutboundVariable getReferenceVariable() {
-													return null;
-												}
+										} catch (Exception e) {
+											throw new Exception("Can't replace with face class: " + e.getMessage(), e);
+										}
+									} else {
 
-												@Override
-												public String getDeclareCode() {
-													return null;
-												}
+										WebObjectType typeOfField = null;
 
-												@Override
-												public String getBuildCode() {
-													return null;
-												}
+										try {
+											typeOfField = MetaworksRemoteService.getInstance().getMetaworksType(value.getClass().getName());
+										} catch (Exception e2) {
+										}
 
-												@Override
-												public String getAssignCode() {
-													return null;
-												}
-											});
+										if (typeOfField != null && typeOfField.getFaceOptions() != null && typeOfField.getFaceOptions().get("faceClass") != null) {
 
+											String faceClassName = typeOfField.getFaceOptions().get("faceClass");
+
+											if (!faceClassName.equals(originalDataClassName)) {
+												Face face = (Face) MetaworksRemoteService.getComponent(Class.forName(faceClassName));
+												MetaworksRemoteService.autowire(face);
+
+												face.setValueToFace(value);
+
+												value = face;
+											} else {
+												disableFaceSwapping(outctx, false);
+
+											}
 										}
 									}
 								}
@@ -531,32 +523,13 @@ public class MetaworksConverter extends BeanConverter{
 							}
 						}
 
+						if(faceReplacingEnabled) {
 
-						//TODO: DO_NOT_SWAP_WITH_FACE
-						//Boolean hidden = (Boolean) wfd.getAttribute("hidden");
-						if(value !=null && value.getClass().getName().equals(originalDataClassName)){
-							//just for signal the child never be swapped with face class
-							outctx.put("DO_NOT_SWAP_WITH_FACE", new OutboundVariable() {
-								@Override
-								public OutboundVariable getReferenceVariable() {
-									return null;
-								}
+							boolean propertyValueIsSameClass = value != null && value.getClass().getName().equals(originalDataClassName);
 
-								@Override
-								public String getDeclareCode() {
-									return null;
-								}
-
-								@Override
-								public String getBuildCode() {
-									return null;
-								}
-
-								@Override
-								public String getAssignCode() {
-									return null;
-								}
-							});
+							if (propertyValueIsSameClass) {
+								disableFaceSwapping(outctx, false);
+							}
 						}
 
 						OutboundVariable nested = getConverterManager().convertOutbound(value, outctx);
@@ -587,6 +560,30 @@ public class MetaworksConverter extends BeanConverter{
 			throw e;
 		}
 
+	}
+
+	private void disableFaceSwapping(OutboundContext outctx, final boolean recursively) {
+		outctx.put("DO_NOT_SWAP_WITH_FACE", new OutboundVariable() {
+            @Override
+            public OutboundVariable getReferenceVariable() {
+                return null;
+            }
+
+			@Override
+			public String getDeclareCode() {
+				return (recursively ? "RECURSIVELY" : null);
+			}
+
+            @Override
+            public String getBuildCode() {
+                return null;
+            }
+
+            @Override
+            public String getAssignCode() {
+                return null;
+            }
+        });
 	}
 
 

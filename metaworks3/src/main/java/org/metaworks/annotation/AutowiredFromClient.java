@@ -16,9 +16,10 @@ import java.lang.annotation.Target;
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE})
 public @interface AutowiredFromClient {
 	boolean onDrop() default false;
 	String instruction() default "";
 	String select() default "";
+//	boolean alwaysOnChildren() default false;
 }

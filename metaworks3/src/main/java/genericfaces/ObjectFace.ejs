@@ -7,7 +7,7 @@
 				return true;
 			}
 
-			var group = field.attributes.group;
+			var group = field.attributes ? field.attributes.group : null;
 
 			if(group == undefined){
 				group = "undefined";

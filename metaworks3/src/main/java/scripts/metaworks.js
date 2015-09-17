@@ -105,6 +105,9 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 			    this.dragging = false;
 			    this.dragStartX = 0;
 			    this.dragStartY = 0;
+
+
+				this.alwaysSubmittedClasses = {};
 			    
 			    /*
 			     * metaworks service array
@@ -792,6 +795,10 @@ com.abc.ClassA.methodA=입력
 				
 				var objectTypeName = webObjectType.name;
 				mw3.metaworksMetadata[objectTypeName] = webObjectType;
+
+				if(webObjectType.alwaysSubmitted){
+					mw3.alwaysSubmittedClasses[webObjectType.name]=true;
+				}
 				
 				webObjectType['version'] = mw3._metadata_version ++;
 				
@@ -2799,6 +2806,22 @@ com.abc.ClassA.methodA=입력
 							}
 						}
 					}
+
+
+					for(var classNameForAutowiring in mw3.alwaysSubmittedClasses){
+
+						var fieldKeyName = prefixForWireParamCls + classNameForAutowiring;
+
+						if(autowiredObjects[fieldKeyName] == null){
+
+							autowiredObjects[fieldKeyName] = mw3.getClosestObject(objId, classNameForAutowiring);
+
+							if(autowiredObjects[fieldKeyName] == null){
+								autowiredObjects[fieldKeyName] = mw3.getAutowiredObject(classNameForAutowiring);
+							}
+						}
+					}
+
 					var returnValue;
 					
 					var objectKey = this._createObjectKey(object);
@@ -3576,9 +3599,17 @@ com.abc.ClassA.methodA=입력
 						for(var key in fd.attributes['available.condition']){
 							var condition = fd.attributes['available.condition'][key]; 
 							var validateCondition = true;
-							
+
+							var evaluatedObject = object;
+							if(object.__className
+								&& mw3.isSuperClassOf("org.metaworks.Face", object.__className)
+								&& object._realValue){
+
+								evaluatedObject = object._realValue;
+							}
+
 			    			if(condition != null){
-			    				with(object){
+			    				with(evaluatedObject){
 			    					try{
 			    						validateCondition = eval(condition);
 			    					}catch(e){
@@ -4520,6 +4551,9 @@ com.abc.ClassA.methodA=입력
 				if(!className)
 					className = this.fieldDescriptor.className;
 					
+				if(className == null) throw new Error("FieldRef [" + fieldDescriptor.name + "] doesn't have className. Redering cancelled.");
+
+					
 				var oldContext = mw3.getContext();
 				if(context!=null){
 					//mw3.setContext(context);
@@ -4931,6 +4965,17 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 		var returnValue = null;
 		var metaworksServiceIndex = this.index;
 		var loaded = false;
+		
+		if(mw3.debugMode){
+			console.log("metaworks call:");
+			console.log("	className: "+ className);
+			console.log("	object: ");
+			console.log(object);
+			console.log("	svcNameAndMethodName: "+ svcNameAndMethodName);
+			console.log("	autowiredObjects: ");
+			console.log(autowiredObjects);
+			
+		}
 		
 		mw3.metaworksProxy.callMetaworksService(className, object, svcNameAndMethodName, autowiredObjects,
 				{ 
