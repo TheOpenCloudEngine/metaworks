@@ -61,85 +61,101 @@ import org.metaworks.inputter.SelectInput;
 
 import com.thoughtworks.xstream.XStream;
 
-public class WebObjectType{
-	
+public class WebObjectType {
+
 	Object resource;
 
 	boolean isInterface;
-		public boolean isInterface() {
-			return isInterface;
-		}
-		public void setInterface(boolean isInterface) {
-			this.isInterface = isInterface;
-		}
+
+	public boolean isInterface() {
+		return isInterface;
+	}
+
+	public void setInterface(boolean isInterface) {
+		this.isInterface = isInterface;
+	}
 
 	boolean isAlwaysSubmitted;
-		public boolean isAlwaysSubmitted() {
-			return isAlwaysSubmitted;
-		}
-		public void setIsAlwaysSubmitted(boolean isAlwaysSubmitted) {
-			this.isAlwaysSubmitted = isAlwaysSubmitted;
-		}
+
+	public boolean isAlwaysSubmitted() {
+		return isAlwaysSubmitted;
+	}
+
+	public void setIsAlwaysSubmitted(boolean isAlwaysSubmitted) {
+		this.isAlwaysSubmitted = isAlwaysSubmitted;
+	}
 
 
 	boolean designable;
-		public boolean isDesignable() {
-			return designable;
-		}
-		public void setDesignable(boolean designable) {
-			this.designable = designable;
-		}
+
+	public boolean isDesignable() {
+		return designable;
+	}
+
+	public void setDesignable(boolean designable) {
+		this.designable = designable;
+	}
 
 	String name;
-		public String getName() {
-			return name;
-		}
-	
-		public void setName(String name) {
-			this.name = name;
-		}
-		
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	String displayName;
-		public String getDisplayName() {
-			return displayName;
-		}
-		public void setDisplayName(String displayName) {
-			this.displayName = displayName;
-		}
-		
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
 	List<String> superClasses;
-		public List<String> getSuperClasses() {
-			return superClasses;
-		}
-		public void setSuperClasses(List<String> superClasses) {
-			this.superClasses = superClasses;
-		}
-		
+
+	public List<String> getSuperClasses() {
+		return superClasses;
+	}
+
+	public void setSuperClasses(List<String> superClasses) {
+		this.superClasses = superClasses;
+	}
+
 	String[] faceMappingByContext;
-	
-		public String[] getFaceMappingByContext() {
-			return faceMappingByContext;
-		}
-		public void setFaceMappingByContext(String[] faceMappingByContext) {
-			this.faceMappingByContext = faceMappingByContext;
-		}
+
+	public String[] getFaceMappingByContext() {
+		return faceMappingByContext;
+	}
+
+	public void setFaceMappingByContext(String[] faceMappingByContext) {
+		this.faceMappingByContext = faceMappingByContext;
+	}
 
 	List<ServiceMethodContext> serviceMethodContexts;
-		public List<ServiceMethodContext> getServiceMethodContexts() {
-			return serviceMethodContexts;
-		}
-		public void setServiceMethodContexts(
-				List<ServiceMethodContext> serviceMethodContexts) {
-			this.serviceMethodContexts = serviceMethodContexts;
-		}
+
+	public List<ServiceMethodContext> getServiceMethodContexts() {
+		return serviceMethodContexts;
+	}
+
+	public void setServiceMethodContexts(
+			List<ServiceMethodContext> serviceMethodContexts) {
+		this.serviceMethodContexts = serviceMethodContexts;
+	}
 
 	String faceComponentPath;
-		public String getFaceComponentPath() {
-			return faceComponentPath;
-		}
-		public void setFaceComponentPath(String faceComponentPath) {
-			this.faceComponentPath = faceComponentPath;
-		}
+
+	public String getFaceComponentPath() {
+		return faceComponentPath;
+	}
+
+	public void setFaceComponentPath(String faceComponentPath) {
+		this.faceComponentPath = faceComponentPath;
+	}
 //		
 //	String faceHelperPath;
 //		public String getFaceHelperPath() {
@@ -149,66 +165,85 @@ public class WebObjectType{
 //			this.faceHelperPath = faceHelperPath;
 //		}
 
-	String faceForArray;	
-		public String getFaceForArray() {
-			return faceForArray;
-		}
-		public void setFaceForArray(String faceForArray) {
-			this.faceForArray = faceForArray;
-		}
-	
+	String faceForArray;
+
+	public String getFaceForArray() {
+		return faceForArray;
+	}
+
+	public void setFaceForArray(String faceForArray) {
+		this.faceForArray = faceForArray;
+	}
+
 	Map<String, String> faceOptions;
-		public Map<String, String> getFaceOptions() {
-			return faceOptions;
-		}
-		public void setFaceOptions(Map<String, String> faceOptions) {
-			this.faceOptions = faceOptions;
-		}
+
+	public Map<String, String> getFaceOptions() {
+		return faceOptions;
+	}
+
+	public void setFaceOptions(Map<String, String> faceOptions) {
+		this.faceOptions = faceOptions;
+	}
 
 	WebFieldDescriptor fieldDescriptors[];
-		public WebFieldDescriptor[] getFieldDescriptors() {
-			return fieldDescriptors;
-		}
-		public void setFieldDescriptors(WebFieldDescriptor[] fieldDescriptors) {
-			this.fieldDescriptors = fieldDescriptors;
-		}
-		
+
+	public WebFieldDescriptor[] getFieldDescriptors() {
+		return fieldDescriptors;
+	}
+
+	public void setFieldDescriptors(WebFieldDescriptor[] fieldDescriptors) {
+		this.fieldDescriptors = fieldDescriptors;
+	}
+
 	Map<String, HashMap> autowiredFields;
-		public Map<String, HashMap> getAutowiredFields() {
-			return autowiredFields;
-		}
-		public void setAutowiredFields(Map<String, HashMap> autowiredFields) {
-			this.autowiredFields = autowiredFields;
-		}
+
+	public Map<String, HashMap> getAutowiredFields() {
+		return autowiredFields;
+	}
+
+	public void setAutowiredFields(Map<String, HashMap> autowiredFields) {
+		this.autowiredFields = autowiredFields;
+	}
 
 	Map<String, String> onDropTypes;
-		public Map<String, String> getOnDropTypes() {
-			return onDropTypes;
-		}
-		public void setOnDropTypes(Map<String, String> onDropTypes) {
-			this.onDropTypes = onDropTypes;
-		}
+
+	public Map<String, String> getOnDropTypes() {
+		return onDropTypes;
+	}
+
+	public void setOnDropTypes(Map<String, String> onDropTypes) {
+		this.onDropTypes = onDropTypes;
+	}
 
 	Type metaworks2Type;
-		public Type metaworks2Type() {
-			return metaworks2Type;
-		}
-	
-	Class iDAOClass;
-		public Class iDAOClass() {
-			return iDAOClass;
-		}
-		
-	WebFieldDescriptor keyFieldDescriptor;
-		public WebFieldDescriptor getKeyFieldDescriptor() {
-			return keyFieldDescriptor;
-		}
-	
-		public void setKeyFieldDescriptor(WebFieldDescriptor keyFieldDescriptor) {
-			this.keyFieldDescriptor = keyFieldDescriptor;
-		}
 
-	public WebObjectType(Class actCls) throws Exception {
+	public Type metaworks2Type() {
+		return metaworks2Type;
+	}
+
+	Class iDAOClass;
+
+	public Class iDAOClass() {
+		return iDAOClass;
+	}
+
+	WebFieldDescriptor keyFieldDescriptor;
+
+	public WebFieldDescriptor getKeyFieldDescriptor() {
+		return keyFieldDescriptor;
+	}
+
+	public void setKeyFieldDescriptor(WebFieldDescriptor keyFieldDescriptor) {
+		this.keyFieldDescriptor = keyFieldDescriptor;
+	}
+
+	public WebObjectType() {}
+
+	public WebObjectType(Class clazz) throws Exception {
+		initWithJavaClass(clazz);
+	}
+
+	public void initWithJavaClass(Class actCls) throws Exception {
 		ObjectType objectType = new ObjectType(actCls);
 		this.metaworks2Type = objectType;
 		

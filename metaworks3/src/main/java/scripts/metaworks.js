@@ -4549,6 +4549,9 @@ com.abc.ClassA.methodA=입력
 				if(!className)
 					className = this.fieldDescriptor.className;
 					
+				if(className == null) throw new Error("FieldRef [" + fieldDescriptor.name + "] doesn't have className. Redering cancelled.");
+
+					
 				var oldContext = mw3.getContext();
 				if(context!=null){
 					//mw3.setContext(context);
@@ -4960,6 +4963,17 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 		var returnValue = null;
 		var metaworksServiceIndex = this.index;
 		var loaded = false;
+		
+		if(mw3.debugMode){
+			console.log("metaworks call:");
+			console.log("	className: "+ className);
+			console.log("	object: ");
+			console.log(object);
+			console.log("	svcNameAndMethodName: "+ svcNameAndMethodName);
+			console.log("	autowiredObjects: ");
+			console.log(autowiredObjects);
+			
+		}
 		
 		mw3.metaworksProxy.callMetaworksService(className, object, svcNameAndMethodName, autowiredObjects,
 				{ 
