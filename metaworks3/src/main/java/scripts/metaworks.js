@@ -4839,7 +4839,8 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 								
 			}else if(serviceMethodContext.target=="popup" || serviceMethodContext.target=="stick" || serviceMethodContext.target=="popupOverPopup"){
 				//store the recently added object Id for recent opener
-				mw3.recentOpenerObjectId.push(objId);
+				//mw3.recentOpenerObjectId[objId];
+				result.__openerObjectId = objId;
 				
 				mw3.popupDivId = serviceMethodContext.target + '_' + objId;
 				
@@ -4855,8 +4856,33 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 				}else{
 					mw3.showStick(objId, serviceMethodContext, result);
 				}								
-			}else if(serviceMethodContext.target=="opener" && mw3.recentOpenerObjectId.length > 0){
-				mw3.setObject(mw3.recentOpenerObjectId[mw3.recentOpenerObjectId.length - 1], result);
+			}else if(serviceMethodContext.target=="opener"){
+
+
+				var targetOpenerId = object.__openerObjectId;
+
+
+				var parentDivs = $('#objDiv_' + objId).parents();
+
+				parentDivs.each(function(index) {
+
+					var classNameOfDiv = $(this).attr('classname');
+
+					if (classNameOfDiv) {
+
+						parentObjectId = $(this).attr('objectid');
+						var parent = mw3.getObject(parentObjectId);
+
+						if(parent && parent.__openerObjectId){
+							targetOpenerId = parent.__openerObjectId;
+						}
+					}
+				});
+
+				if(targetOpenerId)
+					mw3.setObject(targetOpenerId, result);
+				else
+					console.log("Target object id is not valid. TO_OPENER target is ignored.");
 
 				
 			}else{ //case of target is "auto"
