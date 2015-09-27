@@ -1,5 +1,6 @@
 package org.metaworks;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -11,7 +12,7 @@ import org.metaworks.inputter.NumberInput;
 import org.metaworks.inputter.SelectInput;
 import org.metaworks.inputter.TextInput;
 
-public class WebFieldDescriptor {
+public class WebFieldDescriptor implements Serializable{
 	
 	public WebFieldDescriptor(){}
 

@@ -1,6 +1,7 @@
 package org.metaworks;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -61,7 +62,7 @@ import org.metaworks.inputter.SelectInput;
 
 import com.thoughtworks.xstream.XStream;
 
-public class WebObjectType {
+public class WebObjectType implements Serializable{
 
 	Object resource;
 
