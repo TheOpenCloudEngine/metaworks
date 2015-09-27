@@ -4227,7 +4227,11 @@ com.abc.ClassA.methodA=입력
 		   							mw3.dropY = event.pageY;
 		   							
 		   							$(this).removeClass('ui-state-active');
-		   							
+
+									if(mw3.debugMode){
+										console.log("Trying drop command: " + this['dropCommand']);
+									}
+
 		   							eval(this['dropCommand']);		   							
 		   						},
 		   						
@@ -4830,6 +4834,11 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 		
 		//alert("call.result=" + dwr.util.toDescriptiveString(result, 5))
 //		mw3.debug("call result");
+
+		if(mw3.debugMode){
+			console.log("  - return value: ");
+			console.log(result);
+		}
 
 		if(result){
 			if(serviceMethodContext.target=="none"){
