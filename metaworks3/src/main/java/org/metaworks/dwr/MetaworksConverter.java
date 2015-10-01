@@ -455,6 +455,8 @@ public class MetaworksConverter extends BeanConverter{
 
 				try
 				{
+					boolean thisStackDisabledChildFaceSwapping = false;
+
 					Map<String, Property> properties = getPropertyMapFromObject(data, true, false);
 					for (Entry<String, Property> entry : properties.entrySet())
 					{
@@ -470,6 +472,7 @@ public class MetaworksConverter extends BeanConverter{
 
 								if(AllChildFacesAreIgnored.class.getName().equals(faceClassForField)){
 									disableFaceSwapping(outctx, true);
+									thisStackDisabledChildFaceSwapping = true;
 								}else {
 
 									if (faceClassForField != null
@@ -533,6 +536,13 @@ public class MetaworksConverter extends BeanConverter{
 						}
 
 						OutboundVariable nested = getConverterManager().convertOutbound(value, outctx);
+
+						if(thisStackDisabledChildFaceSwapping){
+							if(!faceReplacingEnabled) {
+								//restore the status of faceSwappingOption after returning the parent stack call which causes the disabling option to all the child.
+								outctx.put("DO_NOT_SWAP_WITH_FACE", null);
+							}
+						}
 
 						ovs.put(name, nested);
 					}
