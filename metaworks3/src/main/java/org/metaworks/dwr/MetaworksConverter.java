@@ -538,10 +538,11 @@ public class MetaworksConverter extends BeanConverter{
 						OutboundVariable nested = getConverterManager().convertOutbound(value, outctx);
 
 						if(thisStackDisabledChildFaceSwapping){
-							if(!faceReplacingEnabled) {
+							//if(!faceReplacingEnabled) {
 								//restore the status of faceSwappingOption after returning the parent stack call which causes the disabling option to all the child.
-								outctx.put("DO_NOT_SWAP_WITH_FACE", null);
-							}
+							outctx.put("DO_NOT_SWAP_WITH_FACE", null);
+
+							//}
 						}
 
 						ovs.put(name, nested);
