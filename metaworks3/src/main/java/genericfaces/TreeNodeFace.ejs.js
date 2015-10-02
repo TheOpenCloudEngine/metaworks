@@ -7,6 +7,8 @@ var TreeNodeFace = function(objectId, className){
 	
 	this.object = mw3.objects[this.objectId];
 
+	debugger;
+
 	if(this.object == null)
 		return true;
 
@@ -26,7 +28,7 @@ var TreeNodeFace = function(objectId, className){
 			else
 				this.nodeDiv.addClass('plus');
 		}
-		
+
 		$(this.nodeDiv).bind('dblclick', {objectId : this.objectId}, function(event){
 			mw3.getFaceHelper(event.data.objectId).action();
 		});
@@ -139,15 +141,20 @@ TreeNodeFace.prototype = {
 		tree.trigger('collapsed', [this.objectId]);
 	},
 	
-	action : function(){		
+	action : function(){
 		if(event.stopPropagation){
 			event.stopPropagation();
 		}else if(window.event){
 			window.event.cancelBubble = true;
 		}
-		
+
 		this.select();
-		
+
+		if(this.object.metaworksContext.when == "MoveTo"){
+			mw3.call(this.objectId, 'select');
+			return;
+		}
+
 		if(this.expanded)
 			this.collapse();
 		else
