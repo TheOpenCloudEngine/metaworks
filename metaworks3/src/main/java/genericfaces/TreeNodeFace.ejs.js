@@ -148,11 +148,6 @@ TreeNodeFace.prototype = {
 
 		this.select();
 
-		if(this.object.metaworksContext.when == "MoveTo"){
-			mw3.call(this.objectId, 'open');
-			return;
-		}
-
 		if(this.expanded)
 			this.collapse();
 		else

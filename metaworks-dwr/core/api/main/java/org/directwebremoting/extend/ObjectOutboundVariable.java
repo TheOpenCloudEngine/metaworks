@@ -238,4 +238,7 @@ public class ObjectOutboundVariable extends NestedOutboundVariable
      * The contained variables
      */
     private Map<String, OutboundVariable> childMap;
+        public Map<String, OutboundVariable> getChildMap() {
+            return childMap;
+        }
 }

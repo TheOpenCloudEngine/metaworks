@@ -959,7 +959,10 @@ com.abc.ClassA.methodA=입력
 					if(classNameOfDiv){
 
 						parentObjectId = $(this).attr('objectid');
-						var parent = mw3.getObject(parentObjectId);
+
+						try{
+							var parent = mw3.getObject(parentObjectId);
+						}catch(e){ return true; /*skip this parent*/}
 
 
 						if(mw3.isSuperClassOf(findElementClassName, classNameOfDiv)) {
@@ -1106,6 +1109,15 @@ com.abc.ClassA.methodA=입력
 
 			
 			Metaworks3.prototype.showObject = function (object, objectTypeName, target){
+
+
+				var org_object = object;
+
+				/* replace with face when it is rendered */
+				if(object && object.__face){
+					object = object.__face;
+					objectTypeName = object.__className;
+				}
 
 				//if(object && !object.__className){
 				//	if(console)
@@ -1325,8 +1337,9 @@ com.abc.ClassA.methodA=입력
 							url = url + "?ver=" + metadata.version; //let it refreshed
 						
 						var contextValues = {
-							value				: object, 
-							objectTypeName		: objectTypeName, 
+							value				: object,
+							realValue			: org_object,
+							objectTypeName		: objectTypeName,
 							targetDiv			: targetDiv, 
 							objectMetadata		: (objectTypeName && objectTypeName.length > 0 ? this.getMetadata(objectTypeName) : null), 
 							mw3					: this, 
@@ -4807,7 +4820,44 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 	this.setIndex = function(index){
 		this.index = index;
 	};
-	
+
+	this.__replaceWithFace = function(object, forFace){
+		if(Array.isArray(object)){
+			for(var i in object){
+				object[i] = this.__replaceWithFace(object[i], forFace);
+			}
+		}
+
+		if(!object || !object.__className) return object;
+
+		if(!forFace && mw3.isSuperClassOf("org.metaworks.Face", object.__className)){
+			if(object._realValue){
+				var face = object;
+				object = object._realValue;
+				face._realValue = null;
+				object["__face"] = face;
+			}
+		}
+
+		var classDefinition = mw3.getMetadata(object.__className);
+
+		if(classDefinition)
+			for(var fieldIdx in classDefinition.fieldDescriptors){
+				var field = classDefinition.fieldDescriptors[fieldIdx];
+
+				if(!field) continue;
+
+				var fieldValue = object[field.name];
+
+				fieldValue = this.__replaceWithFace(fieldValue);
+
+				object[field.name] = fieldValue;
+			}
+
+		return object;
+	}
+
+
 	this.__showResult = function(object, result, objId, svcNameAndMethodName, serviceMethodContext, placeholder, divId, callback ){
 		var startTime = new Date().getTime();
 //		mw3.log('__showResult : [' + objId + ']' + svcNameAndMethodName + ' ---> ' + new Date().getTime());		
@@ -5013,16 +5063,21 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 		}
 		
 		mw3.metaworksProxy.callMetaworksService(className, object, svcNameAndMethodName, autowiredObjects,
-				{ 
-	        		callback: function(result){	   	        			
-	        			returnValue = result;
-	        			
-	        			if(serviceMethodContext.target != "none"){
-	        				var metaworksService = mw3.metaworksServices[metaworksServiceIndex];
-	        				metaworksService.__showResult(object, result, objId, svcNameAndMethodName, serviceMethodContext, placeholder, divId, callback);
-	        				mw3.metaworksServices[metaworksServiceIndex] = null;
-	        			} 
-	        		},
+				{
+					callback: function(result){
+
+						var metaworksService = mw3.metaworksServices[metaworksServiceIndex];
+	//					result = metaworksService.__replaceWithFace(result);
+
+						returnValue = result;
+
+						if(serviceMethodContext.target != "none"){
+
+
+							metaworksService.__showResult(object, result, objId, svcNameAndMethodName, serviceMethodContext, placeholder, divId, callback);
+							mw3.metaworksServices[metaworksServiceIndex] = null;
+						}
+					},
 
 	        		async: !sync && serviceMethodContext.target!="none",
 	        		

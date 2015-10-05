@@ -1,6 +1,8 @@
 package org.metaworks;
 
-public class MetaworksContext {
+import java.io.Serializable;
+
+public class MetaworksContext implements Serializable{
 		
 	public final static String HOW_NORMAL = "normal";
 	public final static String HOW_STANDALONE = "standalone";

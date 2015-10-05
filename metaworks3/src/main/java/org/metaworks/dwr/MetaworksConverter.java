@@ -24,6 +24,7 @@ import org.metaworks.dao.Database;
 import org.metaworks.dao.IDAO;
 import org.metaworks.dao.MetaworksDAO;
 import org.metaworks.dao.TransactionContext;
+import org.metaworks.model.MetaworksList;
 
 public class MetaworksConverter extends BeanConverter{
 
@@ -347,6 +348,8 @@ public class MetaworksConverter extends BeanConverter{
 
 		String originalDataClassName = null;
 
+		Face faceForData = null;
+
 		if(data!=null)
 			originalDataClassName = data.getClass().getName();
 
@@ -358,7 +361,16 @@ public class MetaworksConverter extends BeanConverter{
 
 			boolean faceReplacingEnabled = true;
 
+//			Face facePassedFromParent = (Face) TransactionContext.getThreadLocalInstance().getSharedContext("__faceForProperty");
+//
+//			if(facePassedFromParent!=null){
+//				faceForData = facePassedFromParent;
+//				TransactionContext.getThreadLocalInstance().setSharedContext("__faceForProperty", null);
+//			}
+
 			WebObjectType wot = null;
+
+			if(faceForData==null)
 			try {
 				try {
 					wot = MetaworksRemoteService.getInstance().getMetaworksType(data.getClass().getName());
@@ -370,15 +382,17 @@ public class MetaworksConverter extends BeanConverter{
 				if(do_not_swap_with_face ==null) {
 					if (wot != null && wot.getFaceOptions() != null && wot.getFaceOptions().get("faceClass") != null) {
 
-						Face face = (Face) MetaworksRemoteService.getComponent(Class.forName(wot.getFaceOptions().get("faceClass")));
-						MetaworksRemoteService.autowire(face);
+						faceForData = (Face) MetaworksRemoteService.getComponent(Class.forName(wot.getFaceOptions().get("faceClass")));
+						MetaworksRemoteService.autowire(faceForData);
 
-						face.setValueToFace(data);
+						faceForData.setValueToFace(data);
 
 
-						data = face;
+						//data = face;//don't replace anymore.
 
 						wot = MetaworksRemoteService.getInstance().getMetaworksType(data.getClass().getName());
+
+
 					}
 
 //TODO: DO_NOT_SWAP_WITH_FACE
@@ -464,6 +478,7 @@ public class MetaworksConverter extends BeanConverter{
 						Property property = entry.getValue();
 
 						Object value = property.getValue(data);
+						Face faceForProperty = null;
 
 						if(wot!=null && faceReplacingEnabled){
 							WebFieldDescriptor wfd = wot.getFieldDescriptor(name);
@@ -490,7 +505,13 @@ public class MetaworksConverter extends BeanConverter{
 											}
 
 											face.setValueToFace(value);
-											value = face;
+
+											if(face instanceof MetaworksList || property.getPropertyType().isPrimitive() || value == null/*|| property.getPropertyType().getPackage().equals(String.class.getPackage())*/) {
+												value = face;//don't replace anymore.
+											}else {
+												faceForProperty = face;
+											}
+
 										} catch (Exception e) {
 											throw new Exception("Can't replace with face class: " + e.getMessage(), e);
 										}
@@ -513,7 +534,11 @@ public class MetaworksConverter extends BeanConverter{
 
 												face.setValueToFace(value);
 
-												value = face;
+												if(face instanceof MetaworksList || property.getPropertyType().isPrimitive() || value == null/* || property.getPropertyType().getPackage().equals(String.class.getPackage())*/) {
+													value = face;//don't replace anymore.
+												}else {
+													faceForProperty = face;
+												}
 											} else {
 												disableFaceSwapping(outctx, false);
 
@@ -537,6 +562,20 @@ public class MetaworksConverter extends BeanConverter{
 
 						OutboundVariable nested = getConverterManager().convertOutbound(value, outctx);
 
+						if(faceForProperty!=null){
+							if(nested instanceof ObjectOutboundVariable) {
+
+								//							TransactionContext.getThreadLocalInstance().setSharedContext("__faceForProperty", faceForProperty);
+
+
+								OutboundVariable faceForPropertyOV = getConverterManager().convertOutbound(faceForProperty, outctx);
+								((ObjectOutboundVariable) nested).getChildMap().put("__face", faceForPropertyOV);
+							}
+						}
+
+
+
+
 						if(thisStackDisabledChildFaceSwapping){
 							//if(!faceReplacingEnabled) {
 								//restore the status of faceSwappingOption after returning the parent stack call which causes the disabling option to all the child.
@@ -544,6 +583,8 @@ public class MetaworksConverter extends BeanConverter{
 
 							//}
 						}
+
+
 
 						ovs.put(name, nested);
 					}
@@ -560,6 +601,13 @@ public class MetaworksConverter extends BeanConverter{
 				OutboundVariable classNameOV = getConverterManager().convertOutbound(data.getClass().getName(), outctx);
 
 				ovs.put("__className", classNameOV);
+
+
+				if(faceForData!=null) {
+					OutboundVariable faceForDataOV = getConverterManager().convertOutbound(faceForData, outctx);
+					ovs.put("__face", faceForDataOV);
+				}
+
 				ov.setChildren(ovs);
 
 				return ov;
@@ -575,26 +623,50 @@ public class MetaworksConverter extends BeanConverter{
 
 	private void disableFaceSwapping(OutboundContext outctx, final boolean recursively) {
 		outctx.put("DO_NOT_SWAP_WITH_FACE", new OutboundVariable() {
-            @Override
-            public OutboundVariable getReferenceVariable() {
-                return null;
-            }
+			@Override
+			public OutboundVariable getReferenceVariable() {
+				return null;
+			}
 
 			@Override
 			public String getDeclareCode() {
 				return (recursively ? "RECURSIVELY" : null);
 			}
 
-            @Override
-            public String getBuildCode() {
-                return null;
-            }
+			@Override
+			public String getBuildCode() {
+				return null;
+			}
 
-            @Override
-            public String getAssignCode() {
-                return null;
-            }
-        });
+			@Override
+			public String getAssignCode() {
+				return null;
+			}
+		});
+	}
+
+	private void enableChildFace(OutboundContext outctx, Face face) {
+		outctx.put("DO_NOT_SWAP_WITH_FACE", new OutboundVariable() {
+			@Override
+			public OutboundVariable getReferenceVariable() {
+				return null;
+			}
+
+			@Override
+			public String getDeclareCode() {
+				return null;
+			}
+
+			@Override
+			public String getBuildCode() {
+				return null;
+			}
+
+			@Override
+			public String getAssignCode() {
+				return null;
+			}
+		});
 	}
 
 
