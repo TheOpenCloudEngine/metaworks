@@ -12,7 +12,7 @@
 	<groupId>org.uengine.metaworks</groupId>
 	<artifactId>metaworks-dwr</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.3-SNAPSHOT</version>
+	<version>1.0.3b-SNAPSHOT</version>
 
 
 	<name>Customize Direct Web Remoting for Metaworks</name>
