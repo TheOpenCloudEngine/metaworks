@@ -53,6 +53,7 @@ org_metaworks_ToEvent.prototype = {
 		}
 		
 		if(!exist){
+			if(this.targetObjKeys)
 			for(var i=0; i<this.targetObjKeys.length; i++){
 				var mappedObjId = mw3.objectId_KeyMapping[this.targetObjKeys[i]];
 				

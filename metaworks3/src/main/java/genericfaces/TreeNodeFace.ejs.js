@@ -7,8 +7,6 @@ var TreeNodeFace = function(objectId, className){
 	
 	this.object = mw3.objects[this.objectId];
 
-	debugger;
-
 	if(this.object == null)
 		return true;
 
@@ -149,11 +147,6 @@ TreeNodeFace.prototype = {
 		}
 
 		this.select();
-
-		if(this.object.metaworksContext.when == "MoveTo"){
-			mw3.call(this.objectId, 'select');
-			return;
-		}
 
 		if(this.expanded)
 			this.collapse();
