@@ -13,12 +13,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.directwebremoting.ConversionException;
 import org.directwebremoting.convert.*;
-import org.directwebremoting.extend.ArrayOutboundVariable;
-import org.directwebremoting.extend.InboundVariable;
-import org.directwebremoting.extend.ObjectOutboundVariable;
-import org.directwebremoting.extend.OutboundContext;
-import org.directwebremoting.extend.OutboundVariable;
-import org.directwebremoting.extend.Property;
+import org.directwebremoting.extend.*;
 import org.metaworks.*;
 import org.metaworks.dao.Database;
 import org.metaworks.dao.IDAO;
@@ -30,6 +25,7 @@ public class MetaworksConverter extends BeanConverter{
 
 	private static final Log log = LogFactory.getLog(MetaworksConverter.class);
 
+	private static final String FACE = "_face_";
 
 
 
@@ -97,14 +93,14 @@ public class MetaworksConverter extends BeanConverter{
 				//when unknown object from javascript, metaworks need to get the class Information from the JSON's property value '__className'
 				String value = data.getValue();
 
-				if(value.length() >= 2 && !("null".equals(value))){
+				if(value.length() >= 2 && !("null".equals(value))) {
 					value = value.substring(1, value.length() - 1);
 
 					Map<String, String> tokens = extractInboundTokens(paramType, value);
 
 					String refName = tokens.get("__className");
 
-					if(refName!=null){
+					if (refName != null) {
 						refName = refName.split(":")[1];
 
 						String className = data.getContext().getInboundVariable(refName).getFormField().getString();
@@ -115,6 +111,24 @@ public class MetaworksConverter extends BeanConverter{
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
+					}
+
+					refName = tokens.get(FACE);
+
+					if (refName != null) {
+							String[] split = ConvertUtil.splitInbound(refName);
+							String splitValue = split[ConvertUtil.INBOUND_INDEX_VALUE];
+							String splitType = split[ConvertUtil.INBOUND_INDEX_TYPE];
+
+							InboundVariable nested = new InboundVariable(data.getContext(), null, splitType, splitValue);
+							nested.dereference();
+
+							try {
+								return convertInbound(Face.class, nested);
+								//return face.createValueFromFace();
+
+							}catch (Exception e){new RuntimeException("Failed to replace with face", e).printStackTrace();}
+
 					}
 				}
 			}
@@ -569,7 +583,7 @@ public class MetaworksConverter extends BeanConverter{
 
 
 								OutboundVariable faceForPropertyOV = getConverterManager().convertOutbound(faceForProperty, outctx);
-								((ObjectOutboundVariable) nested).getChildMap().put("__face", faceForPropertyOV);
+								((ObjectOutboundVariable) nested).getChildMap().put(FACE, faceForPropertyOV);
 							}
 						}
 
@@ -605,7 +619,7 @@ public class MetaworksConverter extends BeanConverter{
 
 				if(faceForData!=null) {
 					OutboundVariable faceForDataOV = getConverterManager().convertOutbound(faceForData, outctx);
-					ovs.put("__face", faceForDataOV);
+					ovs.put(FACE, faceForDataOV);
 				}
 
 				ov.setChildren(ovs);

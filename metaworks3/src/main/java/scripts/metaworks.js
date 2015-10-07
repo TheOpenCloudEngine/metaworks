@@ -1110,36 +1110,38 @@ com.abc.ClassA.methodA=입력
 			
 			Metaworks3.prototype.showObject = function (object, objectTypeName, target){
 
-
 				var org_object = object;
 
-				/* replace with face when it is rendered */
-				if(object && object.__face){
-					object = object.__face;
-					objectTypeName = object.__className;
-				}
 
 				//if(object && !object.__className){
 				//	if(console)
 				//		console.log("Object [" +  object + "] doesn't have __className property. Some classes are not registered in dwr.xml to be converted by MetaworksConverter.");
-                //
+				//
 				//}
 
 				var objectId;
-					var targetDiv;
-					var options;
-					
-					if(target.objectId){
-						objectId = target.objectId;
-						targetDiv = target.targetDiv;
-						options = target.options;
-					}else{
-						targetDiv = target;
-						objectId = mw3.objectId;
-					}
-					
-					//alert('viewFace = ' + objectTypeName);
-			
+				var targetDiv;
+				var options;
+
+				if(target.objectId){
+					objectId = target.objectId;
+					targetDiv = target.targetDiv;
+					options = target.options;
+				}else{
+					targetDiv = target;
+					objectId = mw3.objectId;
+				}
+
+				/* replace with face when it is rendered */
+				if(object && object._face_){
+					var beanPropertyOption = {objectId: objectId, name: "_face_"};
+
+					var html = mw3.locateObject(object._face_, null, null, null, beanPropertyOption);
+
+					$(targetDiv).html(html);
+
+					return html;
+				}
 					
 					//alert( "showObject.object=" + dwr.util.toDescriptiveString(object, 5))
 					//choosing strategy for actual Face file.
@@ -4835,7 +4837,7 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 				var face = object;
 				object = object._realValue;
 				face._realValue = null;
-				object["__face"] = face;
+				object["_face_"] = face;
 			}
 		}
 
@@ -4857,11 +4859,39 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 		return object;
 	}
 
+	this.__replaceByFace = function(object){
+
+		if(Array.isArray(object)){
+			for(var i in object){
+				object[i] = this.__replaceByFace(object[i]);
+			}
+		}
+
+		if(!object || !object.__className) return object;
+
+		if(object._face_){
+			object = object._face_;
+		}
+
+		for(var fieldIdx in object){
+			var fieldValue = object[fieldIdx];
+
+			fieldValue = this.__replaceByFace(fieldValue);
+
+			object[field] = fieldValue;
+		}
+
+		return object;
+	}
+
 
 	this.__showResult = function(object, result, objId, svcNameAndMethodName, serviceMethodContext, placeholder, divId, callback ){
 		var startTime = new Date().getTime();
 //		mw3.log('__showResult : [' + objId + ']' + svcNameAndMethodName + ' ---> ' + new Date().getTime());		
-		
+
+		//object = JSON.parse(JSON.stringify(object));//clone the object
+		//object = this.__replaceByFace(object);
+
 		mw3.requestMetadataBatch(result);
 		
 		// 2012-03-19 cjw 기존 소스가 ejs.js 생성자 호출 보다 늦게 method 값을 할당하여 맨위로 올림
