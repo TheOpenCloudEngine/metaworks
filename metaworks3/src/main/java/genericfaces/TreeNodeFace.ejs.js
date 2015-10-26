@@ -46,6 +46,7 @@ var TreeNodeFace = function(objectId, className){
 	
 	// add event mouse click
 	$(this.nodeDiv).bind('click', {objectId : this.objectId}, function(event){
+		debugger;
 		mw3.getFaceHelper(event.data.objectId).select();
 	});
 }
@@ -92,12 +93,17 @@ TreeNodeFace.prototype = {
 			window.event.cancelBubble = true;
 		}
 
+		// Resource 클릭시 내비게이터에서 Selected Resource로 선택.
+		if(!this.containerFieldName) {
+			mw3.call(this.objectId, 'select');
+		}
+
 		var tree = this.getTree();
-		
+
 		if(!this.nodeDiv.hasClass('selected'))
 			tree.trigger('change', [this.objectId]);
-		
-		
+
+
 		tree.find('.item-fix.selected').removeClass('selected');
 		this.nodeDiv.addClass('selected');
 	},
