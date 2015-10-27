@@ -94,9 +94,9 @@ TreeNodeFace.prototype = {
 		}
 
 		// Resource 클릭시 내비게이터에서 Selected Resource로 선택.
-		if(!this.containerFieldName) {
+/*		if(!this.containerFieldName) {
 			mw3.call(this.objectId, 'select');
-		}
+		}*/
 
 		var tree = this.getTree();
 
