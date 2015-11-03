@@ -4720,7 +4720,7 @@ com.abc.ClassA.methodA=입력
 				var html = template.render(contextValues);
 				*/
 		   		
-				html = "<div style='display:inline-block' id=method_" + this.objectId + "_" + this.methodContext.methodName + ">" + html + "</div>";
+				//html = "<div style='display:inline-block' id=method_" + this.objectId + "_" + this.methodContext.methodName + ">" + html + "</div>";
 				
 				return html;
 			};

@@ -2,11 +2,35 @@ var org_metaworks_ToOpener = function(objectId, className){
 
 	this.objectId = objectId;
 	this.className = className;
-	
+
 	var object = mw3.objects[objectId];
 
 	if(object){
-		var openerId = mw3.recentOpenerObjectId[mw3.recentOpenerObjectId.length - 1];
+
+		var callerObject = mw3.objects[mw3.recentCallObjectId];
+
+		var targetOpenerId = callerObject.__openerObjectId;
+
+
+		var parentDivs = $('#objDiv_' + mw3.recentCallObjectId).parents();
+
+		parentDivs.each(function(index) {
+
+			var classNameOfDiv = $(this).attr('classname');
+
+			if (classNameOfDiv) {
+
+				parentObjectId = $(this).attr('objectid');
+				var parent = mw3.getObject(parentObjectId);
+
+				if(parent && parent.__openerObjectId){
+					targetOpenerId = parent.__openerObjectId;
+				}
+			}
+		});
+
+
+		var openerId = targetOpenerId;
 		
 		var faceHelper = mw3.getFaceHelper(openerId);
 		
