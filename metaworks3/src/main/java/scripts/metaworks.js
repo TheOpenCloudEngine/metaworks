@@ -3885,10 +3885,10 @@ com.abc.ClassA.methodA=입력
 							   
 							   if(isObject){
 								   if(object[fd.name].__className){
-									   if(this.validationAvailableUnder(fd.attributes.validator, object)){
+//									   if(this.validationAvailableUnder(fd.attributes.validator, object)){
 										   if(!this.validObject(object[fd.name]))
 											   isValid = false;
-									   }
+//									   }
 								   }
 							   }   
 						   }

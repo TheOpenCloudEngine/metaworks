@@ -41,7 +41,7 @@ public class MetaworksList<T> implements ContextAware {
     @Order(1)
     @Face(displayName="Add New")
 //	@Available(when={EssenciaContext.WHEN_EDIT, EssenciaContext.WHEN_NEW})
-    @ServiceMethod(callByContent=true)
+    @ServiceMethod(callByContent=true, validate = true)
     public void add(){
         packElements();
         getElements().add(createNewElement());
