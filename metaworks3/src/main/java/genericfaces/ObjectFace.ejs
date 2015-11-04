@@ -60,70 +60,8 @@
   }
 %>				
 			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			    <tbody><tr>
-			        <td style="padding:2px 12px 0 0;">
 
-		<!-- field를 화명에 뿌려줌 -->
-		<% if(groups.length>1){ %>
-			<div class="tabbable"> <!-- Only required for left/right tabs -->
-				<!-- Group 이름으로 Tab을 만듬 -->
-				<ul class="nav nav-tabs">
-				<%
-					$.each(groups, function(index, group){
-						if(index == 0){ %>
-							<li class="active"><a href="#<%=group%>" data-toggle="tab"><%=group%></a></li>
-						<% }else{ %>
-							<li><a href="#<%=group%>" data-toggle="tab"><%=group%></a></li>
-						<% }
-					});
-				%>
-				</ul>
-				<!-- Group 이름으로 Tab을 만듬 -->
 
-				<!-- Tab에 있는 내용을 만듬 -->
-				<div class="tab-content">
-					<% $.each(groups, function(index, group){
-						if(group == undefined){
-                			group = "undefined";
-                		}
-                	%>
-                		<!-- 첫번째 탭을 활성화하기 위해선 active가 필요하다. -->
-						<div class="tab-pane <%=index==0?'active':''%>" id="<%=group%>">
-							<table width="*" border="0" cellspacing="0" cellpadding="0">
-                        		<tbody>
-						<% $.each(groups[group], function(fieldIndex, fieldDescriptor){ %>
-							<tr height="25" valign="middle">
-
-								<% if(showLabel){ %>
-									<td bgcolor=white> <b><%=mw3.localize(fieldDescriptor.displayName)%></b> </td>
-								<% } %>
-
-								<td bgcolor=white>
-
-								<% var fieldValue = value[fieldDescriptor.name];
-
-								if(fieldDescriptor.attributes && fieldDescriptor.attributes['imagepath']){
-
-									if(fieldValue){ %>
-										<img src="<%=fieldValue%>" width=100>
-									<% }
-
-								}else{ %>
-									<%=fields[fieldDescriptor.name] ? fields[fieldDescriptor.name].here() : "XXX"%>
-								<% } %>
-
-							</td></tr>
-					<%	}); %>
-							</tbody>
-						</table>
-					</div>
-					<% }); %>
-				</div>
-				<!-- Tab에 있는 내용을 만듬 -->
-			</div>
-		<% }else { %>
-			<table width="*" border="0" cellspacing="0" cellpadding="0">
-        		<tbody>
 			<% for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){
 
 				var fd = objectMetadata.fieldDescriptors[i];
@@ -133,36 +71,35 @@
 
 				var fieldValue = value[fd.name];
 		%>
- 
-				<tr height="25" valign="middle">
 
-				<% if(showLabel){ %>
-				<td bgcolor=white> <b><%=mw3.localize(fd.displayName)%></b> </td>
-				<% } %>
+				<tr><td>
+					<div class="form-group">
+						<% if(fd.attributes && fd.attributes['imagepath']){
+								if(fieldValue){ %>
+									<img src="<%=fieldValue%>" width=100>
+								<% }
+							}else{ %>
+								<label class="form-label">
+									<strong><%=fd.displayName%></strong>
+									<span  class="ui-state-default ui-corner-all"  onClick="mw3.getFaceHelper('<%=objectId%>').toggleChild(this)" style="<%=fd.className.match('^org.uengine.essencia.model')?'':'display:none;'%>">▼</span>
+								</label>
+						<% } %>
 
-				<td bgcolor=white>
-
-				<%	if(fd.attributes && fd.attributes['imagepath']){
-						if(fieldValue){ %> <img src="<%=fieldValue%>" width=100> <% }
-					}else{ %>  <%=fields[fd.name] ? fields[fd.name].here() : "XXX"%> <% } %>
-
+						<%	if(fd.attributes && fd.attributes['imagepath']){
+							if(fieldValue){ %> <img src="<%=fieldValue%>" width=100> <% }
+						}else{ %>
+							<div class="controls" style="<%=fd.className.match('^org.uengine.essencia.model')?'display:none;':''%>">
+								<%=fields[fd.name].here()%>
+							</div>
+						<% } %>
+					</div>
 				</td></tr>
-
 			<%
 				}
-			}
 			%>
-		<!-- field를 화명에 뿌려줌 -->
-			            </tbody></table>
-			        </td>
-			        
-			    </tr>
-			    
-			    <tr>
-			    <td <%=showLabel ? "colspan=2" : ""%>>
-			    <%
-      
-   if(objectMetadata.serviceMethodContexts)
+			</table>
+
+   <% if(objectMetadata.serviceMethodContexts)
    for(var i=0; i<objectMetadata.serviceMethodContexts.length; i++){
    	   		var serviceMethod = objectMetadata.serviceMethodContexts[i];
    	   		   	   		
