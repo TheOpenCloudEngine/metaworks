@@ -10,7 +10,7 @@
 			var group = field.attributes ? field.attributes.group : null;
 
 			if(group == undefined){
-				group = "undefined";
+				group = "Basic";
 			}
 
 			if(groups.indexOf(group) == -1){
@@ -55,13 +55,14 @@
   
   
 %>		
-			<p class="title"><%=mw3.localize(objectName)%></p>
+			<h4><%=mw3.localize(objectName)%></h4>
 <%
   }
 %>				
 			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+			    <tbody><tr>
+			        <td style="padding:2px 12px 0 0;">
 
-		<!-- field를 화명에 뿌려줌 -->
 		<% if(groups.length>1){ %>
 			<div class="tabbable"> <!-- Only required for left/right tabs -->
 				<!-- Group 이름으로 Tab을 만듬 -->
@@ -93,7 +94,7 @@
 							<tr height="25" valign="middle">
 
 								<% if(showLabel){ %>
-									<td bgcolor=white> <b><%=mw3.localize(fieldDescriptor.displayName)%></b> </td>
+									<td bgcolor=white align="right"> <b><%=mw3.localize(fieldDescriptor.displayName)%></b> </td><td width="10px"></td>
 								<% } %>
 
 								<td bgcolor=white>
@@ -120,7 +121,8 @@
 				<!-- Tab에 있는 내용을 만듬 -->
 			</div>
 		<% }else { %>
-
+			<table width="*" border="0" cellspacing="0" cellpadding="0">
+        		<tbody>
 			<% for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){
 
 				var fd = objectMetadata.fieldDescriptors[i];
@@ -130,36 +132,36 @@
 
 				var fieldValue = value[fd.name];
 		%>
+ 
+				<tr height="25" valign="middle">
 
-				<tr><td>
-					<div class="form-group">
-						<% if(fd.attributes && fd.attributes['imagepath']){
-								if(fieldValue){ %>
-									<img src="<%=fieldValue%>" width=100>
-								<% }
-							}else{ %>
-								<label class="form-label">
-									<strong><%=fd.displayName%></strong>
-									<span  class="ui-state-default ui-corner-all"  onClick="mw3.getFaceHelper('<%=objectId%>').toggleChild(this)" style="<%=fd.className.match('^org.uengine.essencia.model')?'':'display:none;'%>">▼</span>
-								</label>
-						<% } %>
+				<% if(showLabel){ %>
+				<td bgcolor=white align="right"> <b><%=mw3.localize(fd.displayName)%></b> </td><td width="10px"></td></td>
+				<% } %>
 
-						<%	if(fd.attributes && fd.attributes['imagepath']){
-							if(fieldValue){ %> <img src="<%=fieldValue%>" width=100> <% }
-						}else{ %>
-							<div class="controls" style="<%=fd.className.match('^org.uengine.essencia.model')?'display:none;':''%>">
-								<%=fields[fd.name].here()%>
-							</div>
-						<% } %>
-					</div>
+				<td bgcolor=white>
+
+				<%	if(fd.attributes && fd.attributes['imagepath']){
+						if(fieldValue){ %> <img src="<%=fieldValue%>" width=100> <% }
+					}else{ %>  <%=fields[fd.name] ? fields[fd.name].here() : "XXX"%> <% } %>
+
 				</td></tr>
+
 			<%
 				}
 			}
 			%>
-			</table>
-
-   <% if(objectMetadata.serviceMethodContexts)
+		<!-- field를 화명에 뿌려줌 -->
+			            </tbody></table>
+			        </td>
+			        
+			    </tr>
+			    
+			    <tr>
+			    <td <%=showLabel ? "colspan=2" : ""%>>
+			    <%
+      
+   if(objectMetadata.serviceMethodContexts)
    for(var i=0; i<objectMetadata.serviceMethodContexts.length; i++){
    	   		var serviceMethod = objectMetadata.serviceMethodContexts[i];
    	   		   	   		
