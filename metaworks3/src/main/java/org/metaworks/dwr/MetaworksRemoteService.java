@@ -751,15 +751,23 @@ public class MetaworksRemoteService {
 				throw new RuntimeException("There's no configured Spring application context. if you invoke this in some Test Code, Please declare \"new TestMetaworksRemoteService(new ClassPathXmlApplicationContext(...));\" in the beginning of the 'setUp()' method in the test.");
 			}
 
-			t = getInstance().getBeanFactory().getBean(clazz);
+			Map beans = getInstance().getBeanFactory().getBeansOfType(clazz);
+
+			Iterator iterator = beans.values().iterator();
+			if(iterator.hasNext()){
+				return (T) iterator.next();
+			}
 		} catch (NoSuchBeanDefinitionException e) {
 			//System.out.printf("No qualifying bean of type [%s] is defined", clazz.toString());
+
+		}
+
+		if(t==null)
 			try {
 				t = clazz.newInstance();
 			} catch (Exception e1) {
 				throw new RuntimeException(e1);
 			}
-		}
 
 		autowire(t);
 

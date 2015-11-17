@@ -158,7 +158,11 @@ public class TransactionalDwrServlet extends DwrServlet{
 	            	}
 	            	
 					copyStream(is, response.getOutputStream(), appendix);
-    	        }
+    	        }else{
+					//response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+					response.sendError(HttpServletResponse.SC_NOT_FOUND);
+
+				}
         	}catch(Exception e){
         		e.printStackTrace();
         	}finally{

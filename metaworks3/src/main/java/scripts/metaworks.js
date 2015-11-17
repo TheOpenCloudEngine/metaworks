@@ -1674,9 +1674,10 @@ com.abc.ClassA.methodA=입력
 					return objectId;
 				};
 			
-			Metaworks3.prototype._importFaceHelper = function(actualFace, onError){
+			Metaworks3.prototype._importFaceHelper = function(actualFace, onSuccess, onError){
 
 				var initializingFaceHelper = function() {
+
 					// console.debug("initializingFaceHelper --> " + actualFace);
 					
 					//TODO: may cause unnecessary javascript object creation - performance & memory waste
@@ -1684,11 +1685,14 @@ com.abc.ClassA.methodA=입력
 					
 					//mw3.onLoadFaceHelperScript();					
 					//mw3.loaded = true;
+
+					if(onSuccess) onSuccess();
+
 				};
 
 				var byClassLoader = actualFace.indexOf('dwr') == 0;
 					
-				var url = this.base + (byClassLoader ? '/':'/metaworks/') + actualFace + ".js";
+				var url = this.base + (byClassLoader ? '/':'/dwr/metaworks/') + actualFace + ".js";
 				
 //				   $.ajax({
 //				        url: url,
@@ -1716,7 +1720,7 @@ com.abc.ClassA.methodA=입력
 				// import script
 				if(typeof this.loadedScripts[url] == 'undefined'){
 					if(!mw3.importScript(url, initializingFaceHelper)){
-						mw3.loadedScripts[actualFace] = null;
+						mw3.loadedScripts[url] = null;
 						
 						return;
 					}
@@ -4724,9 +4728,13 @@ com.abc.ClassA.methodA=입력
 				
 				return html;
 			};
-			
+
 			MethodRef.prototype.call = function(){
 				mw3.call(this.objectId, this.methodName);
+			};
+
+			MethodRef.prototype.isAvailable = function(){
+				return !mw3.isHiddenMethod(this)
 			};
 			
 			
@@ -5168,3 +5176,23 @@ $.fn.extend({
 		return distance;
 	}
 });
+
+
+var extend = function (target, parentClassName) {
+
+	if(parentClassName.indexOf('.') > 0){
+		parentClassName = parentClassName.replace(/\./g,'_');
+	}
+
+	try{
+		eval(parentClassName);
+
+	}catch(e){
+		var ejsPath = parentClassName.replace(/\_/g,'/') + '.ejs';
+		mw3._importFaceHelper(ejsPath);
+	}
+
+	var parent = eval(parentClassName);
+
+	target.prototype = Object.create(parent.prototype);
+};
