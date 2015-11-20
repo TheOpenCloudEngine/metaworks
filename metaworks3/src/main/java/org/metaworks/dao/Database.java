@@ -196,149 +196,151 @@ public class Database<T extends IDAO> implements IDAO, Serializable, Cloneable{
 	@Override
 	public void select() throws Exception {
 		// TODO Auto-generated method stub
-		
+		throw new Exception("Not implemented. Use databaseMe() instead.");
 	}
 
 	@Override
 	public int insert() throws Exception {
 		// TODO Auto-generated method stub
-		return 0;
+		throw new Exception("Not implemented. Use databaseMe() instead.");
+//		return 0;
 	}
 
 	@Override
 	public int update() throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new Exception("Not implemented. Use databaseMe() instead.");
+//		return 0;
 	}
 
 	@Override
 	public int update(String stmt) throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new Exception("Not implemented. Use databaseMe() instead.");
+//		return 0;
 	}
 
 	@Override
 	public int call() throws Exception {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new Exception("Not implemented. Use databaseMe() instead.");
+//		return 0;
 	}
 
 	@Override
 	public void addBatch() throws Exception {
 		// TODO Auto-generated method stub
-		
+		throw new Exception("Not implemented. Use databaseMe() instead.");
+
 	}
 
 	@Override
 	public int[] updateBatch() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new Exception("Not implemented. Use databaseMe() instead.");
+//		return null;
 	}
 
 	@Override
 	public void beforeFirst() throws Exception {
-		// TODO Auto-generated method stub
+		throw new Exception("Not implemented. Use databaseMe() instead.");
 		
 	}
 
 	@Override
 	public boolean previous() throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		throw new Exception("Not implemented. Use databaseMe() instead.");
+//		return false;
 	}
 
 	@Override
 	public boolean next() throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		throw new Exception("Not implemented. Use databaseMe() instead.");
+//		return false;
 	}
 
 	@Override
 	public boolean first() throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		throw new Exception("Not implemented. Use databaseMe() instead.");
+//		return false;
 	}
 
 	@Override
 	public void afterLast() throws Exception {
-		// TODO Auto-generated method stub
+		throw new Exception("Not implemented. Use databaseMe() instead.");
 		
 	}
 
 	@Override
 	public boolean last() throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		throw new Exception("Not implemented. Use databaseMe() instead.");
+//		return false;
 	}
 
 	@Override
 	public boolean absolute(int pos) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
+		throw new Exception("Not implemented. Use databaseMe() instead.");
+//		return false;
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new RuntimeException("Not implemented. Use databaseMe() instead.");
+//		return 0;
 	}
 
 	@Override
 	public Object get(String key) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Not implemented. Use databaseMe() instead.");
+//		return null;
 	}
 
 	@Override
 	public Object set(String key, Object value) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Not implemented. Use databaseMe() instead.");
+//		return null;
 	}
 
 	@Override
 	public String getString(String key) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Not implemented. Use databaseMe() instead.");
+//		return null;
 	}
 
 	@Override
 	public Integer getInt(String key) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Not implemented. Use databaseMe() instead.");
+//		return null;
 	}
 
 	@Override
 	public Long getLong(String key) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Not implemented. Use databaseMe() instead.");
+//		return null;
 	}
 
 	@Override
 	public Boolean getBoolean(String key) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Not implemented. Use databaseMe() instead.");
+//		return null;
 	}
 
 	@Override
 	public Date getDate(String key) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		throw new RuntimeException("Not implemented. Use databaseMe() instead.");
+//		return null;
 	}
 
 	@Override
 	public AbstractGenericDAO getImplementationObject() {
-		// TODO Auto-generated method stub
+//		throw new RuntimeException("Not implemented. Use databaseMe() instead.");
 		return null;
 	}
 
 	@Override
 	public void releaseResource() throws Exception {
-		// TODO Auto-generated method stub
+		throw new RuntimeException("Not implemented. Use databaseMe() instead.");
 		
 	}
 	@Override
 	public void moveToInsertRow() throws Exception {
-		// TODO Auto-generated method stub
+		throw new RuntimeException("Not implemented. Use databaseMe() instead.");
 		
 	}
 	

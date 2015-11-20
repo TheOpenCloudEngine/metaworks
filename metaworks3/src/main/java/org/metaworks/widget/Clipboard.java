@@ -5,7 +5,7 @@ import javax.persistence.Id;
 import org.metaworks.annotation.Face;
 import org.metaworks.annotation.Hidden;
 
-@Face(ejsPath="dwr/metaworks/CleanObjectFace.ejs")
+@Face(ejsPath="dwr/metaworks/genericfaces/CleanObjectFace.ejs")
 public class Clipboard {
 
 	String id;
