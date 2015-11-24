@@ -57,6 +57,8 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 				this.face_ObjectIdMapping = {};
 				this.objectIds_FaceMapping = {};
 				
+				this.loadedObjectIds=[];
+				
 				this.loaded = false;
 				this.loadedScripts = {};				
 				
@@ -393,26 +395,52 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 					console.log(e.message);
 				}
 			}
+			
+			
+			Metaworks3.prototype.onLoadFaceHelperScript_toBe = function(){
+
+				if(mw3.loadedObjectIds.length > 0)
+				for(var i=mw3.loadedObjectIds.length - 1; i>=0; i--){
+				
+					var objectIdAndFace = mw3.loadedObjectIds[i];
+					
+					var objectId = objectIdAndFace.objectId;
+					var face = objectIdAndFace.face;
+
+					if(mw3.objects[objectId]){
+							
+							var targetElement = document.getElementById(mw3._getObjectDivId(objectId));
+									
+							var objectContext = mw3.objectContexts[objectId];
+							
+							// object attr apply
+							var htmlAttr = (objectContext && objectContext.__options && objectContext.__options['htmlAttr'] ? objectContext.__options['htmlAttr'] : null);
+							
+							if(htmlAttr)
+								$(targetElement).attr(htmlAttr);
+							
+							var htmlAttrChild = (objectContext && objectContext.__options && objectContext.__options['htmlAttrChild'] ? objectContext.__options['htmlAttrChild'] : null);
+							if(htmlAttrChild){
+								$(targetElement).children(':first').attr(htmlAttrChild);
+							}
+							
+							if(mw3.loadFaceHelper(objectId, face)){
+
+								var object = mw3.objects[objectId];
+
+								if(object!=null && object.__className){
+				        			mw3.serviceMethodBinding(objectId, object.__className);
+								}
+							}
+					}
+						
+		    	}
+
+		    			
+			};	
 
 			Metaworks3.prototype.onLoadFaceHelperScript = function(){
-//				if(!target)
-//					target = this.face_ObjectIdMapping;
-				/*
-				//console.debug('onLoadFaceHelperScript');
-				
-				if(this.`aceHelper[face]){
-					objectIds = this.objectIds_FaceMapping[face];
-									
-					for(var objectId in objectIds){
-						//console.debug(objectId);
-						
-						this.loadFaceHelper(objectId);
-					}
-					
-					this.afterLoadFaceHelper[face] = null;
-					this.objectIds_FaceMapping[face] = null;
-				}
-				*/
+
 				
 				if(this.loadFaceHelperStatus != 'ready'){
 					this.loadFaceHelperStatus = 'more';
@@ -1325,6 +1353,9 @@ com.abc.ClassA.methodA=입력
 					}					
 					mw3._importFaceHelper(actualFace);
 					
+					mw3.loadedObjectIds.push({objectId: objectId, face: actualFace});
+
+					
 					try {
 						//alert("selected face : " + actualFace);
 						var url = this.base + (actualFace.indexOf('dwr') == 0 ? '/':'/metaworks/') + actualFace;
@@ -1901,6 +1932,9 @@ com.abc.ClassA.methodA=입력
 				var divId =  this._getObjectDivId(objectId);
 				var infoDivId = this._getInfoDivId(objectId);
 				var html; 
+				
+				mw3.loadedObjectIds=[]; //clear everytime
+
 				
 				var className;
 				
@@ -2572,9 +2606,6 @@ com.abc.ClassA.methodA=입력
 						var object = objectFromUI;
 					}
 				}
-//				}else{
-//				object = objId; //TODO: readability is bad.
-//			}
 
 				//var thisMetaworks = this;
 				var divId = "objDiv_" + objId;
