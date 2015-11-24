@@ -482,32 +482,34 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 								$(targetElement).children(':first').attr(htmlAttrChild);
 							}
 							
-							if(mw3.loadFaceHelper(objectId, face)){
+							if(mw3.loadFaceHelper(objectId, face)) {
 								mw3.afterLoadFaceHelper[i] = null;
 								mw3.objectIds_FaceMapping[face] = null;
 
-								var object = mw3.objects[objectId];
-
-								if(object!=null && object.__className){
-									var metadata = mw3.getMetadata(object.__className);
-									
-									// optimizing the object size
-									
-				        			if(object!=null && this.optimizeObjectMemory && metadata){
-				        				
-					        			for(var i in metadata.fieldDescriptors){
-											var fd = metadata.fieldDescriptors[i];
-											
-											if(!fd.isKey && (!fd.attributes || !fd.attributes['keepAtClient']) && object[fd.name]!=null){
-												object[fd.name] = null; //remove after rendering for memory saving.
-											}
-										}
-				        			}
-				        			
-				        			//console.log(object.__className);
-				        			mw3.serviceMethodBinding(objectId, object.__className);
-								}
 							}
+
+							var object = mw3.objects[objectId];
+
+							if(object!=null && object.__className){
+								var metadata = mw3.getMetadata(object.__className);
+
+								// optimizing the object size
+
+								if(object!=null && this.optimizeObjectMemory && metadata){
+
+									for(var i in metadata.fieldDescriptors){
+										var fd = metadata.fieldDescriptors[i];
+
+										if(!fd.isKey && (!fd.attributes || !fd.attributes['keepAtClient']) && object[fd.name]!=null){
+											object[fd.name] = null; //remove after rendering for memory saving.
+										}
+									}
+								}
+
+								//console.log(object.__className);
+								mw3.serviceMethodBinding(objectId, object.__className);
+							}
+
 						}
 		    		}
 		    	}		
