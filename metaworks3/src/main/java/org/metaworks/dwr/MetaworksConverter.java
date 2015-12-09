@@ -346,7 +346,7 @@ public class MetaworksConverter extends BeanConverter{
 			try {
 				return paramType.newInstance();
 			} catch(java.lang.InstantiationException e){
-				throw new ConversionException(paramType, "Service Object should have constructor with empty parameter. Add new Constructor with no argument into " + paramType.getName() + ". 臾몄��瑜� ��닿껐�����ㅻ㈃ ��ㅼ�� ��대����ㅼ�� ���洹�癒쇳�멸�� ��������� ������ �����깆��瑜� 異�媛���댁＜��몄��--> " + paramType.getName(), e);
+				throw new ConversionException(paramType, "Service Object should have constructor with empty parameter. Add new Constructor with no argument into " + paramType.getName() + ". " + paramType.getName(), e);
 			}catch (Exception e) {
 				// TODO Auto-generated catch block
 				throw new ConversionException(paramType, "Service Object couldn't be instantiated due to : " +  e.getClass(), e);
