@@ -991,7 +991,9 @@ com.abc.ClassA.methodA=입력
 						parentObjectId = $(this).attr('objectid');
 
 						try{
-							var parent = mw3.getObject(parentObjectId);
+							var parent = mw3.objects[parentObjectId];
+
+							if(!parent) return true;
 						}catch(e){ return true; /*skip this parent*/}
 
 
@@ -2528,6 +2530,8 @@ com.abc.ClassA.methodA=입력
 						
 					}
 				}
+
+
 			};
 
 
@@ -3579,6 +3583,8 @@ com.abc.ClassA.methodA=입력
 			};
 			
 			Metaworks3.prototype.isHidden = function(field){
+				if(!field) return false;
+
 				return this.isHiddenFieldDescriptor(field.fieldDescriptor, field.object);
 			}
 			

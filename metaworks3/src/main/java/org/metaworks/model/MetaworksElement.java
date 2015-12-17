@@ -9,17 +9,17 @@ import org.metaworks.dwr.MetaworksRemoteService;
 public class MetaworksElement implements ContextAware{
 
     public MetaworksElement(){
-        setElementId(System.currentTimeMillis());
+        setElementId(java.util.UUID.randomUUID().toString());
     }
 
 
-    long elementId;
+    String elementId;
         @Id
-        public long getElementId() {
+        public String getElementId() {
             return elementId;
         }
 
-        public void setElementId(long elementId) {
+        public void setElementId(String elementId) {
             this.elementId = elementId;
         }
 
