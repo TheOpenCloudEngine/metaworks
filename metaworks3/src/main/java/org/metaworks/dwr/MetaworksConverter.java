@@ -591,11 +591,11 @@ public class MetaworksConverter extends BeanConverter{
 
 
 						if(thisStackDisabledChildFaceSwapping){
-							//if(!faceReplacingEnabled) {
-								//restore the status of faceSwappingOption after returning the parent stack call which causes the disabling option to all the child.
+
+							//restore the status of faceSwappingOption after returning the parent stack call which causes the disabling option to all the child.
 							outctx.put("DO_NOT_SWAP_WITH_FACE", null);
 
-							//}
+
 						}
 
 
