@@ -9,3 +9,9 @@ hs_err_pid*
 
 metaworks-dwr/target
 metaworks-dwr/dist
+metaworks-dwr/dist/lib
+
+*.iml
+target/
+metaworks2/*.iml
+
