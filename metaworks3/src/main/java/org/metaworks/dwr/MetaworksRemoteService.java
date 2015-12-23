@@ -54,7 +54,8 @@ public class MetaworksRemoteService {
 	static Hashtable<String, WebObjectType> metadataStorage = new Hashtable<String, WebObjectType>();
 	
 	protected static MetaworksRemoteService instance;
-		protected static void setInstance(MetaworksRemoteService instance) {
+
+	protected static void setInstance(MetaworksRemoteService instance) {
 			MetaworksRemoteService.instance = instance;
 		}
 		public static MetaworksRemoteService getInstance() {
@@ -618,6 +619,9 @@ public class MetaworksRemoteService {
     }
     
     public static boolean metaworksCall(){
+
+		if(TransactionContext.getThreadLocalInstance()==null) return false;
+
     	StackTraceElement[] stack = Thread.currentThread().getStackTrace();
 
 		String calledClassName = (String) TransactionContext.getThreadLocalInstance().getSharedContext("_calledClassName");
@@ -790,6 +794,13 @@ public class MetaworksRemoteService {
 		public void setDebugMode(boolean debugMode) {
 			this.debugMode = debugMode;
 		}
-		
 
+
+	private boolean SQLLowerCase;
+		public boolean isSQLLowerCase() {
+			return SQLLowerCase;
+		}
+		public void setSQLLowerCase(boolean SQLLowerCase) {
+			this.SQLLowerCase = SQLLowerCase;
+		}
 }

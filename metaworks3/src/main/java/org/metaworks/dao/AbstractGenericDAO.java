@@ -1113,6 +1113,10 @@ public abstract class AbstractGenericDAO implements InvocationHandler, IDAO {
 				}
 			}
 		}
+
+		if(MetaworksRemoteService.getInstance().isSQLLowerCase()){
+			return realSql.toString().toLowerCase();
+		}
 		
 		return realSql.toString();
     }
