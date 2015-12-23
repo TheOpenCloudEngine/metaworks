@@ -30,7 +30,6 @@ import org.metaworks.annotation.AutowiredFromClient;
 import org.metaworks.dao.ConnectionFactory;
 import org.metaworks.dao.IDAO;
 import org.metaworks.dao.TransactionContext;
-import org.metaworks.widget.ReturnWrapper;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -42,7 +41,6 @@ import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.SystemPropertyUtils;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class MetaworksRemoteService {
@@ -56,17 +54,17 @@ public class MetaworksRemoteService {
 	protected static MetaworksRemoteService instance;
 
 	protected static void setInstance(MetaworksRemoteService instance) {
-			MetaworksRemoteService.instance = instance;
-		}
-		public static MetaworksRemoteService getInstance() {
+		MetaworksRemoteService.instance = instance;
+	}
+	public static MetaworksRemoteService getInstance() {
 
-			if(instance==null){
+		if(instance==null){
 
-					instance = new MetaworksRemoteService();
-			}
-			
-			return instance;
+				instance = new MetaworksRemoteService();
 		}
+
+		return instance;
+	}
 	
 	public static void pushTargetScript(String sessionId, final String script, final Object[] object){
 		 Browser.withSession(sessionId, new Runnable(){
@@ -796,11 +794,11 @@ public class MetaworksRemoteService {
 		}
 
 
-	private boolean SQLLowerCase;
-		public boolean isSQLLowerCase() {
-			return SQLLowerCase;
+	private boolean lowerCaseSQL;
+		public boolean isLowerCaseSQL() {
+			return lowerCaseSQL;
 		}
-		public void setSQLLowerCase(boolean SQLLowerCase) {
-			this.SQLLowerCase = SQLLowerCase;
+		public void setLowerCaseSQL(boolean lowerCaseSQL) {
+			this.lowerCaseSQL = lowerCaseSQL;
 		}
 }
