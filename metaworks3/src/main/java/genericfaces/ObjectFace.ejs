@@ -3,7 +3,7 @@
 		var groups = [];
 
 		$.each(objectMetadata.fieldDescriptors, function(index, field){
-			if(mw3.isHidden(fields[field.name]) || field.name == 'metaworksContext'){
+			if(fields && (mw3.isHidden(fields[field.name]) || field.name == 'metaworksContext')){
 				return true;
 			}
 
