@@ -1170,7 +1170,13 @@ com.abc.ClassA.methodA=입력
 
 					var html = mw3.locateObject(object._face_, null, null, null, beanPropertyOption);
 
-					$(targetDiv).html(html);
+					if(html.indexOf("<!--replace-->")==0){
+
+						$(targetDiv).replaceWith(html);
+					}else{
+						$(targetDiv).html(html);
+					}
+
 
 					return html;
 				}
@@ -1425,10 +1431,15 @@ com.abc.ClassA.methodA=입력
 						}
 						
 						//#DEBUG POINT
-						$(targetDiv).html(html);
-						
-						
-						
+						if(html.indexOf("<!--replace-->")==0){
+
+							$(targetDiv).replaceWith(html);
+						}else{
+							$(targetDiv).html(html);
+						}
+
+
+
 						// optimizing the object size : moved to onLoadFaceHelper()
 						
 //	        			if(object!=null && this.optimizeObjectMemory && metadata){
@@ -2052,21 +2063,27 @@ com.abc.ClassA.methodA=입력
 					mainDOM.text(mw3.MESSAGE_LOADING);
 				
 				var scriptHTML = '';
-				
-				if(mw3.usingTemplateEngine == 'jQote'){
-					var batchHTML = mw3.showObjectWithObjectId(this.objectId, className, null, options);
-					
-					mainDOM.html(batchHTML);
+
+
+				var batchHTML = mw3.showObjectWithObjectId(this.objectId, className, null, options);
+
+
+				var html;
+
+				if(batchHTML.indexOf("<!--replace-->")==0){
+
+					html = (batchHTML);
 				}else{
-					scriptHTML = '<script>mw3.showObjectWithObjectId('+this.objectId+',\"'+className+'\", \"#'+divId+'\"' + (options ? ',' + JSON.stringify(options) : '') + ');</script>';	
+					mainDOM.html(batchHTML);
+
+					locateObjectDOM.append(mainDOM);
+					locateObjectDOM.append($('<div>').attr('id', infoDivId))
+
+					html = locateObjectDOM.html();// + scriptHTML;
+
 				}
 
 
-				locateObjectDOM.append(mainDOM);
-				locateObjectDOM.append($('<div>').attr('id', infoDivId))
-				
-				var html = locateObjectDOM.html() + scriptHTML;
-								
 				if(divName){ //when locateObject method has been called for just positioning purpose not the html generation.
 					var divId = divName;
 					
