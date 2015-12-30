@@ -30,6 +30,7 @@ import org.metaworks.annotation.AutowiredFromClient;
 import org.metaworks.dao.ConnectionFactory;
 import org.metaworks.dao.IDAO;
 import org.metaworks.dao.TransactionContext;
+import org.metaworks.i18n.MultilingualSupport;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -392,25 +393,11 @@ public class MetaworksRemoteService {
     public Object callMetaworksService(String objectTypeName, Object clientObject, String methodName, Map<String, Object> autowiredFields) throws Throwable{
 
 
-		/// moved to MetaworksConverter
-//		if(clientObject instanceof SerializationSensitive){
-//			((SerializationSensitive)clientObject).afterDeserialization();
-//		}
-
 		Class serviceClass = Thread.currentThread().getContextClassLoader().loadClass(objectTypeName);
 
 
 		TransactionContext.getThreadLocalInstance().setSharedContext("_calledClassName", objectTypeName);
 		TransactionContext.getThreadLocalInstance().setSharedContext("_calledMethodName", methodName);
-//		InvocationContext invocationContext = new InvocationContext();
-
-//		if(clientObject==null){
-//			try {
-//				clientObject = serviceClass.newInstance();
-//			}catch (InstantiationException e){
-//				throw new Exception(serviceClass + " must have a constructor with empty parameter to be instantiated automatically.");
-//			}
-//		}
 
 		//real callee object is set by MetaworksConverter once the called object is replaced with Face.
 		Object realCalleeObject = TransactionContext.getThreadLocalInstance().getSharedContext("_real_callee_object");
@@ -418,17 +405,29 @@ public class MetaworksRemoteService {
 		if(realCalleeObject!=null)
 			clientObject = realCalleeObject;
 
-		//replace clientObject with faceClass in case the one of faceClass' method is called since the dataFaceMap is added by MetaworksConverter already.
-//		Map<Object,Face> dataFaceMap = (Map<Object, Face>) TransactionContext.getThreadLocalInstance().getSharedContext("dataFaceMap");
-//
-//		int identityHashCode = System.identityHashCode(clientObject);
-//		if(dataFaceMap!=null && dataFaceMap.containsKey(identityHashCode))
-//			clientObject = dataFaceMap.get(identityHashCode);
 
-		//getBeanFactory().getBean(arg0)
-    	
-//		callingObjectTypeName.set(objectTypeName);
-		
+		//flow clientObject for multilingual framework
+//		{
+//			List<PropertyPointer> multilingualProperties = (List<PropertyPointer>) TransactionContext.getThreadLocalInstance().getSharedContext("multilingualProperties");
+//			if(multilingualProperties!=null) {
+//
+//				for(PropertyPointer propertyPointer : multilingualProperties){
+//					if(propertyPointer.getObject() instanceof MultilingualSupport){
+//						Object text = propertyPointer.getValue();
+//
+//						((MultilingualSupport) propertyPointer.getObject()).putMultilingualText("en", propertyPointer.getPropertyName(), (text!=null ? text.toString(): null));
+//					}
+//
+//				}
+//
+//
+//			}
+//
+//		}
+
+
+		//replace clientObject with faceClass in case the one of faceClass' method is called since the dataFaceMap is added by MetaworksConverter already.
+
 		//if the requested value object is IDAO which need to be converted to implemented one so that it can be invoked by its methods
 		//Another case this required is when Spring is used since the spring base object should be auto-wiring operation
 		ApplicationContext springAppContext = null;

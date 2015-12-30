@@ -292,32 +292,56 @@ public class MetaworksConverter extends BeanConverter{
 				WebFieldDescriptor wfd = wot.getFieldDescriptor(key);
 
 				if (wot != null && wfd != null) {
-					String faceClassForField = (String) wfd.getAttribute("faceclass");
-					if (faceClassForField != null && !AllChildFacesAreIgnored.class.getName().equals(faceClassForField)) {
-						try {
 
-							Class faceClass = Class.forName(faceClassForField);
-							Object faceValue = convert(entry.getValue(), faceClass, data.getContext(), property);
+					//register multilingual properties
+					{
 
-							Object realValue = null;
-							if (faceValue != null && faceClass.isAssignableFrom(faceValue.getClass())) {
-								realValue = ((Face) faceValue).createValueFromFace();
+						Boolean isMultilingual = (Boolean) wfd.getAttribute("multilingual");
+
+						if(isMultilingual!=null && isMultilingual){
+							List<PropertyPointer> multilingualProperties = (List<PropertyPointer>) TransactionContext.getThreadLocalInstance().getSharedContext("multilingualProperties");
+							if(multilingualProperties==null){
+								multilingualProperties = new ArrayList<PropertyPointer>();
+								TransactionContext.getThreadLocalInstance().setSharedContext("multilingualProperties", multilingualProperties);
 							}
 
-							//sometimes the converted value is realValue
-							if (faceValue != null && property.getPropertyType().isAssignableFrom(faceValue.getClass())) {
-								realValue = faceValue;
+							PropertyPointer propertyPointer = new PropertyPointer(bean, property.getName());
+							multilingualProperties.add(propertyPointer);
+						}
+
+					}// end of multilingual property registration //later it would be processed by MetaworksRemoteService.callMetaworksService()
+
+					{//face replacing
+						String faceClassForField = (String) wfd.getAttribute("faceclass");
+						if (faceClassForField != null && !AllChildFacesAreIgnored.class.getName().equals(faceClassForField)) {
+							try {
+
+								Class faceClass = Class.forName(faceClassForField);
+								Object faceValue = convert(entry.getValue(), faceClass, data.getContext(), property);
+
+								Object realValue = null;
+								if (faceValue != null && faceClass.isAssignableFrom(faceValue.getClass())) {
+									realValue = ((Face) faceValue).createValueFromFace();
+								}
+
+								//sometimes the converted value is realValue
+								if (faceValue != null && property.getPropertyType().isAssignableFrom(faceValue.getClass())) {
+									realValue = faceValue;
+								}
+								//						Object realValue = face.createValueFromFace();
+
+								property.setValue(bean, realValue);
+
+								continue;
+
+							} catch (Exception e) {
+								throw new RuntimeException("Can't replace with face class: " + e.getMessage(), e);
 							}
-							//						Object realValue = face.createValueFromFace();
-
-							property.setValue(bean, realValue);
-
-							continue;
-
-						} catch (Exception e) {
-							throw new RuntimeException("Can't replace with face class: " + e.getMessage(), e);
 						}
 					}
+
+
+
 				}
 			}
 
@@ -497,69 +521,75 @@ public class MetaworksConverter extends BeanConverter{
 						if(wot!=null && faceReplacingEnabled){
 							WebFieldDescriptor wfd = wot.getFieldDescriptor(name);
 							if(wfd!=null){
-								String faceClassForField = (String) wfd.getAttribute("faceclass");
 
-								if(AllChildFacesAreIgnored.class.getName().equals(faceClassForField)){
-									disableFaceSwapping(outctx, true);
-									thisStackDisabledChildFaceSwapping = true;
-								}else {
+								// trying face exchange
+								{
+									String faceClassForField = (String) wfd.getAttribute("faceclass");
 
-									if (faceClassForField != null
+									if(AllChildFacesAreIgnored.class.getName().equals(faceClassForField)){
+										disableFaceSwapping(outctx, true);
+										thisStackDisabledChildFaceSwapping = true;
+									}else {
 
-										//**** important:  to avoid recursive field swapping
-										//										&& !faceClassForField.equals(originalDataClassName)
+										if (faceClassForField != null
 
-											) {
-										try {
-											Face face = (Face) MetaworksRemoteService.getComponent(Class.forName(faceClassForField));
-											MetaworksRemoteService.autowire(face);
+											//**** important:  to avoid recursive field swapping
+											//										&& !faceClassForField.equals(originalDataClassName)
 
-											if (face instanceof FieldFace) {
-												((FieldFace) face).visitHolderObjectOfField(data);
-											}
-
-											face.setValueToFace(value);
-
-											if(face instanceof MetaworksList || property.getPropertyType().isPrimitive() || value == null/*|| property.getPropertyType().getPackage().equals(String.class.getPackage())*/) {
-												value = face;//don't replace anymore.
-											}else {
-												faceForProperty = face;
-											}
-
-										} catch (Exception e) {
-											throw new Exception("Can't replace with face class: " + e.getMessage(), e);
-										}
-									} else {
-
-										WebObjectType typeOfField = null;
-
-										try {
-											typeOfField = MetaworksRemoteService.getInstance().getMetaworksType(value.getClass().getName());
-										} catch (Exception e2) {
-										}
-
-										if (typeOfField != null && typeOfField.getFaceOptions() != null && typeOfField.getFaceOptions().get("faceClass") != null) {
-
-											String faceClassName = typeOfField.getFaceOptions().get("faceClass");
-
-											if (!faceClassName.equals(originalDataClassName)) {
-												Face face = (Face) MetaworksRemoteService.getComponent(Class.forName(faceClassName));
+												) {
+											try {
+												Face face = (Face) MetaworksRemoteService.getComponent(Class.forName(faceClassForField));
 												MetaworksRemoteService.autowire(face);
+
+												if (face instanceof FieldFace) {
+													((FieldFace) face).visitHolderObjectOfField(data);
+												}
 
 												face.setValueToFace(value);
 
-												if(face instanceof MetaworksList || property.getPropertyType().isPrimitive() || value == null/* || property.getPropertyType().getPackage().equals(String.class.getPackage())*/) {
+												if (face instanceof MetaworksList || property.getPropertyType().isPrimitive() || value == null/*|| property.getPropertyType().getPackage().equals(String.class.getPackage())*/) {
 													value = face;//don't replace anymore.
-												}else {
+												} else {
 													faceForProperty = face;
 												}
-											} else {
-												disableFaceSwapping(outctx, false);
 
+											} catch (Exception e) {
+												throw new Exception("Can't replace with face class: " + e.getMessage(), e);
+											}
+										} else {
+
+											WebObjectType typeOfField = null;
+
+											try {
+												typeOfField = MetaworksRemoteService.getInstance().getMetaworksType(value.getClass().getName());
+											} catch (Exception e2) {
+											}
+
+											if (typeOfField != null && typeOfField.getFaceOptions() != null && typeOfField.getFaceOptions().get("faceClass") != null) {
+
+												String faceClassName = typeOfField.getFaceOptions().get("faceClass");
+
+												if (!faceClassName.equals(originalDataClassName)) {
+													Face face = (Face) MetaworksRemoteService.getComponent(Class.forName(faceClassName));
+													MetaworksRemoteService.autowire(face);
+
+													face.setValueToFace(value);
+
+													if (face instanceof MetaworksList || property.getPropertyType().isPrimitive() || value == null/* || property.getPropertyType().getPackage().equals(String.class.getPackage())*/) {
+														value = face;//don't replace anymore.
+													} else {
+														faceForProperty = face;
+													}
+												} else {
+													disableFaceSwapping(outctx, false);
+
+												}
 											}
 										}
 									}
-								}
+								}// end of face exchange
+
+
 
 
 							}

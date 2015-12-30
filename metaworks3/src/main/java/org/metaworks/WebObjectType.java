@@ -25,35 +25,8 @@ import javax.validation.constraints.Null;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import org.metaworks.annotation.AutowiredFromClient;
-import org.metaworks.annotation.AutowiredToClient;
-import org.metaworks.annotation.Available;
-import org.metaworks.annotation.Children;
-import org.metaworks.annotation.Default;
+import org.metaworks.annotation.*;
 import org.metaworks.annotation.Face;
-import org.metaworks.annotation.Group;
-import org.metaworks.annotation.Hidden;
-import org.metaworks.annotation.Icon;
-import org.metaworks.annotation.Id;
-import org.metaworks.annotation.ImagePath;
-import org.metaworks.annotation.KeepAtClient;
-import org.metaworks.annotation.Name;
-import org.metaworks.annotation.NonEditable;
-import org.metaworks.annotation.NonLoadable;
-import org.metaworks.annotation.NonSavable;
-import org.metaworks.annotation.ORMapping;
-import org.metaworks.annotation.Order;
-import org.metaworks.annotation.Payload;
-import org.metaworks.annotation.Range;
-import org.metaworks.annotation.Resource;
-import org.metaworks.annotation.ServiceMethod;
-import org.metaworks.annotation.Test;
-import org.metaworks.annotation.TestContext;
-import org.metaworks.annotation.Testing;
-import org.metaworks.annotation.TypeSelector;
-import org.metaworks.annotation.Validator;
-import org.metaworks.annotation.ValidatorContext;
-import org.metaworks.annotation.ValidatorSet;
 import org.metaworks.dao.Database;
 import org.metaworks.dao.IDAO;
 import org.metaworks.dao.TransactionContext;
@@ -567,6 +540,9 @@ public class WebObjectType implements Serializable{
 
 			if(getAnnotationDeeply(tryingClasses, fd.getName(), AutowiredToClient.class)!=null)
 				fd.setAttribute("autowiredToClient", new Boolean(true));
+
+			if(getAnnotationDeeply(tryingClasses, fd.getName(), Multilingual.class)!=null)
+				fd.setAttribute("multilingual", new Boolean(true));
 
 			NonEditable nonEditable = (NonEditable)getAnnotationDeeply(tryingClasses, fd.getName(), NonEditable.class);
 			
