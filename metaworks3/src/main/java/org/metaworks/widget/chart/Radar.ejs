@@ -1,1 +1,12 @@
 <canvas id="radarChart" width="750" height="650"></canvas>
+
+<%
+
+ for(var i in value.radarData){
+
+     var radarData = value.radarData[i];
+
+     %><font color="<%=radarData.color%>"><b><%=radarData.label%></b></font><%
+ }
+
+ %>
