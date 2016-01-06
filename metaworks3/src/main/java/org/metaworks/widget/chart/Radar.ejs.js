@@ -22,8 +22,8 @@ var org_metaworks_widget_chart_Radar= function(objectId, className){
 
         dataSets[i] = {
             fillColor: object.radarData[i].color,
-            strokeColor: "rgba(102,45,145,1)",
-            pointColor: "rgba(220,220,220,1)",
+            strokeColor: object.radarData[i].color,
+            pointColor: object.radarData[i].color,
             pointStrokeColor: "#fff",
             data: object.radarData[i].data
         };

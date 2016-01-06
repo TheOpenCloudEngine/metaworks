@@ -11,12 +11,14 @@
 		} else if(mw3.when == "new" || mw3.when == "edit" || mw3.when=="design") {
 			var selectBoxId = "select_" + objectId ; 
 %>
-	<select id="<%=selectBoxId%>"class="form-control"  size="<%=value.selectSize%>" style="<%=value.selectStyle%>" name="<%=selectBoxId%>"
+	<select id="<%=selectBoxId%>" <%if(value.__className.indexOf('Multi') > 0){%>multiple="multiple"<%}%> class="form-control"  size="<%=value.selectSize%>" style="<%=value.selectStyle%>" name="<%=selectBoxId%>"
 	<% if(value.disabled){ %> disabled="true" <%}%> 
 	>
 <%	
 			for(var i in value.optionValues){
-				if(value.selected == value.optionValues[i]) {
+				var option = value.optionValues[i];
+
+				if(value.selected == option || (value.selected && (value.selected.indexOf(option + ", ") >= 0 || value.selected.length - value.selected.indexOf(option) - option.length == 0) )) {
 %>
 		<option value="<%=value.optionValues[i]%>" selected><%=mw3.localize(value.optionNames[i])%></option>
 <%
