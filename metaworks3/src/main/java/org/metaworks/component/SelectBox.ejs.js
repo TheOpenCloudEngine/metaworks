@@ -3,6 +3,8 @@ var org_metaworks_component_SelectBox = function(objectId, className) {
 	this.className = className;
 	
 	var object = mw3.objects[this.objectId];
+
+	var selectBoxId = "#select_" + objectId ;
 	
 	/*
 	if(object != null && object.__descriptor && object.__descriptor.getOptionValue('changeEvent')){
@@ -13,6 +15,12 @@ var org_metaworks_component_SelectBox = function(objectId, className) {
 		});
 	}
 	*/
+
+	if(object.__className.indexOf('Multi') > 0 && $(selectBoxId).multiselect) {
+		$(selectBoxId).multiselect(
+			{enableFiltering: true, enableFullValueFiltering: true}
+		);
+	}
 };
 
 org_metaworks_component_SelectBox.prototype = {

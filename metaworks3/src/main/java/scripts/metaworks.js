@@ -1956,9 +1956,17 @@ com.abc.ClassA.methodA=입력
 				if(className){
 				}else if(value.__className){
 					className = value.__className;
-				}else
-					className = "java.lang.Object";
-				
+				}else{
+
+					if(typeof value == 'string'){
+						className = "java.lang.String";
+					}else if(typeof value =='number'){
+						className = "java.lang.Number";
+					}else {
+						className = "java.lang.Object";
+					}
+				}
+
 				// 2012-04-04 cjw java.lang.String 일 경우 faceHelper 호출을 위해 공백으로 초기화
 				//if(value == null && className == 'java.lang.String')
 				//	value = '';
