@@ -4499,7 +4499,7 @@ com.abc.ClassA.methodA=입력
 			   return menuItems;
 		   };
 	   
-			Metaworks3.prototype.showPopop = function(objId, serviceMethodContext, result){
+			Metaworks3.prototype.showPopup = function(objId, serviceMethodContext, result){
 				$('body').append("<div id='" + mw3.popupDivId + "' class='target_" + serviceMethodContext.target + "' style='position: absolute; z-index:10; top:" + mw3.mouseY + "px; left:" + mw3.mouseX + "px'></div>");
 				
 				mw3.locateObject(result, null, '#' + mw3.popupDivId);
@@ -4515,7 +4515,7 @@ com.abc.ClassA.methodA=입력
 					closeOutsideContainer(mw3.popupDivId);				
 
 			};
-			Metaworks3.prototype.showOverPopop = function(objId, serviceMethodContext, result){
+			Metaworks3.prototype.showOverPopup = function(objId, serviceMethodContext, result){
 				var zIndex = 10;
 				if( serviceMethodContext.target=="popupOverPopup" ){
 					var modalWindow = $('.ui-dialog');
@@ -5011,9 +5011,9 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 					mw3.removeObject(placeholder);
 				
 				if(serviceMethodContext.target == 'popup'){
-					mw3.showPopop(objId, serviceMethodContext, result);
+					mw3.showPopup(objId, serviceMethodContext, result);
 				}else if(serviceMethodContext.target == 'popupOverPopup'){
-					mw3.showOverPopop(objId, serviceMethodContext, result);
+					mw3.showOverPopup(objId, serviceMethodContext, result);
 				}else{
 					mw3.showStick(objId, serviceMethodContext, result);
 				}								
