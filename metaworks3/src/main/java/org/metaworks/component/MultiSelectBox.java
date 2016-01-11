@@ -7,5 +7,6 @@ public class MultiSelectBox extends SelectBox{
     public MultiSelectBox() {
         super();
         setSelectSize(5);
+        setMultiple(true);
     }
 }

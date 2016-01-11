@@ -20,7 +20,16 @@ public class SelectBox extends ChoiceBox implements Serializable{
 		public void setSelectStyle(String selectStyle) {
 			this.selectStyle = selectStyle;
 		}
-		
+
+	boolean multiple;
+		public boolean isMultiple() {
+			return multiple;
+		}
+		public void setMultiple(boolean multiple) {
+			this.multiple = multiple;
+		}
+
+
 	public SelectBox(){
 		super();
 		setSelectSize(1);

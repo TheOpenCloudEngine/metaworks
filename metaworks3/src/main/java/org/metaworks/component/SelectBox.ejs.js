@@ -16,7 +16,7 @@ var org_metaworks_component_SelectBox = function(objectId, className) {
 	}
 	*/
 
-	if(object.__className.indexOf('Multi') > 0 && $(selectBoxId).multiselect) {
+	if(object.multiple && $(selectBoxId).multiselect) {
 		$(selectBoxId).multiselect(
 			{enableFiltering: true, enableFullValueFiltering: true}
 		);
