@@ -86,6 +86,7 @@ public class MetaworksList<T> implements ContextAware {
             MetaworksElement me = new MetaworksElement();
             me.setMetaworksContext(new MetaworksContext());
             me.getMetaworksContext().setWhen(MetaworksContext.WHEN_EDIT);
+            me.setElementId(java.util.UUID.randomUUID().toString());
             me.setValue(c);
 
             return me;

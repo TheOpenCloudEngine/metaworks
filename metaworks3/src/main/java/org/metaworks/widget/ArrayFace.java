@@ -13,12 +13,16 @@ public class ArrayFace<T> extends MetaworksList<T> implements Face<T[]> {
     public void setValueToFace(T[] elements) {
         List<MetaworksElement> list = new ArrayList<MetaworksElement>();
 
-        if(elements!=null)
-            for(T element : elements){
+        if(elements!=null) {
+            int i = 0;
+            for (T element : elements) {
                 MetaworksElement me = new MetaworksElement();
+                me.setElementId(String.valueOf(i++));
+
                 me.setValue(element);
                 list.add(me);
             }
+        }
 
         setElements(list);
 

@@ -21,33 +21,32 @@ import org.metaworks.dao.MetaworksDAO;
 import org.metaworks.dao.TransactionContext;
 import org.metaworks.model.MetaworksList;
 
-public class MetaworksConverter extends BeanConverter{
+public class MetaworksConverter extends BeanConverter {
 
 	private static final Log log = LogFactory.getLog(MetaworksConverter.class);
 
 	private static final String FACE = "_face_";
 
 
-
-
-
 	@Override
 	protected boolean isAllowedByIncludeExcludeRules(String property) {
-		if("__className".equals(property)) return false;
-		if("__objectId".equals(property)) return false;
-		if("__faceHelper".equals(property)) return false;
+		if ("__className".equals(property)) return false;
+		if ("__objectId".equals(property)) return false;
+		if ("__faceHelper".equals(property)) return false;
 
 		return super.isAllowedByIncludeExcludeRules(property);
 	}
 
 
+	public Object convertInbound(Class<?> paramType, InboundVariable data) throws ConversionException{
+		return convertInbound(paramType, data, false);
 
-
+	}
 
 	/* (non-Javadoc)
 	 * @see org.directwebremoting.Converter#convertInbound(java.lang.Class, org.directwebremoting.InboundVariable, org.directwebremoting.InboundContext)
 	 */
-	public Object convertInbound(Class<?> paramType, InboundVariable data) throws ConversionException
+	public Object convertInbound(Class<?> paramType, InboundVariable data, boolean forFace) throws ConversionException
 	{
 
 		Integer depth = (Integer) TransactionContext.getThreadLocalInstance().getSharedContext("_unmarshall_depth");
@@ -59,6 +58,9 @@ public class MetaworksConverter extends BeanConverter{
 
 			TransactionContext.getThreadLocalInstance().setSharedContext("_unmarshall_depth", depth);
 		}
+
+
+
 
 		try {
 			//System.out.println("--------------------------------------------------------");
@@ -124,14 +126,31 @@ public class MetaworksConverter extends BeanConverter{
 							nested.dereference();
 
 							try {
-								return convertInbound(Face.class, nested);
-								//return face.createValueFromFace();
+								return convertInboundForFace(nested);    //this will jump to "if(Face.class.isAssignableFrom....)" of convertInbound() method.
 
 							}catch (Exception e){new RuntimeException("Failed to replace with face", e).printStackTrace();}
 
 					}
 				}
 			}
+
+			if(forFace){
+				Face face = (Face) super.convertInbound(paramType, data);
+
+				Object realValue = null;
+				if(face!=null) {
+					realValue = face.createValueFromFace();
+				}
+
+				if(realValue instanceof SerializationSensitive){
+					((SerializationSensitive)realValue).afterDeserialization();
+				}
+
+				return realValue;
+			}
+
+
+
 
 			if( paramType.isArray() || "array".equals(data.getType())){
 
@@ -186,14 +205,10 @@ public class MetaworksConverter extends BeanConverter{
 			}else{
 
 				//this will work only for the case that root object is the FaceClass. for the properties, see createUsingSetterInjection
-				if(Face.class.isAssignableFrom(paramType)){
-					Face face = (Face) super.convertInbound(paramType, data);
+				if(FaceWrapped.class.isAssignableFrom(paramType)){
+					FaceWrapped faceWrapped = (FaceWrapped) super.convertInbound(paramType, data);
 
-//					Map<Object,Face> dataFaceMap = (Map<Object, Face>) TransactionContext.getThreadLocalInstance().getSharedContext("dataFaceMap");
-//					if(dataFaceMap==null){
-//						dataFaceMap = new HashMap<Object, Face>();
-//						TransactionContext.getThreadLocalInstance().setSharedContext("dataFaceMap", dataFaceMap);
-//					}
+					Face face = faceWrapped.getFace();
 
 					Object realValue = null;
 					if(face!=null) {
@@ -202,16 +217,18 @@ public class MetaworksConverter extends BeanConverter{
 						if(depth.intValue()==1){
 							TransactionContext.getThreadLocalInstance().setSharedContext("_real_callee_object", face);
 						}
-
-//						dataFaceMap.put(System.identityHashCode(realValue), face); //register for later reference in case of the Face object is used for calling method.
 					}
+
+//					Object realValue = faceWrapped.getValue(); //it is created from (FACEWRAP_1)
 
 					if(realValue instanceof SerializationSensitive){
 						((SerializationSensitive)realValue).afterDeserialization();
 					}
 
 					return realValue;
-				}else{
+				}
+
+				else{
 					Object value = super.convertInbound(paramType, data);
 
 					if(value instanceof SerializationSensitive){
@@ -230,6 +247,10 @@ public class MetaworksConverter extends BeanConverter{
 			throw e;
 		}
 
+	}
+
+	private Object convertInboundForFace(InboundVariable nested) {
+		return convertInbound(Face.class, nested, true);
 	}
 
 	@Override
@@ -346,9 +367,24 @@ public class MetaworksConverter extends BeanConverter{
 			}
 
 
+			/**
+			 * (FACEWRAP_1)
+			 */
+//			if(bean instanceof FaceWrapped){
+//				if( "face".equals(property.getName())) {
+//					Object realValue = convert(entry.getValue(), property.getPropertyType(), data.getContext(), property);
+//
+//					((FaceWrapped) bean).setValue(realValue);
+//				}
+//
+//				continue;  //no need to set value except value by transformed from property 'face'
+//			}
+
+
 			Object output = convert(entry.getValue(), property.getPropertyType(), data.getContext(), property);
 			property.setValue(bean, output);
 		}
+
 		return bean;
 	}
 
@@ -548,7 +584,15 @@ public class MetaworksConverter extends BeanConverter{
 												face.setValueToFace(value);
 
 												if (face instanceof MetaworksList || property.getPropertyType().isPrimitive() || value == null/*|| property.getPropertyType().getPackage().equals(String.class.getPackage())*/) {
-													value = face;//don't replace anymore.
+
+													FaceWrapped faceWrapped = new FaceWrapped();
+													faceWrapped.setValue(value);
+													faceWrapped.setFace(face);
+													faceWrapped.setFaceClass(faceClassForField);
+
+													value = faceWrapped;
+
+													//value = face;//don't replace anymore.
 												} else {
 													faceForProperty = face;
 												}
@@ -576,7 +620,13 @@ public class MetaworksConverter extends BeanConverter{
 													face.setValueToFace(value);
 
 													if (face instanceof MetaworksList || property.getPropertyType().isPrimitive() || value == null/* || property.getPropertyType().getPackage().equals(String.class.getPackage())*/) {
-														value = face;//don't replace anymore.
+														FaceWrapped faceWrapped = new FaceWrapped();
+														faceWrapped.setValue(value);
+														faceWrapped.setFace(face);
+
+														value = faceWrapped;
+
+//														value = face;//don't replace anymore.
 													} else {
 														faceForProperty = face;
 													}
@@ -770,37 +820,9 @@ public class MetaworksConverter extends BeanConverter{
 
 				OutboundVariable nested = null;
 
-				//primitive default value mapping
-				//							if(value==null){
-				//
-				//								if(propertyClass!=null){
-				//									if(propertyClass == String.class || propertyClass == MetaworksContext.class || propertyClass == Date.class){
-				//										//do nothing. null is ok.
-				//									}else
-				//									if(propertyClass == int.class)
-				//										value = new Integer(0);
-				//									else if(propertyClass == boolean.class)
-				//										value = new Boolean(false);
-				//									else if(propertyClass == Long.class){
-				//										value = new Long(0);
-				//									}else if(Number.class.isAssignableFrom(propertyClass)){
-				//										value = new Integer(0);
-				//									}else if(Date.class.isAssignableFrom(propertyClass)){
-				//										value = new Date();
-				//									}else{
-				//										//new Exception("please add more primitive type's default value mapping for " + propertyClass).printStackTrace();
-				//									}
-				//								}
-				//							}
-
 				if(value==null){
 					nested = null;
 				}else if(value instanceof IDAO && ((IDAO) value).getImplementationObject()!=null){
-					//
-					//								if(Thread.currentThread().getStackTrace().length > 200){
-					//System.out.println(" nasted value's dao type is " + value.getClass());
-					//								}
-					//
 					nested = this.convertOutbound(value, outctx);
 				}else{
 					nested = getConverterManager().convertOutbound(value, outctx);

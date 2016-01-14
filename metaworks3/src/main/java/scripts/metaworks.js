@@ -4942,6 +4942,13 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 		if(!object || !object.__className) return object;
 
 		if(object._face_){
+
+			//object = {
+			//	__className: "org.metaworks.FaceWrapped",
+			//	//value: object,
+			//	face: object._face_
+			//}
+
 			object = object._face_;
 		}
 

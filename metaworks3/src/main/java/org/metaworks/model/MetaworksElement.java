@@ -5,11 +5,12 @@ import org.metaworks.MetaworksContext;
 import org.metaworks.Remover;
 import org.metaworks.annotation.*;
 import org.metaworks.dwr.MetaworksRemoteService;
+import org.metaworks.widget.ArrayFace;
+import org.metaworks.widget.ListFace;
 
 public class MetaworksElement implements ContextAware{
 
     public MetaworksElement(){
-        setElementId(java.util.UUID.randomUUID().toString());
     }
 
 
@@ -33,7 +34,7 @@ public class MetaworksElement implements ContextAware{
             this.value = value;
         }
 
-    @Order(1)
+    @Order(20)
     @Face(displayName="Remove")
     @ServiceMethod(callByContent=true, inContextMenu = true)
     public Remover remove(){
@@ -41,6 +42,7 @@ public class MetaworksElement implements ContextAware{
     }
 
 
+    @Order(1)
     @Face(displayName="Edit")
     @ServiceMethod(callByContent = true, inContextMenu = true)
     public void edit(){
@@ -48,7 +50,8 @@ public class MetaworksElement implements ContextAware{
         getMetaworksContext().setWhen(MetaworksContext.WHEN_EDIT);
     }
 
-    @ServiceMethod(inContextMenu = true)
+    @ServiceMethod(callByContent = true, inContextMenu = true)
+    @Order(10)
     public void up(@AutowiredFromClient MetaworksList metaworksList){
         int index = metaworksList.getElements().indexOf(this);
 
@@ -61,9 +64,23 @@ public class MetaworksElement implements ContextAware{
         MetaworksRemoteService.wrapReturn(metaworksList);
     }
 
+    @ServiceMethod(callByContent = true, inContextMenu = true)
+    @Order(11)
+    public void down(@AutowiredFromClient MetaworksList metaworksList){
+        int index = metaworksList.getElements().indexOf(this);
+
+        if(index<metaworksList.getElements().size() - 1){
+            metaworksList.getElements().remove(this);
+            //TODO: quiz 1 (below is not proper since it will clear the type information. Prove why and fix this)
+            metaworksList.getElements().add(index + 1, this);
+        }
+
+        MetaworksRemoteService.wrapReturn(metaworksList);
+    }
+
     @Override
     public boolean equals(Object obj) {
-        if(obj!=null && obj instanceof MetaworksElement && ((MetaworksElement) obj).getElementId() == getElementId()){
+        if(obj!=null && obj instanceof MetaworksElement && ((MetaworksElement) obj).getElementId().equals(getElementId())){
             return true;
         }
 
