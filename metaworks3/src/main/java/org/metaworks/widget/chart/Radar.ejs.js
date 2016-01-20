@@ -41,6 +41,6 @@ var org_metaworks_widget_chart_Radar= function(objectId, className){
         var ctx2 = chartDiv.getContext("2d");
         var myNewChart = new Chart(ctx2).Radar(radarData);
 
-        new Chart(ctx2).Radar(radarData, options);
+        new Chart(ctx2).Radar(radarData, lineOptions);
     }
 }

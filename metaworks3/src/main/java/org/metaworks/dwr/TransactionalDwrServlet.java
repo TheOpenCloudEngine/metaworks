@@ -74,7 +74,8 @@ public class TransactionalDwrServlet extends DwrServlet{
 		
 		//check if the request is simply requesting resource and handles it.
 		
-		String pathInfo = request.getPathInfo();
+		String pathInfo = request.getPathInfo();  //System.out.println(pathInfo);
+
 		String requestContextPath = request.getContextPath();
 
 		boolean isAllow = true;
