@@ -11,9 +11,9 @@ var org_metaworks_widget_chart_Radar= function(objectId, className){
         scaleOverride: true,
         scaleShowGridLines: false,
         scaleShowLabels: true,
-        scaleSteps: 4,
-        scaleStepWidth: 25,
-        scaleStartValue: 25,
+        scaleSteps: 7,
+        scaleStepWidth: 1,
+        scaleStartValue: 1,
     };
 
 
@@ -21,9 +21,9 @@ var org_metaworks_widget_chart_Radar= function(objectId, className){
     for(i=0; i<object.radarData.length; i++){
 
         dataSets[i] = {
-            fillColor: object.radarData[i].color,
-            strokeColor: object.radarData[i].color,
-            pointColor: object.radarData[i].color,
+            fillColor: "rgba(" + object.radarData[i].color + ", 0.5)",
+            strokeColor: "rgba(" + object.radarData[i].color + ", 1)",
+            pointColor: "rgba(" + object.radarData[i].color + ", 1)",
             pointStrokeColor: "#fff",
             data: object.radarData[i].data
         };
@@ -41,6 +41,6 @@ var org_metaworks_widget_chart_Radar= function(objectId, className){
         var ctx2 = chartDiv.getContext("2d");
         var myNewChart = new Chart(ctx2).Radar(radarData);
 
-        new Chart(ctx2).Radar(radarData, lineOptions);
+        //new Chart(ctx2).Radar(radarData, lineOptions);
     }
 }

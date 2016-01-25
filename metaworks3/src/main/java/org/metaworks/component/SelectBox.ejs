@@ -18,7 +18,7 @@
 			for(var i in value.optionValues){
 				var option = value.optionValues[i];
 
-				if(value.selected == option || (value.selected && (value.selected.indexOf(option + ", ") >= 0 || value.selected.length - value.selected.indexOf(option) - option.length == 0) )) {
+				if(value.selected == option || (value.multiple && (value.selected && (value.selected.indexOf(option + ", ") >= 0 || value.selected.length - value.selected.indexOf(option) - option.length == 0) ))) {
 %>
 		<option value="<%=value.optionValues[i]%>" selected><%=mw3.localize(value.optionNames[i])%></option>
 <%
