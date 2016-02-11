@@ -624,11 +624,22 @@ public class MetaworksRemoteService {
 		String calledClassName = (String) TransactionContext.getThreadLocalInstance().getSharedContext("_calledClassName");
 		String calledMethodNAme = (String) TransactionContext.getThreadLocalInstance().getSharedContext("_calledMethodName");
 
-		if(stack[2].getClassName().equals(calledClassName) && stack[2].getMethodName().equals(calledMethodNAme)){
-			return true;
-		}else{
+		try {
+			Class calledClass = Thread.currentThread().getContextClassLoader().loadClass(calledClassName);
+			Class stackClass = Thread.currentThread().getContextClassLoader().loadClass(stack[2].getClassName());
+
+			if(stackClass.isAssignableFrom(calledClass) && stack[2].getMethodName().equals(calledMethodNAme)){
+				return true;
+			}else{
+				return false;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
 			return false;
 		}
+
 
     }
 
