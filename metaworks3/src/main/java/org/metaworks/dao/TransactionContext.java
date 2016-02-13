@@ -169,7 +169,7 @@ public class TransactionContext implements ConnectionFactory{
 		if(!isNew){
 			dao.getImplementationObject().createSelectSql();
 			dao.select();
-			if(!dao.next()) throw new Exception("No Such "+tableName+" where "+keyFieldName+" is " + keyFieldValue);
+			if(!dao.next()) throw new NoSuchEntitySQLException("No Such "+tableName+" where "+keyFieldName+" is " + keyFieldValue);
 		}
 		
 		String sharedContextKey = tableName + "@" + keyFieldValue;
