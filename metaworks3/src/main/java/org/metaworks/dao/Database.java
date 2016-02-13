@@ -43,6 +43,8 @@ public class Database<T extends IDAO> implements IDAO, Serializable, Cloneable{
 				return (T) get(getClass(), keyValue, this);
 			}catch(ClassCastException cce){
 				throw new Exception("You probably mis-defined your database class " + getClass().getName() + " extends Database<interface name> not the implemented class name.", cce);
+			}catch(NoSuchEntitySQLException noEntity){
+				return null; //meaning no such entity!
 			}
 //		} finally {
 //			TransactionContext.getThreadLocalInstance().setNeedSecurityCheck(securityCheck);
