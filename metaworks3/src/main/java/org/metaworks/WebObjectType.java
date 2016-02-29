@@ -37,6 +37,9 @@ import com.thoughtworks.xstream.XStream;
 
 public class WebObjectType implements Serializable{
 
+
+	final static String ACTIVITY_DESCRIPTION_COMPONENT_OVERRIDER_PACKAGE = null;
+
 	Object resource;
 
 	boolean isInterface;
@@ -259,7 +262,8 @@ public class WebObjectType implements Serializable{
 
 		//setting face
 		Face typeFace = (Face)getAnnotationDeeply(tryingClasses, null, Face.class);
-		
+
+		boolean ignoreFaceClass = false;
 		if(typeFace!=null){
 			
 			if(typeFace.ejsPathMappingByContext().length > 0){
@@ -276,7 +280,10 @@ public class WebObjectType implements Serializable{
 				setFaceOptions(optionMap);
 			}
 
-			if(typeFace.faceClass() != org.metaworks.Face.class){
+			ignoreFaceClass = typeFace.faceClass() == org.metaworks.IgnoreFaceClassOfSuper.class ;
+
+
+			if(typeFace.faceClass() != org.metaworks.Face.class && !ignoreFaceClass){
 				if(getFaceOptions()==null) setFaceOptions(new HashMap<String, String>());
 				getFaceOptions().put("faceClass", typeFace.faceClass().getName());
 			}
@@ -293,6 +300,15 @@ public class WebObjectType implements Serializable{
 				setFaceForArray(typeFace.ejsPathForArray());
 		}
 
+		//for the last, if there is no face information, try to use the mapped Face Class - <packageName>.faces.<className>Face
+		if(!ignoreFaceClass && (getFaceOptions()==null || !getFaceOptions().containsKey("faceClass"))){
+			Class faceClass = getClassComponentByEscalation(actCls, "face", null);
+
+			if(faceClass!=null && org.metaworks.Face.class.isAssignableFrom(faceClass)){
+				if(getFaceOptions()==null) setFaceOptions(new HashMap<String, String>());
+				getFaceOptions().put("faceClass", faceClass.getName());
+			}
+		}
 
 		AutowiredFromClient alwaysSubmitted = (AutowiredFromClient)getAnnotationDeeply(tryingClasses, null, AutowiredFromClient.class);
 		if(alwaysSubmitted!=null) {
@@ -1657,7 +1673,89 @@ public class WebObjectType implements Serializable{
 
 		return null;//"genericfaces/ObjectFace.ejs";
 	}
-	
+
+	static public String getComponentClassName(Class cls, String compType) {
+		return getComponentClassName(cls, compType, false, false);
+	}
+
+	static public String getDomainClassName(Class cls, String compType) {
+
+		String componentClassName = cls.getName();
+		int whereComponentPackageNameStarts = componentClassName.lastIndexOf("." + compType);
+
+		String domainClassName = componentClassName.substring(whereComponentPackageNameStarts + compType.length() + 1, componentClassName.length() - compType.length());
+
+		String domainPackageName = componentClassName.substring(0, whereComponentPackageNameStarts);
+
+		return domainPackageName + domainClassName;
+	}
+
+	static public String getComponentClassName(Class cls, String compType, boolean isDefault, boolean overridesPackage) {
+		String pkgName = (overridesPackage ? ACTIVITY_DESCRIPTION_COMPONENT_OVERRIDER_PACKAGE : cls.getPackage().getName());
+		String clsName = getClassNameOnly(cls);
+
+		return pkgName + "." + compType + (isDefault ? ".Default" : ".") + clsName + compType.substring(0, 1).toUpperCase() + compType.substring(1, compType.length());
+	}
+
+
+	static public Class getClassComponentByEscalation(Class seedClass, String compType, Class defaultComponent) {
+		Class componentClass = null;
+		Class copyOfActivityCls = seedClass;
+
+		//try to find proper component by escalation (prior to overriding package)
+		String overridingPackageName = null;
+		if (overridingPackageName != null) {
+			do {
+				String componentClsName = getComponentClassName(copyOfActivityCls, compType, false, true);
+
+				try {
+					componentClass = Thread.currentThread().getContextClassLoader().loadClass(componentClsName);
+				} catch (Exception e) {
+				}
+
+				//try to find proper component by escalation (with original package)
+				if (componentClass == null) {
+					componentClsName = getComponentClassName(copyOfActivityCls, compType);
+					try {
+						componentClass = Thread.currentThread().getContextClassLoader().loadClass(componentClsName);
+					} catch (ClassNotFoundException e) {
+					}
+				}
+				copyOfActivityCls = copyOfActivityCls.getSuperclass();
+			} while (componentClass == null);
+		}
+
+		if (componentClass == null) {
+			copyOfActivityCls = seedClass;
+			//try to find proper component by escalation (with original package)
+			do {
+				String componentClsName = getComponentClassName(copyOfActivityCls, compType);
+
+				try {
+					componentClass = Thread.currentThread().getContextClassLoader().loadClass(componentClsName);
+				} catch (Exception e) {
+				}
+
+				copyOfActivityCls = copyOfActivityCls.getSuperclass();
+			} while (componentClass == null && copyOfActivityCls != Object.class && copyOfActivityCls != null);
+
+			//try default one
+			if (componentClass == null) {
+				if (defaultComponent != null) {
+					return defaultComponent;
+				} else {
+					try {
+						componentClass = Thread.currentThread().getContextClassLoader().loadClass(getComponentClassName(seedClass, compType, true, false));
+					} catch (ClassNotFoundException e) {
+					}
+				}
+			}
+		}
+
+		return componentClass;
+	}
+
+
 	static public String toUpperStartedPropertyName(String propertyName){
 		return propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1);
 	}
