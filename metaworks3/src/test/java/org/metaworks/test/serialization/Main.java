@@ -19,7 +19,7 @@ public class Main implements SerializationSensitive {
 
 
 	@Override
-	public void afterDeserialization() {
+	public void afterMWDeserialization() {
 		Part part = new Part();
 		part.setId("deserialized");
 
@@ -27,7 +27,7 @@ public class Main implements SerializationSensitive {
 	}
 
 	@Override
-	public void beforeSerialization() {
+	public void beforeMWSerialization() {
 		Part part = new Part();
 		part.setId("serialized");
 
