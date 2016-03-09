@@ -44,10 +44,10 @@ public class MySQLDAOFactory extends OracleDAOFactory{
 				String forTableName = new String(forWhat);
 				String forColumnName = new String(((useTableNameHeader) ? forWhat : "") + "id");
 				forColumnName = forColumnName.replaceFirst("Proc", "");
-//				forTableName = forTableName.toLowerCase();
-				forTableName = forTableName.toUpperCase();
-				if (forTableName.equals("WORKITEM")) {
-					forColumnName = "TASKID";
+				forTableName = forTableName.toLowerCase();
+//				forTableName = forTableName.toUpperCase();
+				if (forTableName.equals("workitem")) {
+					forColumnName = "taskid";
 				}
 				
 				Connection conn = null;
@@ -67,9 +67,9 @@ public class MySQLDAOFactory extends OracleDAOFactory{
 					
 					Long seq_key  = null;
 						stmt_select_seq = conn.createStatement();
-						rs_select_seq = stmt_select_seq.executeQuery("select ifnull(max(SEQ),0) + 1 as LASTKEY from BPM_SEQ where TBNAME = '" + forTableName + "'");
+						rs_select_seq = stmt_select_seq.executeQuery("select ifnull(max(seq),0) + 1 as lastkey from bpm_seq where tbname = '" + forTableName + "'");
 						if (rs_select_seq.next()) {
-							seq_key = rs_select_seq.getLong("LASTKEY");
+							seq_key = rs_select_seq.getLong("lastkey");
 						} else {
 							seq_key = new Long(1);
 						}
@@ -80,9 +80,9 @@ public class MySQLDAOFactory extends OracleDAOFactory{
 					}else{
 						Long id_key  = null;
 						stmt_select_table_max_key = conn.createStatement();
-						rs_select_table_max_key = stmt_select_table_max_key.executeQuery("select ifnull(max("+forColumnName+"),0) as LASTKEY from " +(forTableName.equals("WORKITEM")? "BPM_WORKLIST" : ((useTableNameHeader)?"BPM_":"") + forTableName));
+						rs_select_table_max_key = stmt_select_table_max_key.executeQuery("select ifnull(max("+forColumnName+"),0) as lastkey from " +(forTableName.equals("workitem")? "bpm_worklist" : ((useTableNameHeader)?"bpm_":"") + forTableName));
 						if (rs_select_table_max_key.next()) {
-							id_key = rs_select_table_max_key.getLong("LASTKEY");
+							id_key = rs_select_table_max_key.getLong("lastkey");
 						}
 										
 						if (seq_key.longValue() > id_key.longValue()) {
@@ -92,13 +92,13 @@ public class MySQLDAOFactory extends OracleDAOFactory{
 						}
 					}
 					
-					pstmt_update_seq = conn.prepareStatement("update BPM_SEQ set SEQ = ? , MODDATE = now() where  TBNAME = ?");
+					pstmt_update_seq = conn.prepareStatement("update bpm_seq set seq = ? , moddate = now() where  tbname = ?");
 					pstmt_update_seq.setLong(1, key);
 					pstmt_update_seq.setString(2, forTableName);
 					int modcount = pstmt_update_seq.executeUpdate();
 					
 					if(modcount == 0) {
-						pstmt_insert_seq = conn.prepareStatement("insert into BPM_SEQ (TBNAME, SEQ, DESCRIPTION, MODDATE) values(?, ?, ?, now())");
+						pstmt_insert_seq = conn.prepareStatement("insert into bpm_seq (tbname, seq, description, moddate) values(?, ?, ?, now())");
 						pstmt_insert_seq.setString(1, forTableName);
 						pstmt_insert_seq.setLong(2, key);
 						pstmt_insert_seq.setString(3, forTableName);
