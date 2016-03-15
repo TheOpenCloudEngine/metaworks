@@ -30,7 +30,6 @@ import org.metaworks.annotation.AutowiredFromClient;
 import org.metaworks.dao.ConnectionFactory;
 import org.metaworks.dao.IDAO;
 import org.metaworks.dao.TransactionContext;
-import org.metaworks.i18n.MultilingualSupport;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -45,7 +44,7 @@ import org.springframework.util.SystemPropertyUtils;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 public class MetaworksRemoteService {
-	
+	public static final String AUTOWIRED_FROM_CLIENT_CLASS_MAP = "autowiredFromClientClassMap";
 
 
 //    public static ThreadLocal<String> callingObjectTypeName = new ThreadLocal<String>();
@@ -696,21 +695,8 @@ public class MetaworksRemoteService {
 			if(TransactionContext.getThreadLocalInstance()==null || TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient()==null){
 				autowiringFromClient = false;
 			}else{
-			
-				autowiringObjectFromClientMapByClassTypes = new HashMap<Class, Object>();
-				for(Object key : TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient().keySet()){
-					Object autowiringObjectFromClient = TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient().get(key);
-					
-					if(autowiringObjectFromClient!=null){
-						Class theClass = autowiringObjectFromClient.getClass();
 
-						//register class hierarchy.
-						while(theClass != Object.class) {
-							autowiringObjectFromClientMapByClassTypes.put(theClass, autowiringObjectFromClient);
-							theClass = theClass.getSuperclass();
-						}
-					}
-				}
+				autowiringObjectFromClientMapByClassTypes = getAutowiredFromClientClassMap();
 			}
 		}
 		
@@ -755,6 +741,33 @@ public class MetaworksRemoteService {
 		return autowiredObjects;
 	}
 
+	public static Map<Class, Object> getAutowiredFromClientClassMap() {
+		if(TransactionContext.getThreadLocalInstance().getSharedContext("autowiredFromClientClassMap") != null){
+			return (Map<Class, Object>) TransactionContext.getThreadLocalInstance().getSharedContext("autowiredFromClientClassMap");
+		}
+
+
+		Map<Class, Object> autowiringObjectFromClientMapByClassTypes;
+		autowiringObjectFromClientMapByClassTypes = new HashMap<Class, Object>();
+		for(Object key : TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient().keySet()){
+            Object autowiringObjectFromClient = TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient().get(key);
+
+            if(autowiringObjectFromClient!=null){
+                Class theClass = autowiringObjectFromClient.getClass();
+
+                //register class hierarchy.
+                while(theClass != Object.class) {
+                    autowiringObjectFromClientMapByClassTypes.put(theClass, autowiringObjectFromClient);
+                    theClass = theClass.getSuperclass();
+                }
+            }
+        }
+
+		TransactionContext.getThreadLocalInstance().setSharedContext(AUTOWIRED_FROM_CLIENT_CLASS_MAP, autowiringObjectFromClientMapByClassTypes);
+
+		return autowiringObjectFromClientMapByClassTypes;
+	}
+
 	public static <T> T getComponent(Class<T> clazz) {
 		T t = null;
 
@@ -771,6 +784,14 @@ public class MetaworksRemoteService {
 			}
 		} catch (NoSuchBeanDefinitionException e) {
 			//System.out.printf("No qualifying bean of type [%s] is defined", clazz.toString());
+
+		}
+
+		if(t==null){
+
+			if(getAutowiredFromClientClassMap().containsKey(clazz)){
+				t = (T) getAutowiredFromClientClassMap().get(clazz);
+			};
 
 		}
 

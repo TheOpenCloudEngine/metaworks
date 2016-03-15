@@ -143,7 +143,7 @@ public class MetaworksConverter extends BeanConverter {
 				}
 
 				if(realValue instanceof SerializationSensitive){
-					((SerializationSensitive)realValue).afterDeserialization();
+					((SerializationSensitive)realValue).afterMWDeserialization();
 				}
 
 				return realValue;
@@ -222,7 +222,7 @@ public class MetaworksConverter extends BeanConverter {
 //					Object realValue = faceWrapped.getValue(); //it is created from (FACEWRAP_1)
 
 					if(realValue instanceof SerializationSensitive){
-						((SerializationSensitive)realValue).afterDeserialization();
+						((SerializationSensitive)realValue).afterMWDeserialization();
 					}
 
 					return realValue;
@@ -232,7 +232,7 @@ public class MetaworksConverter extends BeanConverter {
 					Object value = super.convertInbound(paramType, data);
 
 					if(value instanceof SerializationSensitive){
-						((SerializationSensitive)value).afterDeserialization();
+						((SerializationSensitive)value).afterMWDeserialization();
 					}
 
 					return value;
@@ -430,7 +430,7 @@ public class MetaworksConverter extends BeanConverter {
 		try {
 
 			if(data instanceof SerializationSensitive){
-				((SerializationSensitive)data).beforeSerialization();
+				((SerializationSensitive)data).beforeMWSerialization();
 			}
 
 			boolean faceReplacingEnabled = true;
