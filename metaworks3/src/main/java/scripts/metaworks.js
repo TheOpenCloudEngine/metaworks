@@ -351,7 +351,28 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 					return false;
 				else if(faceHelperClass == null)
 					return true;
-				
+
+				//try @ServiceMethod(onLoad=true)
+				if(this.objects[objectId]!=null && !this.objects[objectId].__loaded)
+				try{
+
+					var objectMetadata = mw3.getMetadata(className);
+
+					for(var methodName in objectMetadata.serviceMethodContexts) {
+						var methodContext = objectMetadata.serviceMethodContexts[methodName];
+
+						if (methodContext.onLoad) {
+							mw3.call(objectId, methodContext.methodName);
+							this.objects[objectId].__loaded = true;
+						}
+					}
+
+				}catch(e){
+					console.log("Failed to invoke @ServiceMethod(onload) for "+ className +"(objectId:" + objectId + ")\n" + e.message);
+				}
+
+
+
 				var thereIsHelperClass = false;
 				try{
 					//console.debug('eval faceHelper [' + objectId + '] -> ' + face);					
@@ -679,51 +700,66 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 			Metaworks3.prototype.getMetadata = function(objectTypeName){
 
 				if(!objectTypeName || objectTypeName == null || objectTypeName.trim().length == 0) return;
-				
+
 				if(objectTypeName.length > 2 && objectTypeName.substr(-2) == '[]'){			//if array of some object type, use ArrayFace with mapped class mapping for the object type.
 					return;
 				}
-				
+
 				if(objectTypeName.length > 4 && objectTypeName.substr(0, 2) == '[L' && objectTypeName.substr(objectTypeName.length-1) == ';'){			//if array of some object type, use ArrayFace with mapped class mapping for the object type.
 					return;
 				}
-				
+
 				if(objectTypeName.indexOf(":") != -1)
 					objectTypeName = objectTypeName.split(':')[0];
-			
-				if(!this.metaworksMetadata[objectTypeName] 
+
+				if(!this.metaworksMetadata[objectTypeName]
 				//|| true
-				
+
 				){ //caches the metadata
 					//alert('getting metadata for ' + objectTypeName);
-					
-					this.metaworksProxy.getMetaworksType(objectTypeName, 
-						{ 
-			        		callback: function( webObjectType ){
-				    			//alert(webObjectType.name + "=" + dwr.util.toDescriptiveString(webObjectType, 5))
 
-			        			mw3._storeMetadata(webObjectType);
-							
-			        		},
+					if(localStorage && localStorage['metadata' + '_' + objectTypeName]){
+						var metadataInCache = null;
+						eval('metadataInCache = ' + localStorage['metadata'+ '_' + objectTypeName]);
 
-			        		async: false,
-					
-							timeout:10000, 
-		                    
-		                    errorHandler:function(errorString, exception) {
-		                        //alert(errorString);
-		                    	throw new Error(exception.javaClassName + ": " + exception.message);
-		                    	
-		  						//document.getElementById(this.dwrErrorDiv).innerHTML = errorString;
-		                    } 
-			    		}
-					);
+						mw3._storeMetadata(metadataInCache);
+
+					}
+					else{
+
+						this.metaworksProxy.getMetaworksType(objectTypeName,
+							{
+								callback: function( webObjectType ){
+									//alert(webObjectType.name + "=" + dwr.util.toDescriptiveString(webObjectType, 5))
+
+									mw3._storeMetadata(webObjectType);
+
+									if(localStorage){
+										localStorage['metadata_'+ objectTypeName] = JSON.stringify(webObjectType);
+									}
+
+								},
+
+								async: false,
+
+								timeout:10000,
+
+								errorHandler:function(errorString, exception) {
+									//alert(errorString);
+									throw new Error(exception.javaClassName + ": " + exception.message);
+
+									//document.getElementById(this.dwrErrorDiv).innerHTML = errorString;
+								}
+							}
+						);
+					}
 				}
-				
+
 				var objectMetadata = this.metaworksMetadata[objectTypeName];
-				
+
 				return objectMetadata;
 			};
+
 				
 			/**
 			  *  metadata 캐시하기:  metaworksMetadata 에 넣어두기 와 후처리 작업들
@@ -1045,6 +1081,10 @@ com.abc.ClassA.methodA=입력
 			**/
 			
 			Metaworks3.prototype._template = function(url, contextValues){
+
+
+				if(localStorage && url && url.indexOf('?') > 0) url = url.split('?')[0];
+
 				var templateEngine;
 				if(mw3.templates[url]){
 					templateEngine = mw3.templates[url];
@@ -1067,9 +1107,46 @@ com.abc.ClassA.methodA=입력
 						templateEngine = url;
 						
 						
-					}else{
-						templateEngine = new EJS({url: url});
-						mw3.templates[url] = templateEngine;
+					}else {
+						var templateSource;
+
+						//caching templates
+						if(localStorage) {
+
+
+
+							if (localStorage['template_' + url]) {
+								templateSource = localStorage['template_' + url];
+							} else {
+
+								$.ajax(url,
+									{
+										async: false,
+										success: function (tmpl) {
+
+											templateSource = tmpl;
+										}
+									}
+								);
+
+
+
+								localStorage['template_'+ url] = templateSource;
+							}
+
+							if(templateSource != null && typeof templateSource == 'string' && templateSource.trim().length==0){
+								return ""; //no need to render.
+							}
+
+							templateEngine = new EJS({text: templateSource, name: url});
+							mw3.templates[url] = templateEngine;
+
+						}else{
+							templateEngine = new EJS({url: url});
+							mw3.templates[url] = templateEngine;
+
+						}
+
 					}
 
 				}
@@ -1077,7 +1154,11 @@ com.abc.ClassA.methodA=입력
 				if(mw3.usingTemplateEngine == 'jQote'){
 					return $.jqote(templateEngine, contextValues);
 				}else{
-					return templateEngine.render(contextValues);	
+					try {
+						return templateEngine.render(contextValues);
+					}catch(e){
+						throw e;
+					}
 				}
 				
 			};
@@ -1431,7 +1512,7 @@ com.abc.ClassA.methodA=입력
 						}
 						
 						//#DEBUG POINT
-						if(html.indexOf("<!--replace-->")==0){
+						if(html && html.indexOf("<!--replace-->")==0){
 
 							$(targetDiv).replaceWith(html);
 						}else{
@@ -1683,7 +1764,7 @@ com.abc.ClassA.methodA=입력
 						e.targetObjectId = objectId;
 
 						this.template_error(e, actualFace)
-						return
+						throw e;
 					} finally{
 						this.setWhen(currentContextWhen);
 						this.setWhere(currentContextWhere)
@@ -1800,73 +1881,91 @@ com.abc.ClassA.methodA=입력
 
 				}
 			};
-			
+
 			Metaworks3.prototype.importScript = function(scriptUrl, afterLoadScript){
 
-				var result = false;
-				
+				var scriptString = false;
+
 				if(!this.loadedScripts[scriptUrl]){
 				   mw3.loadedScripts[scriptUrl] = scriptUrl;
-				
-				   //TODO: asynchronous processing performance issues later on
-				   $.ajax({
-					   async:false,
-					   url: scriptUrl,
-					   type:'GET',
-					   success:function(data, textStatus, jqXHR){
-						   if(data && data.length > 0){
-							   	result = true;
-								
-								// add script url
-								var head= document.getElementsByTagName('head')[0];
-								var script= document.createElement('script');
-								script.type= 'text/javascript';
-								script.src= scriptUrl;
-								head.appendChild(script);
-	
-								//TODO: it is disabled since all the facehelper initialization is done by onLoadFaceHelperScript() explicitly for now.
-	//							if(afterLoadScript){
-	//								script.onload = afterLoadScript;
-	//								
-	//								script.onreadystatechange = function() { //for IE
-	//									if (this.readyState == 'complete' || this.readyState == 'loaded') {
-	//										
-	//										afterLoadScript;
-	//									}
-	//								};
-	//							}
-								
-								if(typeof afterLoadScript == 'function'){
-									script.onload = afterLoadScript;
-									
-									script.onreadystatechange = function() { //for IE
-										if (this.readyState == 'complete' || this.readyState == 'loaded') {
-											afterLoadScript;
-										}
-									}
+
+
+					//TODO: asynchronous processing performance issues later on
+					if(localStorage){
+						if(localStorage['scripts_' + scriptUrl]){
+							scriptString = localStorage['scripts_' + scriptUrl];
+						}
+					}
+
+					if(!scriptString) {
+						$.ajax({
+							async: false,
+							url: scriptUrl,
+							type: 'GET',
+							success: function(data){
+								if (data && data.length > 0) {
+									scriptString = data;
+
+
 								}
-						   }
-					   },
-					   
-					   
-					   error:function(xhr){
-						   //TODO: looks undesired validation or something is happening guessing by 
-						   //      the successful request is treated as an error. 
-						   //      It probably harmful to performance, so someday it should be fixed.
-						   
-						   if(xhr.status=='200'){
-							   this.success();
-						   }
-						   
-						   //alert(e.message);
-					   }
-				   });
+							},
+
+
+							error: function (xhr) {
+								//TODO: looks undesired validation or something is happening guessing by
+								//      the successful request is treated as an error.
+								//      It probably harmful to performance, so someday it should be fixed.
+
+								if (xhr.status == '200') {
+									this.success();
+								}
+
+								//alert(e.message);
+							}
+						});
+					}
+
+					if(scriptString){
+
+
+						//eval(scriptString);
+						//eval(scriptString);
+
+						//if(typeof afterLoadScript == 'function')
+						//	afterLoadScript();
+
+
+						// add script url
+						var head = document.getElementsByTagName('head')[0];
+						var script = document.createElement('script');
+						script.type = 'text/javascript';
+						//script.src= scriptUrl;
+						script.innerText = scriptString;
+						script.innerHTML = scriptString;
+						head.appendChild(script);
+
+						if (typeof afterLoadScript == 'function') {
+							script.onload = afterLoadScript;
+
+							script.onreadystatechange = function () { //for IE
+								if (this.readyState == 'complete' || this.readyState == 'loaded') {
+									afterLoadScript;
+								}
+							}
+						}
+
+						if(localStorage)
+							localStorage['scripts_' + scriptUrl] = scriptString;
+
+					}
+
+
 				}else{
 					if(typeof afterLoadScript == 'function')
 						afterLoadScript();
 				}
-				
-				return result;
+
+				return scriptString;
 			};
 			
 			Metaworks3.prototype.importStyle = function(url){

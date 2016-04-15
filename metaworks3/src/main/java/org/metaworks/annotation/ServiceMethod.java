@@ -58,4 +58,5 @@ public @interface ServiceMethod {
 	boolean childrenLoader() 	default false;
 	boolean constructor()		default false;
 	boolean bindingHidden() 	default false;
+	boolean onLoad() 	default false;
 }
