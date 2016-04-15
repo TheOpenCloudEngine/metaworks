@@ -1153,7 +1153,8 @@ public class WebObjectType implements Serializable{
 				smc.setValidate(annotation.validate());
 				smc.setRtnCls(method.getReturnType().getName());
 				smc.setBindingHidden(annotation.bindingHidden());
-				
+				smc.setOnLoad(annotation.onLoad());
+
 				if(group != null)
 					smc.setGroup(group.name());
 				

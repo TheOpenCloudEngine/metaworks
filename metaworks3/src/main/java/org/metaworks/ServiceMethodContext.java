@@ -147,8 +147,17 @@ public class ServiceMethodContext{
 		public void setNameGetter(boolean nameGetter) {
 			this.nameGetter = nameGetter;
 		}
-		
-	
+
+	boolean onLoad;
+		public boolean isOnLoad() {
+			return onLoad;
+		}
+		public void setOnLoad(boolean onLoad) {
+			this.onLoad = onLoad;
+		}
+
+
+
 	Map<String, Object> attributes;
 		public Map<String, Object> getAttributes() {
 			return attributes;

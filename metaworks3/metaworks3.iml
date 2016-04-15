@@ -14,7 +14,7 @@
     <orderEntry type="library" name="Maven: org.uengine.metaworks:metaworks2:1.2-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.thoughtworks.xstream:xstream:1.4.5" level="project" />
     <orderEntry type="library" name="Maven: org.uengine.metaworks:metaworks-dwr:1.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.uengine.metaworks:metaworks2:1.2-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="metaworks2" />
     <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:3.0.1" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:1.0.0.GA" level="project" />
     <orderEntry type="library" name="Maven: javax.persistence:persistence-api:1.0.2" level="project" />
