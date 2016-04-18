@@ -1,4 +1,13 @@
 var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
+
+				this.useLocalStorage = true;
+
+				if(localStorage && localStorage["useLocalStorage"]){
+					this.useLocalStorage = (localStorage["useLocalStorage"] == "true");
+				}
+
+
+
 				this.fn = {};
 				
 				this.metaworksMetadata = new Array();
@@ -115,6 +124,9 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 			     * metaworks service array
 			     */
 			    this.metaworksServices = [];
+
+				//for storing flags that @ServiceMethod(onLoad) has been done for each object.
+				this.objectLoaded = {};
 			    
 			    // Netscape
 			    // 5.0 (Windows NT 6.1) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.79 Safari/535.11
@@ -353,25 +365,36 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 					return true;
 
 				//try @ServiceMethod(onLoad=true)
-				if(this.objects[objectId]!=null && !this.objects[objectId].__loaded)
-				try{
+				if(this.objects[objectId]!=null && !this.objectLoaded[objectId]){
+					try{
 
-					var objectMetadata = mw3.getMetadata(className);
+						var objectMetadata = mw3.getMetadata(className);
 
-					for(var methodName in objectMetadata.serviceMethodContexts) {
-						var methodContext = objectMetadata.serviceMethodContexts[methodName];
+						for(var methodName in objectMetadata.serviceMethodContexts) {
+							var methodContext = objectMetadata.serviceMethodContexts[methodName];
 
-						if (methodContext.onLoad) {
-							mw3.call(objectId, methodContext.methodName);
-							this.objects[objectId].__loaded = true;
+							if (methodContext.onLoad) {
+								mw3.objectLoaded[objectId] = true;
+
+								mw3.call(objectId, methodContext.methodName, false, false
+									, function(objId, result){
+										mw3.objectLoaded[objId] = true;
+										if(result && result.__objectId){
+											mw3.objectLoaded[result.__objectId] = true;
+										}
+									}
+								);
+
+							}
 						}
+
+					}catch(e){
+						console.log("Failed to invoke @ServiceMethod(onload) for "+ className +"(objectId:" + objectId + ")\n" + e.message);
 					}
-
-				}catch(e){
-					console.log("Failed to invoke @ServiceMethod(onload) for "+ className +"(objectId:" + objectId + ")\n" + e.message);
 				}
-
-
+				//else{
+				//	mw3.loaded[objectId] = null;
+				//}
 
 				var thereIsHelperClass = false;
 				try{
@@ -718,7 +741,7 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 				){ //caches the metadata
 					//alert('getting metadata for ' + objectTypeName);
 
-					if(localStorage && localStorage['metadata' + '_' + objectTypeName]){
+					if(this.useLocalStorage && localStorage && localStorage['metadata' + '_' + objectTypeName]){
 						var metadataInCache = null;
 						eval('metadataInCache = ' + localStorage['metadata'+ '_' + objectTypeName]);
 
@@ -734,7 +757,7 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 
 									mw3._storeMetadata(webObjectType);
 
-									if(localStorage){
+									if(mw3.useLocalStorage && localStorage){
 										localStorage['metadata_'+ objectTypeName] = JSON.stringify(webObjectType);
 									}
 
@@ -1083,7 +1106,7 @@ com.abc.ClassA.methodA=입력
 			Metaworks3.prototype._template = function(url, contextValues){
 
 
-				if(localStorage && url && url.indexOf('?') > 0) url = url.split('?')[0];
+				if(this.useLocalStorage && localStorage && url && url.indexOf('?') > 0) url = url.split('?')[0];
 
 				var templateEngine;
 				if(mw3.templates[url]){
@@ -1111,7 +1134,7 @@ com.abc.ClassA.methodA=입력
 						var templateSource;
 
 						//caching templates
-						if(localStorage) {
+						if(this.useLocalStorage && localStorage) {
 
 
 
@@ -1129,7 +1152,9 @@ com.abc.ClassA.methodA=입력
 									}
 								);
 
-
+								if(templateSource != null && typeof templateSource == 'string' && templateSource.trim().length==0){
+									templateSource = "  ";
+								}
 
 								localStorage['template_'+ url] = templateSource;
 							}
@@ -1891,9 +1916,12 @@ com.abc.ClassA.methodA=입력
 
 
 					//TODO: asynchronous processing performance issues later on
-					if(localStorage){
+					if(this.useLocalStorage && localStorage){
 						if(localStorage['scripts_' + scriptUrl]){
 							scriptString = localStorage['scripts_' + scriptUrl];
+
+							if(scriptString && scriptString=="//no script") //there is no script
+								return false;
 						}
 					}
 
@@ -1939,9 +1967,14 @@ com.abc.ClassA.methodA=입력
 						var head = document.getElementsByTagName('head')[0];
 						var script = document.createElement('script');
 						script.type = 'text/javascript';
-						//script.src= scriptUrl;
-						script.innerText = scriptString;
-						script.innerHTML = scriptString;
+
+
+						if(this.useLocalStorage && localStorage){
+							script.innerText = scriptString;
+							script.innerHTML = scriptString;
+						}else
+							script.src= scriptUrl;
+
 						head.appendChild(script);
 
 						if (typeof afterLoadScript == 'function') {
@@ -1954,8 +1987,12 @@ com.abc.ClassA.methodA=입력
 							}
 						}
 
-						if(localStorage)
+						if(this.useLocalStorage && localStorage)
 							localStorage['scripts_' + scriptUrl] = scriptString;
+
+					}else{
+						if(this.useLocalStorage && localStorage)
+							localStorage['scripts_' + scriptUrl] = "//no script";
 
 					}
 
@@ -5244,7 +5281,7 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 		}
 		
 		if(callback && typeof callback == 'function')
-			callback();
+			callback(objId, result);
 		
 		if(mw3.afterCall)
 			mw3.afterCall(svcNameAndMethodName, result);
