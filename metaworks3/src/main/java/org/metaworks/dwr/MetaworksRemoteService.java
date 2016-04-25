@@ -1,6 +1,7 @@
 package org.metaworks.dwr;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,6 +34,8 @@ import org.metaworks.dao.TransactionContext;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -778,10 +781,27 @@ public class MetaworksRemoteService {
 
 			Map beans = getInstance().getBeanFactory().getBeansOfType(clazz);
 
+			int minOrder = 10000000;
+
 			Iterator iterator = beans.values().iterator();
-			if(iterator.hasNext()){
-				return (T) iterator.next();
+			while(iterator.hasNext()){
+				T bean = (T) iterator.next();
+				Order order = AnnotationUtils.findAnnotation(bean.getClass(),
+				Order.class);
+
+
+				Integer orderValue = 9999999;
+
+				if(order!=null){
+					orderValue = (Integer) AnnotationUtils.getValue(order);
+				}
+
+				if(minOrder > orderValue){
+					minOrder = orderValue;
+					t = bean;
+				}
 			}
+
 		} catch (NoSuchBeanDefinitionException e) {
 			//System.out.printf("No qualifying bean of type [%s] is defined", clazz.toString());
 
