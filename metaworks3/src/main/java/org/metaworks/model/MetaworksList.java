@@ -32,9 +32,30 @@ public class MetaworksList<T> implements ContextAware {
             this.elements = elements;
         }
 
+    String className;
+        public String getClassName() {
+            return className;
+        }
+        public void setClassName(String className) {
+            this.className = className;
+        }
+
+
     public MetaworksList(){
         setElements(new ArrayList<MetaworksElement>());
         setMetaworksContext(new MetaworksContext());
+
+
+        ParameterizedType parameterizedType;
+
+        try {
+            parameterizedType = (ParameterizedType) this.getClass().
+                    getGenericSuperclass();
+        }catch (ClassCastException cce){
+            throw new RuntimeException("MetaworksList must have parameterized type.", cce);
+        }
+
+        setClassName(((Class)parameterizedType.getActualTypeArguments()[0]).getName());
     }
 
 

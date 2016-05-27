@@ -1,4 +1,20 @@
 <%if(value){%>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <%=value.className%>
+        <%
+         if(value && value.length){
+          %>
+        (<%=value.elements.length%>)
+
+        <%}%>
+
+    </div>
+    <div class="panel-body">
 <%=fields.elements.here()%>
 <%=methods.add.here()%>
+    </div>
+</div>
+
 <%}%>
