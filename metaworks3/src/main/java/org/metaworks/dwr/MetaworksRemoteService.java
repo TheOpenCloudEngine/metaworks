@@ -16,6 +16,7 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 
+import com.sun.tools.javac.util.ArrayUtils;
 import org.directwebremoting.Browser;
 import org.directwebremoting.ScriptSession;
 import org.directwebremoting.ScriptSessionFilter;
@@ -668,7 +669,33 @@ public class MetaworksRemoteService {
     public static void wrapReturn(Object o1, Object o2){
     	wrapReturn(new Object[]{o1, o2});
     }
-    
+
+	public static void addReturn(Object object){
+		Object existingReturns = TransactionContext.getThreadLocalInstance().getSharedContext("wrappedReturn");
+
+		if(existingReturns==null) {
+			wrapReturn(object);
+
+			return;
+		}
+
+		if(existingReturns instanceof Object[]){
+			Object[] newReturns = new Object[((Object[])existingReturns).length + 1];
+			for(int i=0; i<newReturns.length; i++){
+				newReturns[i] = ((Object[])existingReturns)[i];
+			}
+
+			newReturns[((Object[]) existingReturns).length] = object;
+
+			wrapReturn(newReturns);
+
+			return;
+
+		}
+
+		wrapReturn(existingReturns, object);
+
+	}
 
     
 	public static Map<Class, Object> autowire(Object object) {

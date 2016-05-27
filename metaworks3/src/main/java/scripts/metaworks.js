@@ -434,9 +434,10 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 
 						}
 					}
-					
+
 				}catch(e){
-					console.log(e.message);
+					console.log("Error when to load facehelper [" + faceHelperClass + "] :");
+					console.log(e);
 				}
 			}
 			
