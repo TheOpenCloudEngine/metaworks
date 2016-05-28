@@ -14,6 +14,19 @@
     <div class="panel-body">
 <%=fields.elements.here()%>
 <%=methods.add.here()%>
+
+        <%
+        if(objectMetadata.serviceMethodContexts)
+            for(var i=0; i<objectMetadata.serviceMethodContexts.length; i++){
+                var serviceMethod = objectMetadata.serviceMethodContexts[i];
+
+                if(serviceMethod.inContextMenu || serviceMethod.methodName == "add")
+                    continue;
+
+                %><%=methods[serviceMethod.methodName].here()%> <%
+            }
+        %>
+
     </div>
 </div>
 
