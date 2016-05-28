@@ -32,6 +32,7 @@ import org.metaworks.annotation.AutowiredFromClient;
 import org.metaworks.dao.ConnectionFactory;
 import org.metaworks.dao.IDAO;
 import org.metaworks.dao.TransactionContext;
+import org.metaworks.i18n.MultilingualSupport;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -409,7 +410,7 @@ public class MetaworksRemoteService {
 			clientObject = realCalleeObject;
 
 
-		//flow clientObject for multilingual framework
+		//let the clientObject applied for multilingual framework
 //		{
 //			List<PropertyPointer> multilingualProperties = (List<PropertyPointer>) TransactionContext.getThreadLocalInstance().getSharedContext("multilingualProperties");
 //			if(multilingualProperties!=null) {
