@@ -583,7 +583,7 @@ public class MetaworksConverter extends BeanConverter {
 
 												face.setValueToFace(value);
 
-												if (face instanceof MetaworksList || property.getPropertyType().isPrimitive() || value == null/*|| property.getPropertyType().getPackage().equals(String.class.getPackage())*/) {
+												if (face instanceof MetaworksList || property.getPropertyType().getName().startsWith("java.lang") || property.getPropertyType().isPrimitive() || value == null/*|| property.getPropertyType().getPackage().equals(String.class.getPackage())*/) {
 
 													FaceWrapped faceWrapped = new FaceWrapped();
 													faceWrapped.setValue(value);
