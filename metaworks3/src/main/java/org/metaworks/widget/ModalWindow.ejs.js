@@ -11,10 +11,11 @@ var org_metaworks_widget_ModalWindow = function(objectId, className) {
 	if(this.object){
 		var title = this.object.title;
 		
-		if (title == null){
-			var metadata = mw3.getMetadata(this.className);
-			
-			title = metadata.displayName;
+		if (title == null && this.object.panel){
+			var metadata = mw3.getMetadata(this.object.panel.__className);
+
+			if(metadata)
+				title = metadata.displayName;
 		}
 	
 		title = mw3.localize(title);
