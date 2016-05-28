@@ -16,7 +16,6 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 
-import com.sun.tools.javac.util.ArrayUtils;
 import org.directwebremoting.Browser;
 import org.directwebremoting.ScriptSession;
 import org.directwebremoting.ScriptSessionFilter;
@@ -680,12 +679,13 @@ public class MetaworksRemoteService {
 		}
 
 		if(existingReturns instanceof Object[]){
-			Object[] newReturns = new Object[((Object[])existingReturns).length + 1];
-			for(int i=0; i<newReturns.length; i++){
-				newReturns[i] = ((Object[])existingReturns)[i];
+			Object[] existingReturns1 = (Object[]) existingReturns;
+			Object[] newReturns = new Object[existingReturns1.length + 1];
+			for(int i=0; i<existingReturns1.length; i++){
+				newReturns[i] = existingReturns1[i];
 			}
 
-			newReturns[((Object[]) existingReturns).length] = object;
+			newReturns[existingReturns1.length] = object;
 
 			wrapReturn(newReturns);
 
