@@ -3739,6 +3739,8 @@ com.abc.ClassA.methodA=입력
 				   		methods[methodContext.methodName] = new MethodRef(object, objectId, methodContext);
 				   }
 			    }
+
+				methods['contextMenus'] = new MethodRef(object, objectId, {methodName: 'contextMenus'});
 				
 				var objectRef={object: object, objectId: objectId, objectMetadata: objectMetadata, fields: fields, methods: methods};
 				return objectRef;
@@ -4643,7 +4645,24 @@ com.abc.ClassA.methodA=입력
 			};
 
 			Metaworks3.prototype.showStick = function(objId, serviceMethodContext, result){
-				$('body').append("<div id='" + mw3.popupDivId + "' class='target_" + serviceMethodContext.target + "' style='position: absolute; z-index:10; top:" + mw3.mouseY + "px; left:" + mw3.mouseX + "px'></div>");
+
+				var x = mw3.mouseX;
+				var y = mw3.mouseY;
+
+				var objectDiv = $('#objDiv_' + mw3.recentCallObjectId);
+				if(objectDiv){
+					var methodDiv = objectDiv.find('#methodDiv_' + mw3.recentCallMethodName);
+
+					if(methodDiv && methodDiv.offset()){
+						x = methodDiv.offset().left;
+						y = methodDiv.offset().top;
+
+						mw3.mouseX = x + methodDiv.width() / 2;
+						mw3.mouseY = y + methodDiv.height() / 2;
+					}
+				}
+
+				$('body').append("<div id='" + mw3.popupDivId + "' class='target_" + serviceMethodContext.target + "' style='position: absolute; z-index:10; top:" + y + "px; left:" + x + "px'></div>");
 				
 				mw3.locateObject(result, null, '#' + mw3.popupDivId);
 				
@@ -4894,6 +4913,27 @@ com.abc.ClassA.methodA=입력
 			};
 			
 			MethodRef.prototype.here = function(){
+
+				if(this.methodContext.methodName == 'contextMenus'){
+
+					var template = "dwr/metaworks/genericfaces/ContextMenus.ejs";
+
+					var contextValues = {
+						mw3					: mw3,
+						objectId			: this.objectId,
+						object				: this.object,
+						objectMetadata 		: mw3.getMetadata(this.object.__className)
+
+					}
+
+					var templateEngine = new EJS({url: mw3.base + '/' + template, context: contextValues});
+
+					var html = templateEngine.render(contextValues);
+
+					return html;
+				}
+
+
 				if(mw3.isHiddenMethod(this))					
 					return "";
 		   			
@@ -4929,6 +4969,8 @@ com.abc.ClassA.methodA=입력
 				
 				return html;
 			};
+
+
 
 			MethodRef.prototype.call = function(){
 				mw3.call(this.objectId, this.methodName);

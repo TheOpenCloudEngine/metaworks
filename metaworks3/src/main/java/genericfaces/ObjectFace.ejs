@@ -70,9 +70,9 @@
 				<%
 					$.each(groups, function(index, group){
 						if(index == 0){ %>
-							<li class="active"><a href="#<%=group%>" data-toggle="tab"><%=group%></a></li>
+							<li class="active"><a href="#<%=group%>_<%=objectId%>" data-toggle="tab"><%=group%></a></li>
 						<% }else{ %>
-							<li><a href="#<%=group%>" data-toggle="tab"><%=group%></a></li>
+							<li><a href="#<%=group%>_<%=objectId%>" data-toggle="tab"><%=group%></a></li>
 						<% }
 					});
 				%>
@@ -87,7 +87,7 @@
                 		}
                 	%>
                 		<!-- 첫번째 탭을 활성화하기 위해선 active가 필요하다. -->
-						<div class="tab-pane <%=index==0?'active':''%>" id="<%=group%>">
+						<div class="tab-pane <%=index==0?'active':''%>" id="<%=group%>_<%=objectId%>">
 							<table width="*" border="0" cellspacing="0" cellpadding="0">
                         		<tbody>
 						<% $.each(groups[group], function(fieldIndex, fieldDescriptor){ %>

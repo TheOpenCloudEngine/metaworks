@@ -1,0 +1,30 @@
+<div class="dropdown" style="display: inline; float:right">
+    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        Actions
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+
+    <%
+
+
+
+if(objectMetadata.serviceMethodContexts){
+        for(var key in objectMetadata.serviceMethodContexts){
+            var methodContext = objectMetadata.serviceMethodContexts[key];
+
+            if(!methodContext.inContextMenu) continue;
+
+            var methodName = methodContext.methodName;
+            var displayName = methodContext.displayName;
+%>
+        <li><a onclick="<%='if(event.stopPropagation)	 event.stopPropagation(); else if(window.event) window.event.cancelBubble = true;'+(methodContext.needToConfirm ? 'if (confirm(\'Are you sure to '+mw3.localize(displayName)+' this?\'))':'')%> mw3.call('<%=objectId%>','<%=methodName%>')">
+                <%=mw3.localize(displayName)%> <%=methodContext.keyBinding ? '(' + methodContext.keyBinding[0] + ')' : ''%>
+            </a></li>
+<%
+        }
+}
+%>
+
+    </ul>
+</div>

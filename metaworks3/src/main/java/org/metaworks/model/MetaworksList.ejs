@@ -4,14 +4,17 @@
     <div class="panel-heading">
         <%=value.className%>
         <%
-         if(value && value.length){
-          %>
+        if(value && value.length){
+        %>
         (<%=value.elements.length%>)
 
         <%}%>
 
+        <%=methods.contextMenus.here()%>
+
     </div>
     <div class="panel-body">
+
 <%=fields.elements.here()%>
 <%=methods.add.here()%>
 
@@ -26,7 +29,6 @@
                 %><%=methods[serviceMethod.methodName].here()%> <%
             }
         %>
-
     </div>
 </div>
 

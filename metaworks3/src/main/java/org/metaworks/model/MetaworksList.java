@@ -3,15 +3,26 @@ package org.metaworks.model;
 import org.metaworks.ContextAware;
 import org.metaworks.MetaworksAlert;
 import org.metaworks.MetaworksContext;
-import org.metaworks.annotation.Face;
-import org.metaworks.annotation.Order;
-import org.metaworks.annotation.ServiceMethod;
+import org.metaworks.annotation.*;
+import org.metaworks.dwr.SerializationSensitive;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MetaworksList<T> implements ContextAware {
+public class MetaworksList<T> implements ContextAware, SerializationSensitive {
+
+
+
+    public String id;
+    @Id
+        public String getId() {
+            return id;
+        }
+        public void setId(String id) {
+            this.id = id;
+        }
+
 
     transient MetaworksContext metaworksContext;
         @Override
@@ -42,6 +53,8 @@ public class MetaworksList<T> implements ContextAware {
 
 
     public MetaworksList(){
+        setId(java.util.UUID.randomUUID().toString());
+
         setElements(new ArrayList<MetaworksElement>());
         setMetaworksContext(new MetaworksContext());
 
@@ -121,4 +134,51 @@ public class MetaworksList<T> implements ContextAware {
         return null;
 
     }
+
+    @Override
+    public void afterMWDeserialization() {
+        for(MetaworksElement metaworksElement : getElements()){
+            if(metaworksElement.getElementId()==null)
+                metaworksElement.setElementId(java.util.UUID.randomUUID().toString());
+        }
+    }
+
+    @Override
+    public void beforeMWSerialization() {
+        for(MetaworksElement metaworksElement : getElements()){
+            if(metaworksElement.getElementId()==null)
+                metaworksElement.setElementId(java.util.UUID.randomUUID().toString());
+        }
+    }
+
+
+    @ServiceMethod(callByContent = true, inContextMenu = true, target=ServiceMethod.TARGET_SELF)
+    @Order(100)
+    public void unselectAll(){
+
+        for(MetaworksElement metaworksElement : getElements()){
+            metaworksElement.setSelected(false);
+        }
+    }
+
+    @ServiceMethod(callByContent = true, inContextMenu = true, target=ServiceMethod.TARGET_SELF)
+    @Order(100)
+    public void selectAll(){
+
+        for(MetaworksElement metaworksElement : getElements()){
+            metaworksElement.setSelected(true);
+        }
+    }
+
+
+    @ServiceMethod(callByContent = true, inContextMenu = true, target=ServiceMethod.TARGET_SELF)
+    @Order(100)
+    public void toggleSelectAll(){
+
+        for(MetaworksElement metaworksElement : getElements()){
+            metaworksElement.setSelected(!metaworksElement.isSelected());
+        }
+    }
+
+
 }

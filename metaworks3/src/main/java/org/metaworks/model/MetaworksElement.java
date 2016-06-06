@@ -6,7 +6,10 @@ import org.metaworks.Remover;
 import org.metaworks.annotation.*;
 import org.metaworks.dwr.MetaworksRemoteService;
 import org.metaworks.widget.ArrayFace;
+import org.metaworks.widget.Clipboard;
 import org.metaworks.widget.ListFace;
+
+import java.util.ArrayList;
 
 public class MetaworksElement implements ContextAware{
 
@@ -36,11 +39,47 @@ public class MetaworksElement implements ContextAware{
 
     @Order(20)
     @Face(displayName="Remove")
-    @ServiceMethod(callByContent=true, inContextMenu = true)
-    public Remover remove(){
-        return new Remover(this);
+    @ServiceMethod(callByContent=true, inContextMenu = true, needToConfirm = true)
+    public void remove(@AutowiredFromClient MetaworksList metaworksList){
+
+        ArrayList<MetaworksElement> removalTargets = new ArrayList<MetaworksElement>();
+
+        for(Object metaworksElement: metaworksList.getElements()){
+            if(((MetaworksElement)metaworksElement).isSelected() || metaworksElement == this)
+                removalTargets.add((MetaworksElement)metaworksElement);
+        }
+
+        for(MetaworksElement element : removalTargets){
+            metaworksList.getElements().remove(element);
+        }
+
+        MetaworksRemoteService.wrapReturn(metaworksList);
     }
 
+    @Order(20)
+    @ServiceMethod(callByContent=true, inContextMenu = true, keyBinding = "Ctrl+A")
+    public void selectAll(@AutowiredFromClient MetaworksList metaworksList){
+
+        metaworksList.selectAll();
+
+        MetaworksRemoteService.wrapReturn(metaworksList);
+    }
+
+    @Order(20)
+    @ServiceMethod(callByContent=true, inContextMenu = true, keyBinding = "ESC")
+    public void unselectAll(@AutowiredFromClient MetaworksList metaworksList){
+
+        metaworksList.unselectAll();
+        MetaworksRemoteService.wrapReturn(metaworksList);
+    }
+
+    @Order(20)
+    @ServiceMethod(callByContent=true, inContextMenu = true)
+    public void toggleSelectAll(@AutowiredFromClient MetaworksList metaworksList){
+
+        metaworksList.toggleSelectAll();
+        MetaworksRemoteService.wrapReturn(metaworksList);
+    }
 
     @Order(1)
     @Face(displayName="Edit")
@@ -76,6 +115,69 @@ public class MetaworksElement implements ContextAware{
         }
 
         MetaworksRemoteService.wrapReturn(metaworksList);
+    }
+
+    @ServiceMethod(callByContent = true, inContextMenu = true, target = ServiceMethod.TARGET_SELF/*, mouseBinding = "left"*/)
+    @Order(100)
+    public void select(){
+        setSelected(!isSelected());
+        //getMetaworksContext().getHow()
+    }
+
+
+    boolean selected;
+        public boolean isSelected() {
+            return selected;
+        }
+        public void setSelected(boolean selected) {
+            this.selected = selected;
+        }
+
+    @ServiceMethod(callByContent = true, inContextMenu = true, keyBinding = "Ctrl+C")
+    @Order(100)
+    public void copy(@AutowiredFromClient Clipboard clipboard, @AutowiredFromClient MetaworksList metaworksList){
+
+        ArrayList<MetaworksElement> copiedElements = new ArrayList<MetaworksElement>();
+
+        for(Object metaworksElement: metaworksList.getElements()){
+            if(((MetaworksElement)metaworksElement).isSelected())
+                copiedElements.add((MetaworksElement)metaworksElement);
+        }
+
+        clipboard.setContent(copiedElements);
+
+        MetaworksRemoteService.wrapReturn(clipboard);
+    }
+
+    @ServiceMethod(callByContent = true, inContextMenu = true, keyBinding = "Ctrl+P")
+    @Order(100)
+    public void paste(@AutowiredFromClient Clipboard clipboard, @AutowiredFromClient MetaworksList metaworksList){
+
+        if(clipboard!=null && clipboard.getContent()!=null && clipboard.getContent() instanceof Object[] ){
+
+            ArrayList<MetaworksElement> elements = new ArrayList<MetaworksElement>();
+
+            Object[] elementsInObject = (Object[]) clipboard.getContent();
+
+            for(Object elementInObj : elementsInObject){
+                MetaworksElement metaworksElement = (MetaworksElement) elementInObj;
+
+                if(getValue().getClass() == metaworksElement.getValue().getClass()) {
+                    elements.add(metaworksElement);
+                    //metaworksElement.setSelected(false);
+                }
+            }
+
+            if(elements!=null || elements.size()>0) {
+
+                int index = metaworksList.getElements().indexOf(this);
+
+                metaworksList.getElements().addAll(index, elements);
+
+                MetaworksRemoteService.wrapReturn(metaworksList);
+            }
+        }
+
     }
 
     @Override
