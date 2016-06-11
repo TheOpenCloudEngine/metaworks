@@ -4409,11 +4409,17 @@ com.abc.ClassA.methodA=입력
 		   			//mouse binding installation
 		   			if(methodContext.mouseBinding){
 		   				var which = 3;
-		   				if(methodContext.mouseBinding == "right")
-		   					which = 3;
-		   				else if(methodContext.mouseBinding == "left")
-		   					which = 1;
-						
+						var eventType = "mouseup";
+		   				if(methodContext.mouseBinding == "right") {
+							which = 3;
+							eventType = "mouseup";
+						}else if(methodContext.mouseBinding == "left") {
+							which = 1;eventType = "click";
+						}else if (methodContext.mouseBinding == "dblclick" || methodContext.mouseBinding == "double-click"){
+							which = 1;eventType = "dblclick";
+
+						}
+
 		   				if(methodContext.mouseBinding == "drag" || methodContext.mouseBinding == "drag-enableDefault"){
 		   					if(faceHelper && faceHelper.draggable){
 		   						faceHelper.draggable(command);
@@ -4481,24 +4487,29 @@ com.abc.ClassA.methodA=입력
 		   				
 		   				//case of general mouse click
 		   				else{
-		   					theDiv[0]['mouseCommand' + which] = command;
 
-							// click(mouse right) is contextmenu block
-			   			 	if(which == 3){
-			   			 		theDiv[0].oncontextmenu = function() { return false; };
-			   			 	}
-			   			 				
-		   					var mouseEvent = function(e) {
-		   			 			if(e.which == e.data.which){
-		   			 				e.stopPropagation(); //stops to propagate to parent that means consumes the event here.
-			   				    	mw3.mouseX = e.pageX;
-			   		    			mw3.mouseY = e.pageY;
-		   			 			
-			   						eval(this['mouseCommand' + e.which]);
-		   			 			}
-		   			 		};
-		   			 		
-		   			 		$(theDiv[0]).bind(which==3?'mouseup':'click', {which: which}, mouseEvent);
+							if(!theDiv[0]['mouseCommand' + which]) { //to ensure the event is only once registered.
+								theDiv[0]['mouseCommand' + which] = command;
+
+								// click(mouse right) is contextmenu block
+								if (which == 3) {
+									theDiv[0].oncontextmenu = function () {
+										return false;
+									};
+								}
+
+								var mouseEvent = function (e) {
+									if (e.which == e.data.which) {
+										e.stopPropagation(); //stops to propagate to parent that means consumes the event here.
+										mw3.mouseX = e.pageX;
+										mw3.mouseY = e.pageY;
+
+										eval(this['mouseCommand' + e.which]);
+									}
+								};
+
+								$(theDiv[0]).bind(eventType, {which: which}, mouseEvent);
+							}
 		   				}
 		   				
 		   				
