@@ -209,7 +209,7 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
  	 						var objectId = mw3.dragObject['objectId'];
  	 						if(objectId && mw3.objects[objectId]){
  	 							var typeName = mw3.objects[objectId].__className;
- 	 	 						$(".onDrop_" + typeName.split('.').join('_')).css("border-width", "1px").css("border-style", "dashed").css("border-color", "orange");		
+ 	 	 						$(".onDrop_" + typeName.split('.').join('_')).css("border-width", "3px").css("border-style", "dashed").css("border-color", "orange");
  	 						} 							
  						}
  						
@@ -4430,8 +4430,11 @@ com.abc.ClassA.methodA=입력
 				   				      helper: "clone",
 				   				      zIndex: 100,
 					   				  start: function(event, ui) {
-					   					var className = $(this).attr('className');
-					   					$(".onDrop_" + className.split('.').join('_')).css("border-width", "1px").css("border-style", "dashed").css("border-color", "orange");
+										  var className = $(this).attr('className');
+
+										  if (className){
+											  $(".onDrop_" + className.split('.').join('_')).css("border-width", "3px").css("border-style", "dashed").css("border-color", "orange");
+										  }else{console.log('drag method need className of element. you probably use "refresh" statement in the first line of ejs. Add className.');}
 					   					
 					   					eval(this['dragCommand']);
 					   			      },
@@ -4439,7 +4442,8 @@ com.abc.ClassA.methodA=입력
 					   			      },
 					   			      stop: function() {
 						   					var className = $(this).attr('className');
-						   					
+
+										    if(className)
 						   					$(".onDrop_" + className.split('.').join('_')).css("border-width", "").css("border-style", "").css("border-color", "");
 					   			      }
 				   				    });				   						
@@ -4464,19 +4468,21 @@ com.abc.ClassA.methodA=입력
 		   						},
 		   						
 		   						over: function(event, ui){
-		   							var className = ui.draggable.attr('classname');
-		   							
-		   							if(className){
-			   							var dropName;		   							
-			   							if(className.indexOf('.') > -1)
-			   								dropName = "onDrop_" + className.split('.').join('_');
-			   							else
-			   								dropName = className;
-			   							
-			   							if($(this).hasClass(dropName)){
-			   								$(this).addClass('ui-state-active');
-			   							}
-		   							}
+
+									//no need to over background - sometimes look dirty.
+		   							//var className = ui.draggable.attr('classname');
+		   							//
+		   							//if(className){
+			   						//	var dropName;
+			   						//	if(className.indexOf('.') > -1)
+			   						//		dropName = "onDrop_" + className.split('.').join('_');
+			   						//	else
+			   						//		dropName = className;
+			   						//
+			   						//	if($(this).hasClass(dropName)){
+			   						//		$(this).addClass('ui-state-active');
+			   						//	}
+		   							//}
 		   						},
 		   						
 		   						out : function(event, ui){
