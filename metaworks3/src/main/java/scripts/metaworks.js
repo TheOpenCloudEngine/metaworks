@@ -373,7 +373,7 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 						for(var methodName in objectMetadata.serviceMethodContexts) {
 							var methodContext = objectMetadata.serviceMethodContexts[methodName];
 
-							if (methodContext.onLoad) {
+							if (methodContext.onLoad && !mw3.isHiddenMethodContext(methodContext, mw3.objects[objectId])) {
 								mw3.objectLoaded[objectId] = true;
 
 								mw3.call(objectId, methodContext.methodName, false, false
