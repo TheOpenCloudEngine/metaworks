@@ -5263,6 +5263,14 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
         			var neverShowed = true;
         			
         			if(serviceMethodContext.target == 'auto'){
+
+
+						var closestSameWithResult = mw3.getClosestObject(mw3.recentCallObjectId, result_.__className);
+						if(closestSameWithResult){
+							mw3.setObject(closestSameWithResult.__objectId, result_);
+							neverShowed = false;
+						}
+
 	        			if(objKeys && objKeys.length){
 	        				for(var i=0; i<objKeys.length && neverShowed; i++){
 		        				mappedObjId = mw3.objectId_KeyMapping[objKeys[i]];
