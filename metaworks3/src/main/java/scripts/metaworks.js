@@ -3855,7 +3855,9 @@ com.abc.ClassA.methodA=입력
 			
 			Metaworks3.prototype.isHiddenMethodContext = function(methodContext, object){
 				var isHidden = false;
-			
+
+				if(!this.objectContexts[object.__objectId]) return false;
+
 				var metaworksContext = this.objectContexts[object.__objectId]['__metaworksContext'];
 				
 				if(methodContext.attributes){
