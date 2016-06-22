@@ -711,6 +711,33 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 				);
 				
 			};
+
+
+			Metaworks3.prototype.checkUpdates = function(objectTypeName) {
+
+				var version;
+
+				Metaworks.getApplicationVersion(
+					{
+						callback: function (ver) {
+							version = ver;
+						},
+
+						async: false,
+
+						timeout: 10000,
+
+						errorHandler: function (errorString, exception) {
+						}
+					}
+				);
+
+				if (localStorage && localStorage['version'] != version) {
+					localStorage.clear(); //make it updated.
+					localStorage['version'] = version;
+				}
+			}
+
 			
 			
 			/**
@@ -720,6 +747,7 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 			     
 			     
 			  */
+
 
 			Metaworks3.prototype.getMetadata = function(objectTypeName){
 
@@ -3918,7 +3946,8 @@ com.abc.ClassA.methodA=입력
 								with(object)
 									validateCondition = eval(condition);
 							}catch(e){
-
+								console.log("Error in condition statement:");
+								console.log(e);
 							}
 						}
 

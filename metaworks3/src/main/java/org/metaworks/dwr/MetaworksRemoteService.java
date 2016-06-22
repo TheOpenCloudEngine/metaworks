@@ -1,18 +1,12 @@
 package org.metaworks.dwr;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.ServletContext;
 
@@ -50,6 +44,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 public class MetaworksRemoteService {
 	public static final String AUTOWIRED_FROM_CLIENT_CLASS_MAP = "autowiredFromClientClassMap";
 
+	public static long initTimestamp = System.currentTimeMillis();
 
 //    public static ThreadLocal<String> callingObjectTypeName = new ThreadLocal<String>();
 
@@ -150,6 +145,28 @@ public class MetaworksRemoteService {
 
 					}			  
 				});
+	}
+
+	public String getApplicationVersion() throws Exception{
+
+		Properties prop = new Properties();
+
+		InputStream manifest = getClass().getClassLoader().getResourceAsStream("/META-INF/MANIFEST.MF");
+		if(manifest==null){
+			manifest = ServerContextFactory.get().getServletContext().getResourceAsStream("/META-INF/MANIFEST.MF");
+
+		}
+
+		if(manifest ==null) return String.valueOf(initTimestamp); //if all failed, just return the server started time.
+
+		prop.load(manifest);
+
+		String version = prop.getProperty("Implementation-Build");
+
+		if(version == null)
+			version = prop.getProperty("Implementation-Version");
+
+		return version;
 	}
 	
 	public void clearMetaworksType(String className) throws Exception {
