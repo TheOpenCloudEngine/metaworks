@@ -3176,11 +3176,11 @@ com.abc.ClassA.methodA=입력
 			   for(var methodName in objectMetadata.serviceMethodContextMap){
 			   		var methodContext = objectMetadata.serviceMethodContextMap[methodName];
 			   		
-			   		if(methodContext.clientSideCall)
-			   			eval("object['"+methodName+"'] = function(){return mw3.clientSideCall(this.__objectId, '"+methodName+"');}");
-			   		else{
+			   		//if(methodContext.clientSideCall)
+			   		//	eval("object['"+methodName+"'] = function(){return mw3.clientSideCall(this.__objectId, '"+methodName+"');}");
+			   		//else{
 			   			eval("object['"+methodName+"'] = function(getAgain, callback){return mw3.call(this.__objectId, '"+methodName+"', getAgain, false, callback);}");			   			
-			   		}
+//			   		}
 			   }
 			   
 			   
@@ -4365,198 +4365,234 @@ com.abc.ClassA.methodA=입력
 				var targetDivId = mw3._getObjectDivId(objectId);
 				var theDiv = $('#' + targetDivId);
 				
-				if(theDiv[0] && metadata)
-			    for(var methodName in metadata.serviceMethodContextMap){
-			   		var methodContext = metadata.serviceMethodContextMap[methodName];
-			   	
-			   		//console.log('try : ' + methodName);
-		
-				    if(mw3.isHiddenMethodContext(methodContext, object) && !methodContext.bindingHidden)
-					   continue;
+				if(theDiv[0] && metadata) {
 
-				    //console.log('pass : ' + methodName);
-				    //console.log(methodContext);
-				    
-				    // make call method
-		   			var command = "if(mw3.objects['"+ objectId +"']!=null) mw3.call("+objectId+", '"+methodName+"')";
-					if(methodContext.needToConfirm){
-						if(this.needToConfirmMessage){
-							command = "if (confirm(\'" + mw3.localize(mw3.needToConfirmMessage, methodContext.displayName) + "'))" + command;
-						}else{
-							command = "if (confirm(\'Are you sure to "+mw3.localize(methodContext.displayName)+" this?\'))" + command;
-						}
-					}
-					
-				    if(methodContext.eventBinding && methodContext.eventBinding.length > 0){
-				    	for(var i=0; i<methodContext.eventBinding.length; i++){
-				    		var eventBinding = methodContext.eventBinding[i];
-				    		
-	   						for(var j=0; j<methodContext.bindingFor.length; j++){
-	   							var bindingFor = methodContext.bindingFor[j];
-	   							var bindingDivId;
-	   							
-	   							if('@this' == bindingFor){
-	   								bindingDivId = '#' + targetDivId;
-	   							}else if('@page' == bindingFor){
-	   								bindingDivId = 'document';
-	   							}else{
-	   								var bindingFieldId = mw3.getChildObjectId(objectId, bindingFor);
-	   								
-	   								bindingDivId = '#' + mw3._getObjectDivId(bindingFieldId);
-	   							}
-	   							
-	   							$(bindingDivId).bind(eventBinding, {command: command}, function(event){
-	   								event.stopPropagation();
-	   								
-	   								eval(event.data.command);
-	   							});
-	   						}
-				    	}
-				    }
-				    
-		   			if(methodContext.keyBinding && methodContext.keyBinding.length > 0){
-		   				for(var i=0; i<methodContext.keyBinding.length; i++){
-		   					var keyBinding = methodContext.keyBinding[i];
-		   					
-		   					if(keyBinding.indexOf("@Global") > -1){
-		   						/*
-		   						 * 2013-03-25 cjw
-		   						 * global 일때 keyBinding 문제 해결 
-		   						 */ 
-		   						keyBinding = keyBinding.substr(0, keyBinding.length - "@Global".length);
-		   					
-		   						shortcut.remove(keyBinding);
-			   					shortcut.add(keyBinding, command);
-		   					}else{
-			   					shortcut.add(keyBinding, command/*function() {
-			   						eval(command);
-			   					}*/,{
-			   						target: targetDivId
-			   					});
-		   					}
-		   				}
-		   			}
-		   			
-		   			//mouse binding installation
-		   			if(methodContext.mouseBinding){
-		   				var which = 3;
-						var eventType = "mouseup";
-		   				if(methodContext.mouseBinding == "right") {
-							which = 3;
-							eventType = "mouseup";
-						}else if(methodContext.mouseBinding == "left") {
-							which = 1;eventType = "click";
-						}else if (methodContext.mouseBinding == "dblclick" || methodContext.mouseBinding == "double-click"){
-							which = 1;eventType = "dblclick";
 
-						}
+					if(metadata.submittedOnDrag){
+						theDiv.draggable({
+							appendTo: "body",
+							helper: "clone",
+							zIndex: 100,
+							start: function (event, ui) {
+								var className = $(this).attr('className');
 
-		   				if(methodContext.mouseBinding == "drag" || methodContext.mouseBinding == "drag-enableDefault"){
-		   					if(faceHelper && faceHelper.draggable){
-		   						faceHelper.draggable(command);
-		   					}else{
-		   						theDiv[0]['dragCommand'] = command;
-			   					theDiv.draggable({
-				   				      appendTo: "body",
-				   				      helper: "clone",
-				   				      zIndex: 100,
-					   				  start: function(event, ui) {
-										  var className = $(this).attr('className');
-
-										  if (className){
-											  $(".onDrop_" + className.split('.').join('_')).css("border-width", "3px").css("border-style", "dashed").css("border-color", "orange");
-										  }else{console.log('drag method need className of element. you probably use "refresh" statement in the first line of ejs. Add className.');}
-					   					
-					   					eval(this['dragCommand']);
-					   			      },
-					   			      drag: function(event, ui) {
-					   			      },
-					   			      stop: function() {
-						   					var className = $(this).attr('className');
-
-										    if(className)
-						   					$(".onDrop_" + className.split('.').join('_')).css("border-width", "").css("border-style", "").css("border-color", "");
-					   			      }
-				   				    });				   						
-		   					}
-		   				}//end of case 'drag start'
-		   				else if(methodContext.mouseBinding == "drop"){
-		   					theDiv[0]['dropCommand'] = command;
-		   					
-		   					theDiv.droppable({
-		   						greedy: true,
-		   						drop: function(event, ui){
-		   							mw3.dropX = event.pageX;
-		   							mw3.dropY = event.pageY;
-		   							
-		   							$(this).removeClass('ui-state-active');
-
-									if(mw3.debugMode){
-										console.log("Trying drop command: " + this['dropCommand']);
-									}
-
-		   							eval(this['dropCommand']);		   							
-		   						},
-		   						
-		   						over: function(event, ui){
-
-									//no need to over background - sometimes look dirty.
-		   							//var className = ui.draggable.attr('classname');
-		   							//
-		   							//if(className){
-			   						//	var dropName;
-			   						//	if(className.indexOf('.') > -1)
-			   						//		dropName = "onDrop_" + className.split('.').join('_');
-			   						//	else
-			   						//		dropName = className;
-			   						//
-			   						//	if($(this).hasClass(dropName)){
-			   						//		$(this).addClass('ui-state-active');
-			   						//	}
-		   							//}
-		   						},
-		   						
-		   						out : function(event, ui){
-		   							$(this).removeClass('ui-state-active');
-		   						}
-		   					});
-		   				}//end of case 'drop'
-		   				
-		   				//case of general mouse click
-		   				else{
-
-							if(!theDiv[0]['mouseCommand' + which]) { //to ensure the event is only once registered.
-								theDiv[0]['mouseCommand' + which] = command;
-
-								// click(mouse right) is contextmenu block
-								if (which == 3) {
-									theDiv[0].oncontextmenu = function () {
-										return false;
-									};
+								if (className) {
+									$(".onDrop_" + className.split('.').join('_')).css("border-width", "3px").css("border-style", "dashed").css("border-color", "orange");
+								} else {
+									console.log('drag method need className of element. you probably use "refresh" statement in the first line of ejs. Add className.');
 								}
 
-								var mouseEvent = function (e) {
-									if (e.which == e.data.which) {
-										e.stopPropagation(); //stops to propagate to parent that means consumes the event here.
-										mw3.mouseX = e.pageX;
-										mw3.mouseY = e.pageY;
 
-										eval(this['mouseCommand' + e.which]);
-									}
-								};
+							},
+							drag: function (event, ui) {
+							},
+							stop: function () {
+								var className = $(this).attr('className');
 
-								$(theDiv[0]).bind(eventType, {which: which}, mouseEvent);
+								if (className)
+									$(".onDrop_" + className.split('.').join('_')).css("border-width", "").css("border-style", "").css("border-color", "");
 							}
-		   				}
-		   				
-		   				
-		   			} // end of mouse binding installation
-		   			
-		   			if(methodContext.inContextMenu){
-		   				contextMenuMethods[contextMenuMethods.length] = methodContext;
-		   			}
+						});
 
-			   }
+					}
+
+
+					for (var methodName in metadata.serviceMethodContextMap) {
+						var methodContext = metadata.serviceMethodContextMap[methodName];
+
+						//console.log('try : ' + methodName);
+
+						if (mw3.isHiddenMethodContext(methodContext, object) && !methodContext.bindingHidden)
+							continue;
+
+						//console.log('pass : ' + methodName);
+						//console.log(methodContext);
+
+						// make call method
+						var command = "if(mw3.objects['" + objectId + "']!=null) mw3.call(" + objectId + ", '" + methodName + "')";
+						if (methodContext.needToConfirm) {
+							if (this.needToConfirmMessage) {
+								command = "if (confirm(\'" + mw3.localize(mw3.needToConfirmMessage, methodContext.displayName) + "'))" + command;
+							} else {
+								command = "if (confirm(\'Are you sure to " + mw3.localize(methodContext.displayName) + " this?\'))" + command;
+							}
+						}
+
+						if (methodContext.eventBinding && methodContext.eventBinding.length > 0) {
+							for (var i = 0; i < methodContext.eventBinding.length; i++) {
+								var eventBinding = methodContext.eventBinding[i];
+
+								for (var j = 0; j < methodContext.bindingFor.length; j++) {
+									var bindingFor = methodContext.bindingFor[j];
+									var bindingDivId;
+
+									if ('@this' == bindingFor) {
+										bindingDivId = '#' + targetDivId;
+									} else if ('@page' == bindingFor) {
+										bindingDivId = 'document';
+									} else {
+										var bindingFieldId = mw3.getChildObjectId(objectId, bindingFor);
+
+										bindingDivId = '#' + mw3._getObjectDivId(bindingFieldId);
+									}
+
+									$(bindingDivId).bind(eventBinding, {command: command}, function (event) {
+										event.stopPropagation();
+
+										eval(event.data.command);
+									});
+								}
+							}
+						}
+
+						if (methodContext.keyBinding && methodContext.keyBinding.length > 0) {
+							for (var i = 0; i < methodContext.keyBinding.length; i++) {
+								var keyBinding = methodContext.keyBinding[i];
+
+								if (keyBinding.indexOf("@Global") > -1) {
+									/*
+									 * 2013-03-25 cjw
+									 * global 일때 keyBinding 문제 해결
+									 */
+									keyBinding = keyBinding.substr(0, keyBinding.length - "@Global".length);
+
+									shortcut.remove(keyBinding);
+									shortcut.add(keyBinding, command);
+								} else {
+									shortcut.add(keyBinding, command/*function() {
+									 eval(command);
+									 }*/, {
+										target: targetDivId
+									});
+								}
+							}
+						}
+
+						//mouse binding installation
+						if (methodContext.mouseBinding) {
+							var which = 3;
+							var eventType = "mouseup";
+							if (methodContext.mouseBinding == "right") {
+								which = 3;
+								eventType = "mouseup";
+							} else if (methodContext.mouseBinding == "left") {
+								which = 1;
+								eventType = "click";
+							} else if (methodContext.mouseBinding == "dblclick" || methodContext.mouseBinding == "double-click") {
+								which = 1;
+								eventType = "dblclick";
+
+							}
+
+							if (methodContext.mouseBinding == "drag" || methodContext.mouseBinding == "drag-enableDefault") {
+								if (faceHelper && faceHelper.draggable) {
+									faceHelper.draggable(command);
+								} else {
+									theDiv[0]['dragCommand'] = command;
+									theDiv.draggable({
+										appendTo: "body",
+										helper: "clone",
+										zIndex: 100,
+										start: function (event, ui) {
+											var className = $(this).attr('className');
+
+											if (className) {
+												$(".onDrop_" + className.split('.').join('_')).css("border-width", "3px").css("border-style", "dashed").css("border-color", "orange");
+											} else {
+												console.log('drag method need className of element. you probably use "refresh" statement in the first line of ejs. Add className.');
+											}
+
+											eval(this['dragCommand']);
+										},
+										drag: function (event, ui) {
+										},
+										stop: function () {
+											var className = $(this).attr('className');
+
+											if (className)
+												$(".onDrop_" + className.split('.').join('_')).css("border-width", "").css("border-style", "").css("border-color", "");
+										}
+									});
+								}
+							}//end of case 'drag start'
+							else if (methodContext.mouseBinding == "drop") {
+								theDiv[0]['dropCommand'] = command;
+
+								theDiv.droppable({
+									greedy: true,
+									drop: function (event, ui) {
+										mw3.dropX = event.pageX;
+										mw3.dropY = event.pageY;
+
+										$(this).removeClass('ui-state-active');
+
+										if (mw3.debugMode) {
+											console.log("Trying drop command: " + this['dropCommand']);
+										}
+
+										eval(this['dropCommand']);
+									},
+
+									over: function (event, ui) {
+
+										//no need to over background - sometimes look dirty.
+										//var className = ui.draggable.attr('classname');
+										//
+										//if(className){
+										//	var dropName;
+										//	if(className.indexOf('.') > -1)
+										//		dropName = "onDrop_" + className.split('.').join('_');
+										//	else
+										//		dropName = className;
+										//
+										//	if($(this).hasClass(dropName)){
+										//		$(this).addClass('ui-state-active');
+										//	}
+										//}
+									},
+
+									out: function (event, ui) {
+										$(this).removeClass('ui-state-active');
+									}
+								});
+							}//end of case 'drop'
+
+							//case of general mouse click
+							else {
+
+								if (!theDiv[0]['mouseCommand' + which]) { //to ensure the event is only once registered.
+									theDiv[0]['mouseCommand' + which] = command;
+
+									// click(mouse right) is contextmenu block
+									if (which == 3) {
+										theDiv[0].oncontextmenu = function () {
+											return false;
+										};
+									}
+
+									var mouseEvent = function (e) {
+										if (e.which == e.data.which) {
+											e.stopPropagation(); //stops to propagate to parent that means consumes the event here.
+											mw3.mouseX = e.pageX;
+											mw3.mouseY = e.pageY;
+
+											eval(this['mouseCommand' + e.which]);
+										}
+									};
+
+									$(theDiv[0]).bind(eventType, {which: which}, mouseEvent);
+								}
+							}
+
+
+						} // end of mouse binding installation
+
+						if (methodContext.inContextMenu) {
+							contextMenuMethods[contextMenuMethods.length] = methodContext;
+						}
+
+					}
+				}
 			   
 			   //install context menu
 			   if(contextMenuMethods.length > 0){				   
@@ -5405,8 +5441,9 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 			console.log(autowiredObjects);
 			
 		}
-		
-		mw3.metaworksProxy.callMetaworksService(className, object, svcNameAndMethodName, autowiredObjects,
+
+		if(!serviceMethodContext.clientSide){
+			mw3.metaworksProxy.callMetaworksService(className, object, svcNameAndMethodName, autowiredObjects,
 				{
 					callback: function(result){
 
@@ -5449,7 +5486,15 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 			
 	    		}
 			);
-		
+		}else{
+			var facehelper = mw3.getFaceHelper(objId);
+
+			if(facehelper && facehelper[serviceMethodContext.methodName]){
+				var clientSideFunc = facehelper[serviceMethodContext.methodName];
+				clientSideFunc(object, autowiredObjects);
+			}
+		}
+
 		return returnValue;
 	};
 

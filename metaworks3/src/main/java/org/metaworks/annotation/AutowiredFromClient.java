@@ -21,5 +21,7 @@ public @interface AutowiredFromClient {
 	boolean onDrop() default false;
 	String instruction() default "";
 	String select() default "";
+
+	boolean onDrag() default false;
 //	boolean alwaysOnChildren() default false;
 }

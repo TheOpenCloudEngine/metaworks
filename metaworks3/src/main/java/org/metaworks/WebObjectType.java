@@ -62,6 +62,15 @@ public class WebObjectType implements Serializable{
 		this.isAlwaysSubmitted = isAlwaysSubmitted;
 	}
 
+	boolean isSubmittedOnDrag;
+		public boolean isSubmittedOnDrag() {
+			return isSubmittedOnDrag;
+		}
+		public void setSubmittedOnDrag(boolean isSubmittedOnDrag) {
+			this.isSubmittedOnDrag = isSubmittedOnDrag;
+		}
+
+
 
 	boolean designable;
 
@@ -311,10 +320,12 @@ public class WebObjectType implements Serializable{
 		}
 
 		AutowiredFromClient alwaysSubmitted = (AutowiredFromClient)getAnnotationDeeply(tryingClasses, null, AutowiredFromClient.class);
-		if(alwaysSubmitted!=null) {
-			setIsAlwaysSubmitted(true);
+		if(alwaysSubmitted!=null){
+			if(alwaysSubmitted.onDrag()) {
+				setSubmittedOnDrag(true);
+			}else
+				setIsAlwaysSubmitted(true);
 		}
-
 
 //		else
 //			setFaceComponentPath(getComponentLocationByEscalation(actCls, "faces"));
