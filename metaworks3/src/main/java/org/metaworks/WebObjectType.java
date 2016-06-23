@@ -63,6 +63,7 @@ public class WebObjectType implements Serializable{
 	}
 
 	boolean isSubmittedOnDrag;
+	@Hidden
 		public boolean isSubmittedOnDrag() {
 			return isSubmittedOnDrag;
 		}
