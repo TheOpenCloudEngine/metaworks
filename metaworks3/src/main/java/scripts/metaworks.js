@@ -5492,6 +5492,8 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 			if(facehelper && facehelper[serviceMethodContext.methodName]){
 				var clientSideFunc = facehelper[serviceMethodContext.methodName];
 				clientSideFunc(object, autowiredObjects);
+			}else{
+				alert("you have defined your service method as clientSide=true but, there's no defined javascript function in your ejs.js (facehelper)");
 			}
 		}
 
