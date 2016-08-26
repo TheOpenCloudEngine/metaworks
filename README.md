@@ -127,6 +127,24 @@ public class Hello{
 <%=methods.sayHello.here()%>
 ```
 
+## ejs 내에서 사용할 수 있는 reserved variables
+```
+var contextValues = {
+							value				: object,
+							realValue			: org_object,
+							objectTypeName		: objectTypeName,
+							targetDiv			: targetDiv, 
+							objectMetadata		: (objectTypeName && objectTypeName.length > 0 ? this.getMetadata(objectTypeName) : null), 
+							mw3					: this, 
+							objectId			: objectId, 
+							fields				: (objectRef ? objectRef.fields  : null),
+							resources			: (objectRef ? objectRef.fields  : null), //TODO: later should be sent only with resources
+							methods				: (objectRef ? objectRef.methods : null),
+							descriptor			: descriptor,
+							editFunction		: editFunction,
+							options				: options								
+						};
+```
 
 # 동적으로 변경된 메타데이터 반영하기
 
