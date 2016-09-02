@@ -1,0 +1,46 @@
+<%if(value){%>
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <%=value.className%>
+        <%
+        if(value && value.length){
+        %>
+        (<%=value.elements.length%>)
+
+        <%}%>
+
+        <%=methods.contextMenus.here()%>
+
+    </div>
+    <div class="panel-body">
+
+        <table>
+
+            <tr>
+                <th></th>
+            </tr>
+
+            <%=fields.elements.here()%>
+
+        </table>
+
+
+        <%=methods.add.here()%>
+
+        <%
+        if(objectMetadata.serviceMethodContexts)
+            for(var i=0; i<objectMetadata.serviceMethodContexts.length; i++){
+                var serviceMethod = objectMetadata.serviceMethodContexts[i];
+
+                if(serviceMethod.inContextMenu || serviceMethod.methodName == "add")
+                    continue;
+
+                %><%=methods[serviceMethod.methodName].here()%> <%
+            }
+        %>
+
+    </div>
+</div>
+
+<%}%>

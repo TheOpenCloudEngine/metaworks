@@ -1,5 +1,6 @@
 package org.metaworks.widget.grid;
 
+import org.metaworks.annotation.Payload;
 import org.metaworks.annotation.ServiceMethod;
 import org.metaworks.dao.Database;
 import org.metaworks.dao.IDAO;
@@ -21,8 +22,8 @@ public class DatabaseGrid extends ObjectGrid{
 	}
 	
 	@Override
-	@ServiceMethod(callByContent = true, target="none")
-	public void changeCell() {
+	@ServiceMethod(target="none")
+	public void changeCell(@Payload("cell") GridCell cell) {
 		
 		try {
 			Class daoClass = Thread.currentThread().getContextClassLoader().loadClass(getClassName());

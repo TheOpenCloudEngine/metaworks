@@ -1,0 +1,10 @@
+<!--replace-->
+<%if(value){%>
+
+<tr id="objDiv_<%=objectId%>" class="panel <%=value.selected ? "panel-primary" : "panel-default"%>" onclick="<%=methods.select.caller()%>">
+   <%=fields.value.here()%>
+</tr>
+
+<%
+}
+%>

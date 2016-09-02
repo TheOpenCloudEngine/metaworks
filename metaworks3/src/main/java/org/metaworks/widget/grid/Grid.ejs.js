@@ -44,6 +44,7 @@ var org_metaworks_widget_grid_Grid= function(objectId, className){
 			}			
 		},
 		afterEditCell : function(rowid,name,val,iRow,iCol) {
+			grid.chageCell();
 		},
 		afterSaveCell : function(rowid,name,val,iRow,iCol) {
 		}

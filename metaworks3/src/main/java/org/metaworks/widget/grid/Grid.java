@@ -5,11 +5,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.metaworks.ServiceMethodContext;
+import org.metaworks.annotation.Payload;
 import org.metaworks.annotation.ServiceMethod;
 
 public class Grid {
 	public Grid(){
 		cell = new GridCell();
+
+		init();
 	}
 	
 	String KeyColumn;
@@ -104,8 +107,8 @@ public class Grid {
 		setData(arrListData);
 	}
 	
-	@ServiceMethod(callByContent=true, target=ServiceMethodContext.TARGET_NONE)
-	public void changeCell() {
+	@ServiceMethod(target=ServiceMethodContext.TARGET_NONE)
+	public void changeCell(@Payload("cell") GridCell cell) {
 		System.out.println("changeCell1()");
 		//System.out.println("row : " + getCell().row + ", col : " + getCell().col + ", content : " + getCell().value);
 		
