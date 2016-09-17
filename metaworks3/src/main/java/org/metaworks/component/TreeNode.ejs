@@ -44,7 +44,7 @@ if(value){
 	if(value != null && typeof value != 'undefined'){
 		if(!value.hidden){
 %>
-	<div class="item-fix <%=value.selected?'selected':''%> <% if(value.align == 'right'){ %> item-fix-right<%}%> <%=value.root?'root':''%>" objectId="<%=objectId%>" id="<%=value.id%>" name="<%=value.name%>">
+	<div class="item-fix <%=value.selected?'selected':''%> <% if(value.align == 'right'){ %> item-fix-right<%}%> <%=value.root?'root':''%>" objectId="<%=objectId%>" id="<%=value.id%>" name="<%=value[value.name%>">
 		<div class="item">
 			<span>&nbsp;</span>
 			<div class="label-content">

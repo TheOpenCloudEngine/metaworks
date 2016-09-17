@@ -21,6 +21,22 @@ var org_metaworks_component_SelectBox = function(objectId, className) {
 			{enableFiltering: true, enableFullValueFiltering: true}
 		);
 	}
+
+
+	$(selectBoxId).bind('click', function(e){
+
+		var element = $(e.target);
+		var optionSize = element[0].length;
+
+		if(optionSize < 2){
+			var objectId = element[0].id.split("_")[1];
+			var obj = mw3.objects[objectId];
+
+			if(obj.loadOptions)
+				obj.loadOptions();
+		}
+
+	});
 };
 
 org_metaworks_component_SelectBox.prototype = {

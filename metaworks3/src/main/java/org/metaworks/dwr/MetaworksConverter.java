@@ -342,10 +342,18 @@ public class MetaworksConverter extends BeanConverter {
 								}
 
 								//sometimes the converted value is realValue
-								if (faceValue != null && property.getPropertyType().isAssignableFrom(faceValue.getClass())) {
-									realValue = faceValue;
+								if (faceValue != null) {
+									//						Object realValue = face.createValueFromFace();
+
+									if(property.getPropertyType().isAssignableFrom(faceValue.getClass())) {
+										realValue = faceValue;
+									}else{
+										String message = "Face Value [" + faceValue + "] has been dropped for property [" + property.getName() + ":" + property.getPropertyType() + "]";
+										log.debug(message);
+										new Exception(message).printStackTrace();
+									}
+
 								}
-								//						Object realValue = face.createValueFromFace();
 
 								property.setValue(bean, realValue);
 
@@ -402,6 +410,10 @@ public class MetaworksConverter extends BeanConverter {
 			try {
 				return paramType.newInstance();
 			} catch(java.lang.InstantiationException e){
+				if(paramType == java.lang.StackTraceElement.class){
+					return null;
+				}
+
 				throw new ConversionException(paramType, "Service Object should have constructor with empty parameter. Add new Constructor with no argument into " + paramType.getName() + ". " + paramType.getName(), e);
 			}catch (Exception e) {
 				// TODO Auto-generated catch block

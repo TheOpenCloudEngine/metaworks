@@ -1,46 +1,44 @@
+<table>
+
+    <tr>
+
 <%if(value){%>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <%=value.className%>
-        <%
-        if(value && value.length){
-        %>
-        (<%=value.elements.length%>)
+     for (var i=0; i<objectMetadata.fieldDescriptors.length; i++){
 
-        <%}%>
+            var fd = objectMetadata.fieldDescriptors[i];
 
-        <%=methods.contextMenus.here()%>
+            if(mw3.isHidden(fields[fd.name])) continue;
+            if(fd.name == 'metaworksContext') continue;
 
-    </div>
-    <div class="panel-body">
+            var fieldValue = value[fd.name];
+%>
 
-        <table>
+        <th><%=field.displayName%></th>
 
-            <tr>
-                <th></th>
-            </tr>
+<%}%>
+    </tr>
 
-            <%=fields.elements.here()%>
-
-        </table>
+        <%=fields.elements.here()%>
 
 
         <%=methods.add.here()%>
 
         <%
         if(objectMetadata.serviceMethodContexts)
-            for(var i=0; i<objectMetadata.serviceMethodContexts.length; i++){
-                var serviceMethod = objectMetadata.serviceMethodContexts[i];
+        for(var i=0; i<objectMetadata.serviceMethodContexts.length; i++){
+            var serviceMethod = objectMetadata.serviceMethodContexts[i];
 
-                if(serviceMethod.inContextMenu || serviceMethod.methodName == "add")
-                    continue;
+            if(serviceMethod.inContextMenu || serviceMethod.methodName == "add")
+                continue;
 
-                %><%=methods[serviceMethod.methodName].here()%> <%
-            }
+        %><%=methods[serviceMethod.methodName].here()%> <%
+        }
         %>
 
-    </div>
-</div>
-
 <%}%>
+
+
+
+</table>
+

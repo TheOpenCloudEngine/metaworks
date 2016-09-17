@@ -22,6 +22,9 @@ public @interface AutowiredFromClient {
 	String instruction() default "";
 	String select() default "";
 
+	String beanPath() default "";
+
+
 	boolean onDrag() default false;
 //	boolean alwaysOnChildren() default false;
 }

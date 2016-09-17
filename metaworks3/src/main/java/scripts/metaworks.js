@@ -319,11 +319,11 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 			
 			Metaworks3.prototype.loadFaceHelper = function(objectId, actualface){
 				//console.log('loadFaceHelper : ' + actualface);
-				
+
 //				if(!mw3.objects[objectId]){
 //					return null;
 //				}
-				
+
 //				var clsName = mw3.objects[objectId].__className;
 //				
 //				return this.loadFaceHelperWithClsName(clsName);
@@ -331,7 +331,7 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 //			}
 //			
 //			Metaworks3.prototype.loadFaceHelperWithClsName = function(clsName){
-				
+
 				/*
 				 * 2012-04-05 cjw 임시 주석 처리
 				 */
@@ -339,14 +339,14 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 				if(this.objects[objectId]==null)
 					return null;
 				*/
-				
-				if(!this.face_ObjectIdMapping[objectId])					
+
+				if(!this.face_ObjectIdMapping[objectId])
 					return null;
-				
+
 				var face = null;
 				var className = null;
 
-				
+
 				for(var i=0; i<this.face_ObjectIdMapping[objectId].length; i++){
 					if(this.face_ObjectIdMapping[objectId][i].face == actualface){
 						face = this.face_ObjectIdMapping[objectId][i].face;
@@ -355,10 +355,10 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 						break;
 					}
 				}
-				
+
 				// load faceHelper
 				var faceHelperClass = this.loadedScripts[face];
-				
+
 				if(typeof faceHelperClass == 'undefined')
 					return false;
 				else if(faceHelperClass == null)
@@ -398,24 +398,24 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 
 				var thereIsHelperClass = false;
 				try{
-					//console.debug('eval faceHelper [' + objectId + '] -> ' + face);					
+					//console.debug('eval faceHelper [' + objectId + '] -> ' + face);
 					eval(faceHelperClass);
 					thereIsHelperClass = true;
-					
+
 					if(thereIsHelperClass){
 						try{
 							var faceHelper = eval("new " + faceHelperClass + "('" + objectId + "', '"+ className + "')");
-							
+
 							if(faceHelper){
 								this.faceHelpers[objectId] = faceHelper;
-	
+
 								if(faceHelper && faceHelper.loaded){
 									faceHelper.loaded();
 								}
-								
+
 								if(this.objects[objectId]!=null)
 									this.objects[objectId]['__faceHelper'] = faceHelper;
-								
+
 								return true;
 							}
 						}catch(faceHelperLoadException){
