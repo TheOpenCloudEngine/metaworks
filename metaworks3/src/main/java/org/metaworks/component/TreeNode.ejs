@@ -2,7 +2,7 @@
 if(value){
 	var type = value.type;
 	var icontype = '';
-			
+
 	if('project' == type){
 		icontype = "folder"
 	}else if('folder' == type){
@@ -38,43 +38,43 @@ if(value){
 	}else{
 		icontype = "file4"
 	}
-	
-	
-	
-	if(value != null && typeof value != 'undefined'){
-		if(!value.hidden){
+
+
+
+if(value != null && typeof value != 'undefined'){
+if(!value.hidden){
 %>
-	<div class="item-fix <%=value.selected?'selected':''%> <% if(value.align == 'right'){ %> item-fix-right<%}%> <%=value.root?'root':''%>" objectId="<%=objectId%>" id="<%=value.id%>" name="<%=value[value.name%>">
-		<div class="item">
-			<span>&nbsp;</span>
-			<div class="label-content">
-				<div class="tree-checkbox" onClick="if(event.stopPropagation)	 event.stopPropagation(); else if(window.event) window.event.cancelBubble = true;" style="display:none;position:relative;top:2px;left:3px"><input type="checkbox" nodeId="<%=value.id%>" objectId="<%=objectId%>" style="width:15px"></div>
-				
-				<label style="display:inline-block;<% if(value.align == 'right'){ %> float:right <%}%>">
-					<u class="caption"><% if(value.align != 'right'){ %> <b class="icon-<%=icontype%> tab_icon" style="color:#0E51A3"></b><%}%> <%=value.name%> <% if(value.align == 'right'){ %> <b class="icon-<%=icontype%> tab_icon" style="color:#0E51A3"></b> <%}%></u>
-				</label>
-				<% if(value.align == 'right'){ %><div class="clear"></div><%}%>
-			</div>
+<div class="item-fix <%=value.selected?'selected':''%> <% if(value.align == 'right'){ %> item-fix-right<%}%> <%=value.root?'root':''%>" objectId="<%=objectId%>" id="<%=value.id%>" name="<%=value[value.name]%>">
+	<div class="item">
+		<span>&nbsp;</span>
+		<div class="label-content">
+			<div class="tree-checkbox" onClick="if(event.stopPropagation)	 event.stopPropagation(); else if(window.event) window.event.cancelBubble = true;" style="display:none;position:relative;top:2px;left:3px"><input type="checkbox" nodeId="<%=value.id%>" objectId="<%=objectId%>" style="width:15px"></div>
+
+			<label style="display:inline-block;<% if(value.align == 'right'){ %> float:right <%}%>">
+				<u class="caption"><% if(value.align != 'right'){ %> <b class="icon-<%=icontype%> tab_icon" style="color:#0E51A3"></b><%}%> <%=value.name%> <% if(value.align == 'right'){ %> <b class="icon-<%=icontype%> tab_icon" style="color:#0E51A3"></b> <%}%></u>
+			</label>
+			<% if(value.align == 'right'){ %><div class="clear"></div><%}%>
 		</div>
 	</div>
-	
-	
-	
+</div>
+
+
+
 <%
-	}
+}
 %>
 <u class="last root" style="display: block; height: auto; overflow: visible;">
-<%	
-		if(value.child && value.child.length > 0){
-%>
-	
-		<%=fields.child.here()%>
-	
-<%
-		}
-%>
-	</u>
-<%
+	<%
+	if(value.child && value.child.length > 0){
+	%>
+
+	<%=fields.child.here()%>
+
+	<%
 	}
+	%>
+</u>
+<%
+}
 }
 %>
