@@ -797,6 +797,8 @@ public class MetaworksRemoteService {
 
 		Map<Class, Object> autowiringObjectFromClientMapByClassTypes;
 		autowiringObjectFromClientMapByClassTypes = new HashMap<Class, Object>();
+
+		if(TransactionContext.getThreadLocalInstance()!=null && TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient()!=null)
 		for(Object key : TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient().keySet()){
             Object autowiringObjectFromClient = TransactionContext.getThreadLocalInstance().getAutowiringObjectsFromClient().get(key);
 
