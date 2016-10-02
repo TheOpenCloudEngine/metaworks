@@ -22,7 +22,7 @@ public @interface AutowiredFromClient {
 	String instruction() default "";
 	String select() default "";
 
-	String beanPath() default "";
+	String[] payload() default {};
 
 
 	boolean onDrag() default false;

@@ -2704,16 +2704,22 @@ com.abc.ClassA.methodA=입력
 
 								var wireParamClsName = keyName.substring(prefixForWireParamCls.length);
 
-								var selection;
+								var selection, payload;
 								if(wireParamClsName.indexOf(":") > 0){
 									var clsNameAndSelect = wireParamClsName.split(":");
 									wireParamClsName = clsNameAndSelect[0];
 									selection = clsNameAndSelect[1];
+
+									if(clsNameAndSelect.length > 2){
+										payload = clsNameAndSelect[2];
+									}
+
 								}
 
 								autowiringTargets[keyName] = {
 									field: wireParamClsName,
-									select: selection
+									select: selection,
+									payload: payload
 								};
 
 							}
@@ -2727,6 +2733,7 @@ com.abc.ClassA.methodA=입력
 
 							var autowiredClassName = autowiredField.field;
 							var autowiredSelect = autowiredField.select;
+							var autowiredBeanPath = autowiredField.payload;
 
 							// Condition object to be autowired 
 							if(autowiredSelect != null && autowiredSelect.length > 0){
@@ -2813,6 +2820,75 @@ com.abc.ClassA.methodA=입력
 									autowiredObjects[fieldName] = this.getObject(autowiredObjects[fieldName].__objectId);
 							}
 						}
+
+						//filt out the undesired fields for optimizing payload size
+						if(autowiredBeanPath)
+						try{
+							var autowiredBeanPaths;
+							eval("autowiredBeanPaths = " + autowiredBeanPath);
+
+							if(autowiredBeanPaths){
+
+								var origValue = autowiredObjects[fieldName];
+								var filteredValue = {__className: origValue.__className};
+
+								if(!autowiredBeanPaths.length){
+									autowiredBeanPaths = [autowiredBeanPaths];
+								}
+
+								for(var i=0; i<autowiredBeanPaths.length; i++){
+									var beanPath = autowiredBeanPaths[i];
+
+									var whereCondition = beanPath.indexOf('[');
+
+									if (whereCondition > -1){
+										var whereConditionEnd = beanPath.indexOf(']');
+
+										var conditionPart = beanPath.substring(whereCondition+1, whereConditionEnd);
+										var arrayPropName = beanPath.substring(0, whereCondition);
+										var arrayBeanPath = beanPath.substring(whereConditionEnd+1);
+										var arrayOfOrigValue = origValue[arrayPropName];
+
+										filteredValue[arrayPropName] = [];
+
+										for(var j=0; j<arrayOfOrigValue.length; j++){
+
+											var accept = false;
+
+											with(arrayOfOrigValue[j]){
+												try{
+													eval("accept = " + (conditionPart));
+												}catch(ex){console.log(ex);}
+											}
+
+											if(!accept) continue;
+
+											var elem = this.___beanCopy(arrayBeanPath, arrayOfOrigValue[j]);
+
+											filteredValue[arrayPropName].push(elem);
+
+										}
+
+									}else{
+
+										if(beanPath.indexOf(".") > -1){
+
+											var filteredValueWithProp = this.___beanCopy("."+ beanPath, origValue);
+
+											var propName = beanPath.split(".")[0];
+											eval("filteredValue." + propName + " = filteredValueWithProp." + propName);
+
+										}else{
+											eval("filteredValue." + beanPath + " = origValue." + beanPath);
+										}
+									}
+
+								}
+
+								autowiredObjects[fieldName] = filteredValue;
+							}
+
+						}catch(e){console.log(e);}
 					}
 
 
@@ -2879,6 +2955,33 @@ com.abc.ClassA.methodA=입력
 				return this._withTarget(objId);
 
 			};
+
+			Metaworks3.prototype.___beanCopy = function(arrayBeanPath, origValue){
+				var elem = {
+					__className: origValue.__className
+				};
+
+				if(arrayBeanPath.indexOf(".") > -1){
+
+					var fullPath = "";
+					var paths = arrayBeanPath.split(".");
+
+					for(var pathIdx=1; pathIdx < paths.length; pathIdx++){
+						path = paths[pathIdx];
+						fullPath = fullPath + "." + path;
+
+						if(pathIdx == paths.length -1) {
+							eval("elem" + fullPath + " = origValue" + fullPath);
+						}else{
+							eval("elem" + fullPath + " = {__className: origValue" + fullPath + ".__className}");
+						}
+					}
+
+				}else
+					elem = origValue;
+
+				return elem;
+			}
 			
 			Metaworks3.prototype.showInfo = function(objId, message){
 				var infoDivId = "#"+this._getInfoDivId(objId);

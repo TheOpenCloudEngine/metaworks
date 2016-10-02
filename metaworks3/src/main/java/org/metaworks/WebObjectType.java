@@ -403,6 +403,12 @@ public class WebObjectType implements Serializable{
 					autowiredField.put("field", fields[i].getType().getName());
 					autowiredField.put("select", autowiredFromClient.select());
 
+					if(autowiredFromClient.payload().length > 0) {
+						StringBuffer sb = toJSONArrayExp(autowiredFromClient.payload());
+
+						autowiredField.put("payload", sb.toString());
+					}
+
 //					if(autowiredFromClient.alwaysOnChildren()){
 //						autowiredField.put("alwaysOnChildren", "true");
 //					}
@@ -1124,8 +1130,19 @@ public class WebObjectType implements Serializable{
 								}
 								String payloadName = ServiceMethodContext.WIRE_PARAM_CLS + paramType.getName();
 
+								String select = "";
+								String autowiredFromClientPayload = "";
+
 								if(((AutowiredFromClient)parameterAnnotation).select()!=null && ((AutowiredFromClient)parameterAnnotation).select().length() > 0){
-									payloadName = payloadName + ":" + ((AutowiredFromClient)parameterAnnotation).select();
+									select = ((AutowiredFromClient)parameterAnnotation).select();
+								}
+
+								if(((AutowiredFromClient)parameterAnnotation).payload()!=null && ((AutowiredFromClient)parameterAnnotation).payload().length > 0){
+									autowiredFromClientPayload = toJSONArrayExp(((AutowiredFromClient)parameterAnnotation).payload()).toString();
+								}
+
+								if(select!=null || autowiredFromClientPayload!=null){
+									payloadName = payloadName + ":" + select + ":" + autowiredFromClientPayload;
 								}
 
 								payloads.put(payloadName, payloadName);
@@ -1420,7 +1437,21 @@ public class WebObjectType implements Serializable{
 		}
 		
 	}
-	
+
+	private StringBuffer toJSONArrayExp(String[] strings) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("[");
+		for (String payloadStr : strings) {
+            sb
+					.append("\"")
+					.append(payloadStr)
+					.append("\", ")
+            ;
+        }
+		sb.append("]");
+		return sb;
+	}
+
 	static public Annotation getAnnotationDeeply(ArrayList<Class> tryingClasses, String symbol, Class annotationCls) throws Exception{
 		return getAnnotationDeeply(tryingClasses, symbol, annotationCls, true);
 	}
