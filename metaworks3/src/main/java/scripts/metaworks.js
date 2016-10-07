@@ -427,7 +427,7 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 
 							errMsg += ' : ' + faceHelperLoadException.message;
 
-							errMsg += "Error when to intialize the faceHelper [" + faceHelperClass + "]. Detail error message is " + errMsg;
+							errMsg += ". Error when to intialize the faceHelper [" + faceHelperClass + "]. Detail error message is " + errMsg;
 
 
 							throw new Error(errMsg + " : Stack is "+ faceHelperLoadException.stack);
@@ -1248,7 +1248,7 @@ com.abc.ClassA.methodA=입력
 	
 		ejs내에서 ... 
 			....
-			include('hearder.ejs');
+			include('header.ejs');
 			....
 			include('footer.ejs');
 
@@ -2819,76 +2819,80 @@ com.abc.ClassA.methodA=입력
 								if(autowiredObjects[fieldName] && autowiredObjects[fieldName].__objectId)
 									autowiredObjects[fieldName] = this.getObject(autowiredObjects[fieldName].__objectId);
 							}
-						}
 
-						//filt out the undesired fields for optimizing payload size
-						if(autowiredBeanPath)
-						try{
-							var autowiredBeanPaths;
-							eval("autowiredBeanPaths = " + autowiredBeanPath);
 
-							if(autowiredBeanPaths){
+							//filt out the undesired fields for optimizing payload size
+							if(autowiredBeanPath)
+								try{
+									var autowiredBeanPaths;
+									eval("autowiredBeanPaths = " + autowiredBeanPath);
 
-								var origValue = autowiredObjects[fieldName];
-								var filteredValue = {__className: origValue.__className};
+									if(autowiredBeanPaths){
 
-								if(!autowiredBeanPaths.length){
-									autowiredBeanPaths = [autowiredBeanPaths];
-								}
+										var origValue = autowiredObjects[fieldName];
+										var filteredValue = {__className: origValue.__className};
 
-								for(var i=0; i<autowiredBeanPaths.length; i++){
-									var beanPath = autowiredBeanPaths[i];
+										if(!autowiredBeanPaths.length){
+											autowiredBeanPaths = [autowiredBeanPaths];
+										}
 
-									var whereCondition = beanPath.indexOf('[');
+										for(var i=0; i<autowiredBeanPaths.length; i++){
+											var beanPath = autowiredBeanPaths[i];
 
-									if (whereCondition > -1){
-										var whereConditionEnd = beanPath.indexOf(']');
+											var whereCondition = beanPath.indexOf('[');
 
-										var conditionPart = beanPath.substring(whereCondition+1, whereConditionEnd);
-										var arrayPropName = beanPath.substring(0, whereCondition);
-										var arrayBeanPath = beanPath.substring(whereConditionEnd+1);
-										var arrayOfOrigValue = origValue[arrayPropName];
+											if (whereCondition > -1){
+												var whereConditionEnd = beanPath.indexOf(']');
 
-										filteredValue[arrayPropName] = [];
+												var conditionPart = beanPath.substring(whereCondition+1, whereConditionEnd);
+												var arrayPropName = beanPath.substring(0, whereCondition);
+												var arrayBeanPath = beanPath.substring(whereConditionEnd+1);
+												var arrayOfOrigValue = origValue[arrayPropName];
 
-										for(var j=0; j<arrayOfOrigValue.length; j++){
+												filteredValue[arrayPropName] = [];
 
-											var accept = false;
+												for(var j=0; j<arrayOfOrigValue.length; j++){
 
-											with(arrayOfOrigValue[j]){
-												try{
-													eval("accept = " + (conditionPart));
-												}catch(ex){console.log(ex);}
+													var accept = false;
+													var value = object;
+
+													with(arrayOfOrigValue[j]){
+														try{
+															eval("accept = " + (conditionPart));
+														}catch(ex){console.log(ex);}
+													}
+
+													if(!accept) continue;
+
+													var elem = this.___beanCopy(arrayBeanPath, arrayOfOrigValue[j]);
+
+													filteredValue[arrayPropName].push(elem);
+
+												}
+
+											}else{
+
+												if(beanPath.indexOf(".") > -1){
+
+													var filteredValueWithProp = this.___beanCopy("."+ beanPath, origValue);
+
+													var propName = beanPath.split(".")[0];
+													eval("filteredValue." + propName + " = filteredValueWithProp." + propName);
+
+												}else{
+													eval("filteredValue." + beanPath + " = origValue." + beanPath);
+												}
 											}
 
-											if(!accept) continue;
-
-											var elem = this.___beanCopy(arrayBeanPath, arrayOfOrigValue[j]);
-
-											filteredValue[arrayPropName].push(elem);
-
 										}
 
-									}else{
-
-										if(beanPath.indexOf(".") > -1){
-
-											var filteredValueWithProp = this.___beanCopy("."+ beanPath, origValue);
-
-											var propName = beanPath.split(".")[0];
-											eval("filteredValue." + propName + " = filteredValueWithProp." + propName);
-
-										}else{
-											eval("filteredValue." + beanPath + " = origValue." + beanPath);
-										}
+										autowiredObjects[fieldName] = filteredValue;
 									}
 
-								}
+								}catch(e){console.log(e);}
+						}
 
-								autowiredObjects[fieldName] = filteredValue;
-							}
 
-						}catch(e){console.log(e);}
 					}
 
 
