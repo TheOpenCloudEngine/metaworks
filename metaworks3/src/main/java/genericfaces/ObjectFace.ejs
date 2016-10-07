@@ -90,7 +90,8 @@
 						<div class="tab-pane <%=index==0?'active':''%>" id="<%=group%>_<%=objectId%>">
 							<table width="*" border="0" cellspacing="0" cellpadding="0">
                         		<tbody>
-						<% $.each(groups[group], function(fieldIndex, fieldDescriptor){ %>
+						<% $.each(groups[group], function(fieldIndex, fieldDescriptor){
+							try{%>
 							<tr height="25" valign="middle">
 
 								<% if(showLabel){ %>
@@ -112,7 +113,12 @@
 								<% } %>
 
 							</td></tr>
-					<%	}); %>
+					<%
+							}catch(e){
+								throw new Error("Error when ObjectFace.ejs tries to render field [" + fieldDescriptor.name + "] : Stack is "+ e.stack);
+							}
+
+						}); %>
 							</tbody>
 						</table>
 					</div>
