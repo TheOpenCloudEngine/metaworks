@@ -10,6 +10,7 @@ var org_metaworks_ToAppend = function(objectId, className){
 			triggerObjId = mw3.recentOpenerObjectId[mw3.recentOpenerObjectId.length - 1];
 		if(this.object.parent == 'self')
 			triggerObjId = mw3.recentCallObjectId;
+
 				
 	}else{
 		var objKeys = [];
@@ -42,6 +43,11 @@ var org_metaworks_ToAppend = function(objectId, className){
 		}			
 		
 		mw3.onLoadFaceHelperScript();
+	}else{
+		var html = mw3.locateObject(this.object.target, null);//, "#"+mappedObjdivId);
+
+		$("body").append(html);
+
 	}
 	
 	this.loaded = function(){

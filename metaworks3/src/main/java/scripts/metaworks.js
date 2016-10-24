@@ -1065,10 +1065,16 @@ com.abc.ClassA.methodA=입력
 
 			}
 
-			Metaworks3.prototype.getClosestObject = function(fromObjectId, findElementClassName) {
+			Metaworks3.prototype.getClosestObject = function(fromObjectId, findElementClassName, returnAll) {
 				var resultObject;
 				var resultObjectDistance = 0;
 				var parentDivs = $('#objDiv_' + fromObjectId).parents();
+
+
+				if(returnAll){
+					resultObject = [];
+				}
+
 
 				parentDivs.each(function(index) {
 
@@ -1086,10 +1092,18 @@ com.abc.ClassA.methodA=입력
 
 
 						if(mw3.isSuperClassOf(findElementClassName, classNameOfDiv)) {
-							resultObject = parent;
+							if(!parent.__objectId){ //sometimes __objectId is damaged.
+								parent.__objectId = parentObjectId;
+							}
 
-							// return false == break in jQuery each
-							return false;
+							if(returnAll) {
+								resultObject.push(parent);
+								return true;
+							}else{
+								resultObject = parent;
+								return false; // let the $.each stop
+							}
+
 						}else{//finding in childs in parent (siblings)
 
 							var parentMetadata = mw3.getMetadata(parent.__className);
@@ -1101,12 +1115,20 @@ com.abc.ClassA.methodA=입력
 									var fieldObject = parent[field.name];
 
 									if(fieldObject && fieldObject.__className && mw3.isSuperClassOf(findElementClassName, fieldObject.__className)){
-										resultObject = fieldObject;
 
-										return false;
+
+
+										if(returnAll) {
+											resultObject.push(fieldObject);
+										}else{
+											resultObject = fieldObject;
+											return false; // let the $.each stop
+										}
 									}
 								}
 							}
+
+							return true;
 
 
 						}
@@ -1115,7 +1137,30 @@ com.abc.ClassA.methodA=입력
 
 				});
 
+
+				if(returnAll && resultObject.length==0){
+					return null;
+				}
+
 				return resultObject;
+			}
+
+			Metaworks3.prototype.orderBestObject = function(objectArray, fromObject){
+				var fromObjectType = mw3.getMetadata(fromObject.__className);
+
+				if(fromObjectType && fromObjectType.keyFieldDescriptor){
+					if(objectArray && objectArray.length) {
+						for (var i = 0; i < objectArray.length; i++) {
+							if(objectArray[i][fromObjectType.keyFieldDescriptor.name] == fromObject[fromObjectType.keyFieldDescriptor.name]){
+								//move to first order
+								objectArray.splice(0, 0, objectArray.splice(i, 1)[0]);
+							}
+						}
+					}
+
+				}
+
+				return objectArray;
 			}
 			
 			
@@ -1521,8 +1566,10 @@ com.abc.ClassA.methodA=입력
 							targetDiv			: targetDiv, 
 							objectMetadata		: (objectTypeName && objectTypeName.length > 0 ? this.getMetadata(objectTypeName) : null), 
 							mw3					: this, 
-							objectId			: objectId, 
+							objectId			: objectId,
 							fields				: (objectRef ? objectRef.fields  : null),
+							getField			: (objectRef ? objectRef.getField  : null),
+							getMethod			: (objectRef ? objectRef.getMethod  : null),
 							resources			: (objectRef ? objectRef.fields  : null), //TODO: later should be sent only with resources
 							methods				: (objectRef ? objectRef.methods : null),
 							descriptor			: descriptor,
@@ -1572,6 +1619,8 @@ com.abc.ClassA.methodA=입력
 						}else{
 							$(targetDiv).html(html);
 						}
+
+						this.fireEvent("located", object);
 
 					   
 					} catch(e) {
@@ -2821,75 +2870,75 @@ com.abc.ClassA.methodA=입력
 							}
 
 
-							//filt out the undesired fields for optimizing payload size
-							if(autowiredBeanPath)
-								try{
-									var autowiredBeanPaths;
-									eval("autowiredBeanPaths = " + autowiredBeanPath);
+						//filt out the undesired fields for optimizing payload size
+						if(autowiredBeanPath)
+							try{
+								var autowiredBeanPaths;
+								eval("autowiredBeanPaths = " + autowiredBeanPath);
 
-									if(autowiredBeanPaths){
+								if(autowiredBeanPaths){
 
-										var origValue = autowiredObjects[fieldName];
-										var filteredValue = {__className: origValue.__className};
+									var origValue = autowiredObjects[fieldName];
+									var filteredValue = {__className: origValue.__className};
 
-										if(!autowiredBeanPaths.length){
-											autowiredBeanPaths = [autowiredBeanPaths];
-										}
-
-										for(var i=0; i<autowiredBeanPaths.length; i++){
-											var beanPath = autowiredBeanPaths[i];
-
-											var whereCondition = beanPath.indexOf('[');
-
-											if (whereCondition > -1){
-												var whereConditionEnd = beanPath.indexOf(']');
-
-												var conditionPart = beanPath.substring(whereCondition+1, whereConditionEnd);
-												var arrayPropName = beanPath.substring(0, whereCondition);
-												var arrayBeanPath = beanPath.substring(whereConditionEnd+1);
-												var arrayOfOrigValue = origValue[arrayPropName];
-
-												filteredValue[arrayPropName] = [];
-
-												for(var j=0; j<arrayOfOrigValue.length; j++){
-
-													var accept = false;
-													var value = object;
-
-													with(arrayOfOrigValue[j]){
-														try{
-															eval("accept = " + (conditionPart));
-														}catch(ex){console.log(ex);}
-													}
-
-													if(!accept) continue;
-
-													var elem = this.___beanCopy(arrayBeanPath, arrayOfOrigValue[j]);
-
-													filteredValue[arrayPropName].push(elem);
-
-												}
-
-											}else{
-
-												if(beanPath.indexOf(".") > -1){
-
-													var filteredValueWithProp = this.___beanCopy("."+ beanPath, origValue);
-
-													var propName = beanPath.split(".")[0];
-													eval("filteredValue." + propName + " = filteredValueWithProp." + propName);
-
-												}else{
-													eval("filteredValue." + beanPath + " = origValue." + beanPath);
-												}
-											}
-
-										}
-
-										autowiredObjects[fieldName] = filteredValue;
+									if(!autowiredBeanPaths.length){
+										autowiredBeanPaths = [autowiredBeanPaths];
 									}
 
-								}catch(e){console.log(e);}
+									for(var i=0; i<autowiredBeanPaths.length; i++){
+										var beanPath = autowiredBeanPaths[i];
+
+										var whereCondition = beanPath.indexOf('[');
+
+										if (whereCondition > -1){
+											var whereConditionEnd = beanPath.indexOf(']');
+
+											var conditionPart = beanPath.substring(whereCondition+1, whereConditionEnd);
+											var arrayPropName = beanPath.substring(0, whereCondition);
+											var arrayBeanPath = beanPath.substring(whereConditionEnd+1);
+											var arrayOfOrigValue = origValue[arrayPropName];
+
+											filteredValue[arrayPropName] = [];
+
+											for(var j=0; j<arrayOfOrigValue.length; j++){
+
+												var accept = false;
+												var value = object;
+
+												with(arrayOfOrigValue[j]){
+													try{
+														eval("accept = " + (conditionPart));
+													}catch(ex){console.log(ex);}
+												}
+
+												if(!accept) continue;
+
+												var elem = this.___beanCopy(arrayBeanPath, arrayOfOrigValue[j]);
+
+												filteredValue[arrayPropName].push(elem);
+
+											}
+
+										}else{
+
+											if(beanPath.indexOf(".") > -1){
+
+												var filteredValueWithProp = this.___beanCopy("."+ beanPath, origValue);
+
+												var propName = beanPath.split(".")[0];
+												eval("filteredValue." + propName + " = filteredValueWithProp." + propName);
+
+											}else{
+												eval("filteredValue." + beanPath + " = origValue." + beanPath);
+											}
+										}
+
+									}
+
+									autowiredObjects[fieldName] = filteredValue;
+								}
+
+							}catch(e){console.log(e);}
 						}
 
 
@@ -3638,8 +3687,20 @@ com.abc.ClassA.methodA=입력
 			    }
 
 				methods['contextMenus'] = new MethodRef(object, objectId, {methodName: 'contextMenus'});
+
+				var getField = function(fieldName){
+					if(fields[fieldName]) return fields[fieldName];
+
+					throw new Exception("Field [" + fieldName + "] is not defined in your class: " + object.__className + ".");
+				};
+
+				var getMethod = function(methodName){
+					if(fields[methodName]) return methods[methodName];
+
+					throw new Exception("Method [" + methodName + "] is not defined in your class: " + object.__className + ".");
+				};
 				
-				var objectRef={object: object, objectId: objectId, objectMetadata: objectMetadata, fields: fields, methods: methods};
+				var objectRef={object: object, objectId: objectId, objectMetadata: objectMetadata, fields: fields, methods: methods, getField: getField, getMethod: getMethod};
 				return objectRef;
 			};
 			
@@ -4714,6 +4775,35 @@ com.abc.ClassA.methodA=입력
 						ori[key] = dst[key];
 				}
 			};
+
+
+///// event handling framework ///////
+
+			Metaworks3.prototype.addEventListener = function(event, func, data){
+				if(!this.listeners)
+					this.listeners = [];
+
+				var id = this.listeners.length;
+				this.listeners.push({event: event, func: func, data: data});
+
+				return id;
+			}
+
+			Metaworks3.prototype.removeEventListener = function(eventId){
+				this.listners.splice(eventId, 1)
+			}
+
+			Metaworks3.prototype.fireEvent = function(event, object){
+				if(!this.listeners) return;
+
+				for(var i=0; i<this.listeners.length; i++){
+					var listener = this.listeners[i];
+					if(listener.event == event){
+						listener.func(object, listener.data);
+					}
+				}
+			}
+
 			
 			////// reference objects //////
 			
@@ -5201,8 +5291,12 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
         			if(serviceMethodContext.target == 'auto'){
 
 
-						var closestSameWithResult = mw3.getClosestObject(mw3.recentCallObjectId, result_.__className);
-						if(closestSameWithResult){
+						var closestSameWithResults = mw3.getClosestObject(mw3.recentCallObjectId, result_.__className, true);
+
+						if(closestSameWithResults && closestSameWithResults.length){
+
+							var closestSameWithResult = mw3.orderBestObject(closestSameWithResults, result_)[0];
+
 							mw3.setObject(closestSameWithResult.__objectId, result_);
 							neverShowed = false;
 						}

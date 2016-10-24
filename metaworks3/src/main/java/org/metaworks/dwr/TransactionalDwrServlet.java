@@ -23,6 +23,7 @@ import org.metaworks.dao.TransactionContext;
 
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
+import org.metaworks.tools.ResourceChanger;
 
 public class TransactionalDwrServlet extends DwrServlet{
 
@@ -149,7 +150,12 @@ public class TransactionalDwrServlet extends DwrServlet{
         	InputStream is = null;
         	
         	try{
-        		is = Thread.currentThread().getContextClassLoader().getResourceAsStream(pathInfo);
+//				if(MetaworksRemoteService.getInstance().isDebugMode()){
+					is = ResourceChanger.getInputStream(pathInfo);
+//				}
+
+				if(is==null)
+        			is = Thread.currentThread().getContextClassLoader().getResourceAsStream(pathInfo);
         		
     	        if(is!=null){
 	            	String appendix = null;
