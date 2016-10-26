@@ -14,6 +14,10 @@ mvn archetype:generate \
 -DarchetypeRepository=https://oss.sonatype.org/content/repositories/snapshots
 ```
 
+for windows:
+```
+mvn archetype:generate -DarchetypeGroupId=org.uengine -DarchetypeArtifactId=metaworks-sample-archetype -DarchetypeVersion=1.1-SNAPSHOT -DarchetypeRepository=https://oss.sonatype.org/content/repositories/snapshots
+```
 ## 생성된 기본 maven 프로젝트에서 빌드후 바로 실행해보기
 
 톰캣 서버를 설치 없이 바로 테스트 하시려면 아래의 Tomcat plugin 설정을 pom.xml의 plugins 구역에 추가해주셔야 합니다:
