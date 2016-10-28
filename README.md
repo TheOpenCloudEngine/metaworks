@@ -14,6 +14,10 @@ mvn archetype:generate \
 -DarchetypeRepository=https://oss.sonatype.org/content/repositories/snapshots
 ```
 
+for windows:
+```
+mvn archetype:generate -DarchetypeGroupId=org.uengine -DarchetypeArtifactId=metaworks-sample-archetype -DarchetypeVersion=1.1-SNAPSHOT -DarchetypeRepository=https://oss.sonatype.org/content/repositories/snapshots
+```
 ## 생성된 기본 maven 프로젝트에서 빌드후 바로 실행해보기
 
 톰캣 서버를 설치 없이 바로 테스트 하시려면 아래의 Tomcat plugin 설정을 pom.xml의 plugins 구역에 추가해주셔야 합니다:
@@ -151,6 +155,8 @@ var contextValues = {
 1. JRebel 을 사용
 2. http://localhost:8080/runner.html?classname=org.metaworks.Admin 를 호출하여 변경하고자 하는 클래스명을 넣은 후, refreshMetadata 버튼을 클릭함. 모든 클래스를 재반영하려면, * 를 입력함.
 
+# 관련 문서
+1. [Metaworks Wiki Documentation](https://github.com/TheOpenCloudEngine/metaworks/wiki)
 
 # Tutorial Videos
 * press HD when you see the movies
