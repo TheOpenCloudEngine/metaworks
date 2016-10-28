@@ -297,7 +297,7 @@ public class MetaworksConverter extends BeanConverter {
 			}
 
 			Property property = properties.get(key);
-			if (property == null)
+			if (property == null )
 			{
 				log.warn("Missing setter: " + paramType.getName() + ".set" + Character.toTitleCase(key.charAt(0)) + key.substring(1) + "() to match javascript property: " + key + ". Check include/exclude rules and overloaded methods.");
 				continue;
