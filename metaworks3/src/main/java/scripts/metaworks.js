@@ -1683,8 +1683,12 @@ com.abc.ClassA.methodA=입력
 				};
 
 				var byClassLoader = actualFace.indexOf('dwr') == 0;
-					
-				var url = this.base + (byClassLoader ? '/':'/dwr/metaworks/') + actualFace + ".js";
+
+				if(!byClassLoader)
+					actualFace = 'dwr/metaworks/' + actualFace;
+
+
+				var url = this.base + '/' + actualFace + ".js";
 				
 //				   $.ajax({
 //				        url: url,
@@ -1721,28 +1725,19 @@ com.abc.ClassA.methodA=입력
 
 					var faceHelper;
 					
-					if(byClassLoader){
-						if(actualFace.indexOf('genericfaces') != -1){
-							startPos = 'dwr/metaworks/genericfaces/'.length;
-							
-						}else{
-							startPos = 'dwr/metaworks/'.length;
-						}
-						
-						faceHelper = actualFace.substr(startPos, actualFace.lastIndexOf('.') - startPos).split('/').join('_');
-					}else
-						faceHelper = actualFace.substr(0, actualFace.lastIndexOf('.')).split('/').join('_');
+//					if(byClassLoader){
+					if(actualFace.indexOf('genericfaces') != -1){
+						startPos = 'dwr/metaworks/genericfaces/'.length;
+
+					}else{
+						startPos = 'dwr/metaworks/'.length;
+					}
+
+					faceHelper = actualFace.substr(startPos, actualFace.lastIndexOf('.') - startPos).split('/').join('_');
+					//}else
+					//	faceHelper = actualFace.substr(0, actualFace.lastIndexOf('.')).split('/').join('_');
 					
 					mw3.loadedScripts[actualFace] = faceHelper; //now the namespace may not cause any collision.
-					
-//					return true;
-//					        },
-//					        error:function(){
-//					            if(onError) 
-//					            	onError();
-//					        }
-//					    });        
-
 
 				}
 			};
