@@ -350,7 +350,7 @@ public class MetaworksConverter extends BeanConverter {
 									}else{
 										String message = "Face Value [" + faceValue + "] has been dropped for property [" + property.getName() + ":" + property.getPropertyType() + "]";
 										log.debug(message);
-										new Exception(message).printStackTrace();
+										//new Exception(message).printStackTrace();
 									}
 
 								}
