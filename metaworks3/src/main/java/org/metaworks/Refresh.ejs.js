@@ -72,10 +72,12 @@ org_metaworks_Refresh.prototype = {
 				
 				for(var i=0; i<this.targetObjKeys.length; i++){
 					var compareObjKey = mw3._createObjectKey(compareObject);
-					
-					if(this.object.match && (matchKeyCnt > compareObjKey.split('@').length))
-						break;
-					
+
+					try {
+						if (this.object.match && (matchKeyCnt > compareObjKey.split('@').length))
+							break;
+					}catch(e){}
+
 					if(this.targetObjKeys[i] == compareObjKey){
 						return true;
 					}
