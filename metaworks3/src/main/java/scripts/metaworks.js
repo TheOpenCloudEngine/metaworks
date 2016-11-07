@@ -2600,13 +2600,13 @@ com.abc.ClassA.methodA=입력
 				if(test){
 					var object = mw3.objects[objId];
 				}else{
-					var objectFromUI = this.getObjectFromUI(objId);
+//					var objectFromUI = this.getObjectFromUI(objId);
 					
-					if(objectFromUI.__faceHelper && getAgain){				
-						var object = mw3.getObject(objId);
-					}else{
-						var object = objectFromUI;
-					}
+//					if(objectFromUI.__faceHelper && getAgain){
+					var object = mw3.getObject(objId);
+					//}else{
+					//	var object = objectFromUI;
+					//}
 				}
 
 				//var thisMetaworks = this;
