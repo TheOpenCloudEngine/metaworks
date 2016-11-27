@@ -585,7 +585,7 @@ public class MetaworksRemoteService {
 						try{
 							fieldValue = serviceClass.getMethod("get" + key.substring(0, 1).toUpperCase() + key.substring(1), new Class[]{}).invoke(clientObject, new Object[]{});
 						}catch(Exception ex){
-							throw new RuntimeException("Error when to get field value for inserting parametered metaworks object", ex);
+							throw new RuntimeException("Error when to get field ["+ key + "] value for calling parameterized metaworks call: @Payload('" + key + "')", ex);
 						}						
 					}
 					
@@ -813,7 +813,8 @@ public class MetaworksRemoteService {
             }
         }
 
-		TransactionContext.getThreadLocalInstance().setSharedContext(AUTOWIRED_FROM_CLIENT_CLASS_MAP, autowiringObjectFromClientMapByClassTypes);
+		if(autowiringObjectFromClientMapByClassTypes!=null && autowiringObjectFromClientMapByClassTypes.size() > 0)
+			TransactionContext.getThreadLocalInstance().setSharedContext(AUTOWIRED_FROM_CLIENT_CLASS_MAP, autowiringObjectFromClientMapByClassTypes);
 
 		return autowiringObjectFromClientMapByClassTypes;
 	}

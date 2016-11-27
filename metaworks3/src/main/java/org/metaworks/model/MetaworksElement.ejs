@@ -5,7 +5,7 @@
      var lastIndexOfDot = value.value.__className.lastIndexOf(".");
         var classNameOnly;
         if(lastIndexOfDot > -1){
-            classNameOnly = value.value.__className.substr(lastIndexOfDot);
+            classNameOnly = value.value.__className.substr(lastIndexOfDot + 1);
         }else{
             classNameOnly = value.value.__className;
         }

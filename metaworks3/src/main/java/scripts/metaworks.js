@@ -1570,6 +1570,7 @@ com.abc.ClassA.methodA=입력
 							fields				: (objectRef ? objectRef.fields  : null),
 							getField			: (objectRef ? objectRef.getField  : null),
 							getMethod			: (objectRef ? objectRef.getMethod  : null),
+							here				: (objectRef ? objectRef.here  : null),
 							resources			: (objectRef ? objectRef.fields  : null), //TODO: later should be sent only with resources
 							methods				: (objectRef ? objectRef.methods : null),
 							descriptor			: descriptor,
@@ -2609,6 +2610,8 @@ com.abc.ClassA.methodA=입력
 					//}
 				}
 
+				var originalObject = object;
+
 				//var thisMetaworks = this;
 				var divId = "objDiv_" + objId;
 				
@@ -2898,7 +2901,7 @@ com.abc.ClassA.methodA=입력
 											for(var j=0; j<arrayOfOrigValue.length; j++){
 
 												var accept = false;
-												var value = object;
+												var value = originalObject;
 
 												with(arrayOfOrigValue[j]){
 													try{
@@ -3690,12 +3693,20 @@ com.abc.ClassA.methodA=입력
 				};
 
 				var getMethod = function(methodName){
-					if(fields[methodName]) return methods[methodName];
+					if(methods[methodName]) return methods[methodName];
 
 					throw new Exception("Method [" + methodName + "] is not defined in your class: " + object.__className + ".");
 				};
-				
-				var objectRef={object: object, objectId: objectId, objectMetadata: objectMetadata, fields: fields, methods: methods, getField: getField, getMethod: getMethod};
+
+				var here = function(name){
+					if(fields[name]) return fields[name].here();
+					if(methods[name]) return methods[name].here();
+
+					throw new Exception("No Field or Method [" + name + "] is not defined in your class: " + object.__className + ".");
+				};
+
+
+				var objectRef={object: object, objectId: objectId, objectMetadata: objectMetadata, fields: fields, methods: methods, getField: getField, getMethod: getMethod, here: here};
 				return objectRef;
 			};
 			
