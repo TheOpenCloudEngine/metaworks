@@ -1571,6 +1571,7 @@ com.abc.ClassA.methodA=입력
 							getField			: (objectRef ? objectRef.getField  : null),
 							getMethod			: (objectRef ? objectRef.getMethod  : null),
 							here				: (objectRef ? objectRef.here  : null),
+							caller				: (objectRef ? objectRef.caller  : null),
 							resources			: (objectRef ? objectRef.fields  : null), //TODO: later should be sent only with resources
 							methods				: (objectRef ? objectRef.methods : null),
 							descriptor			: descriptor,
@@ -2198,6 +2199,32 @@ com.abc.ClassA.methodA=입력
 			Metaworks3.prototype.getObjectReference = function(){
 				return this._createObjectRef(this.targetObjectId, getObject());
 			};
+
+			Metaworks3.prototype.getParentMetaworksContext = function(objId){
+
+				var parentDivs = $('#objDiv_' + objId).parents();
+
+				var metaworksContext;
+				parentDivs.each(function(index) {
+
+					var parentObjectId = $(this).attr('id');
+
+					if (parentObjectId && parentObjectId.indexOf("objDiv_") == 0) {
+
+						parentObjectId = parentObjectId.substr("objDiv_".length);
+						var parent = mw3.getObject(parentObjectId);
+
+						if(parent && parent.metaworksContext){
+							metaworksContext = parent.metaworksContext;
+
+							return false;
+						}
+					}
+				});
+
+				return metaworksContext;
+			}
+
 			
 			Metaworks3.prototype.removeObject = function(objectId, keepDiv){
 				if(arguments.length == 0)
@@ -3705,8 +3732,14 @@ com.abc.ClassA.methodA=입력
 					throw new Exception("No Field or Method [" + name + "] is not defined in your class: " + object.__className + ".");
 				};
 
+				var caller = function(name){
+					if(methods[name]) return methods[name].caller();
 
-				var objectRef={object: object, objectId: objectId, objectMetadata: objectMetadata, fields: fields, methods: methods, getField: getField, getMethod: getMethod, here: here};
+					throw new Exception("No Method [" + name + "] is not defined in your class: " + object.__className + ".");
+				};
+
+
+				var objectRef={object: object, objectId: objectId, objectMetadata: objectMetadata, fields: fields, methods: methods, getField: getField, getMethod: getMethod, here: here, caller: caller};
 				return objectRef;
 			};
 			
@@ -5231,6 +5264,15 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 			if(serviceMethodContext.target=="none"){
 				// none mode is object return
 			}else if(serviceMethodContext.target=="self"){
+				if(!result.metaworksContext){
+
+					//find parent metaworksContext
+					var parentContext = mw3.getParentMetaworksContext(objId);
+
+					result.metaworksContext = parentContext;
+
+				}
+
 				mw3.setObject(objId, result);
 								
 			}else if(serviceMethodContext.target=="popup" || serviceMethodContext.target=="stick" || serviceMethodContext.target=="popupOverPopup"){
