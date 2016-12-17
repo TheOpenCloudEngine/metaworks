@@ -16,13 +16,5 @@ var CleanObjectFace = function(objectId, className){
 	}else{
 		this.objectDiv.css({'height': '100%'});
 	}
-	
-	this.startLoading = function(){
-		
-	};
-
-	this.endLoading = function(){
-		
-	};
 
 };

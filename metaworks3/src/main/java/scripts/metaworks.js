@@ -2682,14 +2682,22 @@ com.abc.ClassA.methodA=입력
 						if(serviceMethodContext){
 							if(serviceMethodContext.callByContent == false){
 								if(serviceMethodContext.payload){
-									var objectForCall = {__className: object.__className, metaworksContext: object.metaworksContext};
-									for(var i in objectMetadata.fieldDescriptors){
-										var fd = objectMetadata.fieldDescriptors[i];
-										
-										if(serviceMethodContext.payload[fd.name])
-											objectForCall[fd.name] = object[fd.name];
-									
+
+									var beanPaths = [];
+									for(var key in serviceMethodContext.payload){
+										beanPaths.push(key);
 									}
+
+									var objectForCall = mw3.___copyBeanPathsOnly(object, beanPaths);
+
+									//var objectForCall = {__className: object.__className, metaworksContext: object.metaworksContext};
+									// for(var i in objectMetadata.fieldDescriptors){
+									// 	var fd = objectMetadata.fieldDescriptors[i];
+									//
+									// 	if(serviceMethodContext.payload[fd.name])
+									// 		objectForCall[fd.name] = object[fd.name];
+									//
+									// }
 									
 									object = objectForCall;
 									
@@ -2901,67 +2909,7 @@ com.abc.ClassA.methodA=입력
 								var autowiredBeanPaths;
 								eval("autowiredBeanPaths = " + autowiredBeanPath);
 
-								if(autowiredBeanPaths){
-
-									var origValue = autowiredObjects[fieldName];
-									var filteredValue = {__className: origValue.__className};
-
-									if(!autowiredBeanPaths.length){
-										autowiredBeanPaths = [autowiredBeanPaths];
-									}
-
-									for(var i=0; i<autowiredBeanPaths.length; i++){
-										var beanPath = autowiredBeanPaths[i];
-
-										var whereCondition = beanPath.indexOf('[');
-
-										if (whereCondition > -1){
-											var whereConditionEnd = beanPath.indexOf(']');
-
-											var conditionPart = beanPath.substring(whereCondition+1, whereConditionEnd);
-											var arrayPropName = beanPath.substring(0, whereCondition);
-											var arrayBeanPath = beanPath.substring(whereConditionEnd+1);
-											var arrayOfOrigValue = origValue[arrayPropName];
-
-											filteredValue[arrayPropName] = [];
-
-											for(var j=0; j<arrayOfOrigValue.length; j++){
-
-												var accept = false;
-												var value = originalObject;
-
-												with(arrayOfOrigValue[j]){
-													try{
-														eval("accept = " + (conditionPart));
-													}catch(ex){console.log(ex);}
-												}
-
-												if(!accept) continue;
-
-												var elem = this.___beanCopy(arrayBeanPath, arrayOfOrigValue[j]);
-
-												filteredValue[arrayPropName].push(elem);
-
-											}
-
-										}else{
-
-											if(beanPath.indexOf(".") > -1){
-
-												var filteredValueWithProp = this.___beanCopy("."+ beanPath, origValue);
-
-												var propName = beanPath.split(".")[0];
-												eval("filteredValue." + propName + " = filteredValueWithProp." + propName);
-
-											}else{
-												eval("filteredValue." + beanPath + " = origValue." + beanPath);
-											}
-										}
-
-									}
-
-									autowiredObjects[fieldName] = filteredValue;
-								}
+                                autowiredObjects[fieldName] = mw3.___copyBeanPathsOnly(autowiredObjects[fieldName]);
 
 							}catch(e){console.log(e);}
 						}
@@ -3033,6 +2981,74 @@ com.abc.ClassA.methodA=입력
 				return this._withTarget(objId);
 
 			};
+
+			Metaworks3.prototype.___copyBeanPathsOnly = function(origValue, autowiredBeanPaths){
+				if(autowiredBeanPaths){
+
+					var filteredValue = {__className: origValue.__className, metaworksContext: origValue.metaworksContext};
+
+
+					if(!autowiredBeanPaths.length){
+						autowiredBeanPaths = [autowiredBeanPaths];
+					}
+
+					for(var i=0; i<autowiredBeanPaths.length; i++){
+						var beanPath = autowiredBeanPaths[i];
+
+						var whereCondition = beanPath.indexOf('[');
+
+						if (whereCondition > -1){
+							var whereConditionEnd = beanPath.indexOf(']');
+
+							var conditionPart = beanPath.substring(whereCondition+1, whereConditionEnd);
+							var arrayPropName = beanPath.substring(0, whereCondition);
+							var arrayBeanPath = beanPath.substring(whereConditionEnd+1);
+							var arrayOfOrigValue = origValue[arrayPropName];
+
+							filteredValue[arrayPropName] = [];
+
+							for(var j=0; j<arrayOfOrigValue.length; j++){
+
+								var accept = false;
+								var value = originalObject;
+
+								with(arrayOfOrigValue[j]){
+									try{
+										eval("accept = " + (conditionPart));
+									}catch(ex){console.log(ex);}
+								}
+
+								if(!accept) continue;
+
+								var elem = this.___beanCopy(arrayBeanPath, arrayOfOrigValue[j]);
+
+								filteredValue[arrayPropName].push(elem);
+
+							}
+
+						}else{
+
+							if(beanPath.indexOf(".") > -1){
+
+								var filteredValueWithProp = this.___beanCopy("."+ beanPath, origValue);
+
+								var propName = beanPath.split(".")[0];
+								eval("filteredValue." + propName + " = filteredValueWithProp." + propName);
+
+							}else{
+								eval("filteredValue." + beanPath + " = origValue." + beanPath);
+							}
+						}
+
+					}
+
+					return filteredValue;
+				}
+
+
+                return origValue;
+
+            }
 
 			Metaworks3.prototype.___beanCopy = function(arrayBeanPath, origValue){
 				var elem = {
@@ -4405,11 +4421,13 @@ com.abc.ClassA.methodA=입력
 										bindingDivId = '#' + mw3._getObjectDivId(bindingFieldId);
 									}
 
-									$(bindingDivId).bind(eventBinding, {command: command}, function (event) {
-										event.stopPropagation();
+									if(!$(bindingDivId).data("events") || !$(bindingDivId).data("events")[eventBinding]) { //only once
+                                        $(bindingDivId).bind(eventBinding, {command: command}, function (event) {
+                                            event.stopPropagation();
 
-										eval(event.data.command);
-									});
+                                            eval(event.data.command);
+                                        });
+                                    }
 								}
 							}
 						}
