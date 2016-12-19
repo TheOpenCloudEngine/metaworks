@@ -3030,10 +3030,21 @@ com.abc.ClassA.methodA=입력
 
 							if(beanPath.indexOf(".") > -1){
 
-								var filteredValueWithProp = this.___beanCopy("."+ beanPath, origValue);
+								filteredValue = this.___beanCopy("."+ beanPath, origValue, filteredValue);
 
-								var propName = beanPath.split(".")[0];
-								eval("filteredValue." + propName + " = filteredValueWithProp." + propName);
+// 								var propName = beanPath.split(".")[0];
+
+// 								var paths = beanPath.split(".");
+
+// 								for(var pathIdx=1; pathIdx < paths.length; pathIdx++){
+// 									path = paths[pathIdx];
+// 									fullPath = fullPath + "." + path;
+
+// 										(pathIdx == paths.length -1) {
+
+// 								}
+
+// 								eval("filteredValue." + propName + " = filteredValueWithProp." + propName);
 
 							}else{
 								eval("filteredValue." + beanPath + " = origValue." + beanPath);
@@ -3046,14 +3057,17 @@ com.abc.ClassA.methodA=입력
 				}
 
 
-                return origValue;
+				return origValue;
 
-            }
+			}
 
-			Metaworks3.prototype.___beanCopy = function(arrayBeanPath, origValue){
+			Metaworks3.prototype.___beanCopy = function(arrayBeanPath, origValue, existingValue){
 				var elem = {
 					__className: origValue.__className
 				};
+
+				if(existingValue)
+					elem = existingValue;
 
 				if(arrayBeanPath.indexOf(".") > -1){
 
@@ -3063,6 +3077,8 @@ com.abc.ClassA.methodA=입력
 					for(var pathIdx=1; pathIdx < paths.length; pathIdx++){
 						path = paths[pathIdx];
 						fullPath = fullPath + "." + path;
+
+						if(existingValue && eval("elem" + fullPath)) continue;
 
 						if(pathIdx == paths.length -1) {
 							eval("elem" + fullPath + " = origValue" + fullPath);
@@ -3076,7 +3092,8 @@ com.abc.ClassA.methodA=입력
 
 				return elem;
 			}
-			
+
+
 			Metaworks3.prototype.showInfo = function(objId, message){
 				var infoDivId = "#"+this._getInfoDivId(objId);
 
