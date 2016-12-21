@@ -2685,7 +2685,8 @@ com.abc.ClassA.methodA=입력
 
 									var beanPaths = [];
 									for(var key in serviceMethodContext.payload){
-										beanPaths.push(key);
+										if(key.indexOf("wireParamCls:") != 0)
+											beanPaths.push(key);
 									}
 
 									var objectForCall = mw3.___copyBeanPathsOnly(object, beanPaths);
