@@ -2685,6 +2685,7 @@ com.abc.ClassA.methodA=입력
 
 									var beanPaths = [];
 									for(var key in serviceMethodContext.payload){
+
 										if(key.indexOf("wireParamCls:") != 0)
 											beanPaths.push(key);
 									}
