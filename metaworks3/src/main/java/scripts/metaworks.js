@@ -3005,14 +3005,16 @@ com.abc.ClassA.methodA=입력
 							var conditionPart = beanPath.substring(whereCondition+1, whereConditionEnd);
 							var arrayPropName = beanPath.substring(0, whereCondition);
 							var arrayBeanPath = beanPath.substring(whereConditionEnd+1);
-							var arrayOfOrigValue = origValue[arrayPropName];
+							var arrayOfOrigValue = eval("origValue." + arrayPropName);//origValue[arrayPropName];
 
-							filteredValue[arrayPropName] = [];
+							filteredValue = this.___beanCopy("."+arrayPropName, origValue, filteredValue);
+							eval("filteredValue." + arrayPropName + " = []");
 
 							for(var j=0; j<arrayOfOrigValue.length; j++){
 
 								var accept = false;
-								var value = originalObject;
+								var value = origValue;
+								var __index = j;
 
 								with(arrayOfOrigValue[j]){
 									try{
@@ -3024,10 +3026,9 @@ com.abc.ClassA.methodA=입력
 
 								var elem = this.___beanCopy(arrayBeanPath, arrayOfOrigValue[j]);
 
-								filteredValue[arrayPropName].push(elem);
+								eval("filteredValue." + arrayPropName + ".push(elem)");
 
 							}
-
 						}else{
 
 							if(beanPath.indexOf(".") > -1){

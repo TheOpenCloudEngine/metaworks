@@ -1,0 +1,20 @@
+<%
+
+ var colSize = Math.round(12 / value.sortableLists.length);
+
+ mw3.newBeanProperty(objectId);
+
+%>
+
+<div class="row">
+
+    <%for(var i=0; i<value.sortableLists.length; i++){
+
+        var sortableList = value.sortableLists[i];
+        var objectTypeName = sortableList.__className;
+    %>
+
+    <div class="col-md-<%=colSize%>"><%=mw3.locateObject(sortableList, objectTypeName, null, null, {objectId: objectId, name: '[' + i + ']'})%></div>
+
+    <%}%>
+</div>
