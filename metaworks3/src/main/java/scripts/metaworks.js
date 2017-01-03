@@ -662,10 +662,13 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
  */
 			Metaworks3.prototype.clearMetaworksType = function(objectTypeName){
 				if(objectTypeName == "*"){
-					this.metaworksMetadata = new Array();
+					this.metaworksMetadata = {};
 					this.tests ={};
-				}else
+					localStorage.clear();
+				}else {
 					this.metaworksMetadata[objectTypeName] = null;
+					localStorage['metadata_'+ objectTypeName] = null;
+				}
 
 				return function(){}; //for dwr dummy call
 			};
@@ -3752,26 +3755,26 @@ com.abc.ClassA.methodA=입력
 				var getField = function(fieldName){
 					if(fields[fieldName]) return fields[fieldName];
 
-					throw new Exception("Field [" + fieldName + "] is not defined in your class: " + object.__className + ".");
+					throw new Error("Field [" + fieldName + "] is not defined in your class: " + object.__className + ".");
 				};
 
 				var getMethod = function(methodName){
 					if(methods[methodName]) return methods[methodName];
 
-					throw new Exception("Method [" + methodName + "] is not defined in your class: " + object.__className + ".");
+					throw new Error("Method [" + methodName + "] is not defined in your class: " + object.__className + ".");
 				};
 
 				var here = function(name){
 					if(fields[name]) return fields[name].here();
 					if(methods[name]) return methods[name].here();
 
-					throw new Exception("No Field or Method [" + name + "] is not defined in your class: " + object.__className + ".");
+					throw new Error("No Field or Method [" + name + "] is not defined in your class: " + object.__className + ".");
 				};
 
 				var caller = function(name){
 					if(methods[name]) return methods[name].caller();
 
-					throw new Exception("No Method [" + name + "] is not defined in your class: " + object.__className + ".");
+					throw new Error("No Method [" + name + "] is not defined in your class: " + object.__className + ".");
 				};
 
 
