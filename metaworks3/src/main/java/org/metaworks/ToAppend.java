@@ -27,7 +27,16 @@ public class ToAppend {
 		public void setMatch(boolean match) {
 			this.match = match;
 		}
-		
+
+	boolean toFront;
+		public boolean isToFront() {
+			return toFront;
+		}
+		public void setToFront(boolean toFront) {
+			this.toFront = toFront;
+		}
+
+
 	public ToAppend(Object parent, Object target){
 		this(parent, target, false);
 	}

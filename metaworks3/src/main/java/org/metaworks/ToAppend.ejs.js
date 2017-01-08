@@ -34,19 +34,27 @@ var org_metaworks_ToAppend = function(objectId, className){
 	if(triggerObjId){
 		var faceHelper = mw3.getFaceHelper(triggerObjId);
 		
-		if(faceHelper && faceHelper.toAppend){
+		if(faceHelper && this.object.toFront && faceHelper.toPrepend){
+			faceHelper.toPrepend(this.object.target);
+		}else if(faceHelper && !this.object.toFront && faceHelper.toAppend){
 			faceHelper.toAppend(this.object.target);
 		}else{
 			var html = mw3.locateObject(this.object.target, null);//, "#"+mappedObjdivId);
-			
-			$("#objDiv_" + mappedObjId).append(html);	
+
+			if(this.object.toFront)
+				$("#objDiv_" + mappedObjId).prepend(html);
+			else
+				$("#objDiv_" + mappedObjId).append(html);
 		}			
 		
 		mw3.onLoadFaceHelperScript();
 	}else{
 		var html = mw3.locateObject(this.object.target, null);//, "#"+mappedObjdivId);
 
-		$("body").append(html);
+		if(this.object.toFront)
+			$("body").prepend(html);
+		else
+			$("body").append(html);
 
 	}
 	
