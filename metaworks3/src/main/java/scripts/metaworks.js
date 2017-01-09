@@ -127,6 +127,8 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 
 				//for storing flags that @ServiceMethod(onLoad) has been done for each object.
 				this.objectLoaded = {};
+
+				this.eventListeners = []; //{event: 'after call', objectId: 10, bindingFor: 'org.uengine.Test.test'}
 			    
 			    // Netscape
 			    // 5.0 (Windows NT 6.1) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.79 Safari/535.11
@@ -2080,6 +2082,12 @@ com.abc.ClassA.methodA=입력
 					
 					return this;
 				}
+
+				//bind events for object
+				var metadata = mw3.getMetadata(className);
+
+
+				//
 				
 				//#DEBUG POINT
 				return html;
@@ -3163,6 +3171,35 @@ com.abc.ClassA.methodA=입력
 			   		//else{
 			   			eval("object['"+methodName+"'] = function(getAgain, callback){return mw3.call(this.__objectId, '"+methodName+"', getAgain, false, callback);}");			   			
 //			   		}
+
+
+
+				   if (methodContext.eventBinding && methodContext.eventBinding.length > 0) {
+					   for (var i = 0; i < methodContext.eventBinding.length; i++) {
+						   var eventBinding = methodContext.eventBinding[i];
+						   if("after call"==eventBinding && methodContext.bindingFor && methodContext.bindingFor[i]){
+							   var bindingFor = methodContext.bindingFor[i];
+
+							   mw3.addEventListener(eventBinding + ":" + bindingFor,
+								   function(object, data, listener){
+
+									   //alert('method ' + data.methodName);
+
+									   if(mw3.objects[data.objectId]){
+										   eval("mw3.objects[data.objectId]." + data.methodName + "()");
+									   }else{
+										   mw3.removeEventListener(listener.id);
+									   }
+								   },
+								   {methodName: methodName, objectId: objId},
+								   objId
+							   );
+
+						   }
+					   }
+				   }
+
+
 			   }
 			   
 			   
@@ -4859,18 +4896,28 @@ com.abc.ClassA.methodA=입력
 
 ///// event handling framework ///////
 
-			Metaworks3.prototype.addEventListener = function(event, func, data){
+			Metaworks3.prototype.addEventListener = function(event, func, data, listenerObjId){
+
 				if(!this.listeners)
 					this.listeners = [];
 
+				if(listenerObjId){ //if listenerObjId is given, ignore same event binding
+					for(var i=0; i<this.listeners.length; i++){
+						var listener = this.listeners[i];
+						if(listener.event == event && listener.listenerObjId == listenerObjId){
+							return; //ignored
+						}
+					}
+				}
+
 				var id = this.listeners.length;
-				this.listeners.push({event: event, func: func, data: data});
+				this.listeners.push({event: event, func: func, data: data, id: id});
 
 				return id;
 			}
 
 			Metaworks3.prototype.removeEventListener = function(eventId){
-				this.listners.splice(eventId, 1)
+				this.listeners.splice(eventId, 1)
 			}
 
 			Metaworks3.prototype.fireEvent = function(event, object){
@@ -4879,7 +4926,7 @@ com.abc.ClassA.methodA=입력
 				for(var i=0; i<this.listeners.length; i++){
 					var listener = this.listeners[i];
 					if(listener.event == event){
-						listener.func(object, listener.data);
+						listener.func(object, listener.data, listener);
 					}
 				}
 			}
@@ -5506,6 +5553,7 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 
 						if(serviceMethodContext.target != "none"){
 
+							mw3.fireEvent("after call:" + className + "." + svcNameAndMethodName, result);
 
 							metaworksService.__showResult(object, result, objId, svcNameAndMethodName, serviceMethodContext, placeholder, divId, callback);
 							mw3.metaworksServices[metaworksServiceIndex] = null;
