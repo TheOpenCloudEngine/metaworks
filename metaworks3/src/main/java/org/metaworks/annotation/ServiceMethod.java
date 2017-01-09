@@ -29,6 +29,16 @@ public @interface ServiceMethod {
 	public final static String MOUSEBINDING_ONOVER 		= "over";
 	public final static String MOUSEBINDING_ONOUT 		= "out";
 
+	public final static String EVENT_CHANGE				= "change";
+	public final static String EVENT_CLICK				= "click";
+	public final static String EVENT_DBLCLICK			= "dblclick";
+	public final static String EVENT_CLOSE				= "close";
+	public final static String EVENT_DROP				= "drop";
+	public final static String EVENT_SAVE				= "save";
+	public final static String EVENT_DELEGATE			= "delegate";
+	public final static String EVENT_AFTERCALL			= "after call";
+	public final static String EVENT_AFTERLOAD			= "after load";
+
 
 	String when() 				default IDAO.WHEN_EVER;
 	String where() 				default IDAO.WHERE_EVER;
