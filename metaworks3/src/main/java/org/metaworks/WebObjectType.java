@@ -6,13 +6,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -271,7 +265,7 @@ public class WebObjectType implements Serializable{
 		}
 
 		//setting face
-		Face typeFace = (Face)getAnnotationDeeply(tryingClasses, null, Face.class);
+		Face typeFace = (Face)getAnnotationDeeply(tryingClasses, (String)null, Face.class);
 
 		boolean ignoreFaceClass = false;
 		if(typeFace!=null){
@@ -320,7 +314,7 @@ public class WebObjectType implements Serializable{
 			}
 		}
 
-		AutowiredFromClient alwaysSubmitted = (AutowiredFromClient)getAnnotationDeeply(tryingClasses, null, AutowiredFromClient.class);
+		AutowiredFromClient alwaysSubmitted = (AutowiredFromClient)getAnnotationDeeply(tryingClasses, (String)null, AutowiredFromClient.class);
 		if(alwaysSubmitted!=null){
 			if(alwaysSubmitted.onDrag()) {
 				setSubmittedOnDrag(true);
@@ -352,9 +346,9 @@ public class WebObjectType implements Serializable{
 		
 		try{
 			
-			javax.persistence.Table ejb3Table = (javax.persistence.Table) getAnnotationDeeply(tryingClasses, null, javax.persistence.Table.class);
+			javax.persistence.Table ejb3Table = (javax.persistence.Table) getAnnotationDeeply(tryingClasses, javax.persistence.Table.class);
 			
-			org.metaworks.annotation.Table metaworksTable = (org.metaworks.annotation.Table) getAnnotationDeeply(tryingClasses, null, org.metaworks.annotation.Table.class);
+			org.metaworks.annotation.Table metaworksTable = (org.metaworks.annotation.Table) getAnnotationDeeply(tryingClasses, org.metaworks.annotation.Table.class);
 			
 			if(metaworksTable != null && metaworksTable.name().length() > 0)
 				objectType.setName(metaworksTable.name());
@@ -368,7 +362,7 @@ public class WebObjectType implements Serializable{
 
 			}
 				
-			org.metaworks.annotation.Face objectFace = (Face) getAnnotationDeeply(tryingClasses, null, Face.class);
+			org.metaworks.annotation.Face objectFace = (Face) getAnnotationDeeply(tryingClasses, Face.class);
 			if(objectFace != null && objectFace.displayName().length() > 0)
 				setDisplayName(objectFace.displayName());
 			else{
@@ -1094,8 +1088,9 @@ public class WebObjectType implements Serializable{
 //			}
 //			
 
-			Annotation annotationSomewhat = getAnnotationDeeply(tryingClasses, method.getName(), ServiceMethod.class, false);
-			
+			Annotation annotationSomewhat = getAnnotationDeeply(tryingClasses, method, ServiceMethod.class);
+
+
 			if(annotationSomewhat!=null){
 				
 				ServiceMethod annotation = null;
@@ -1438,6 +1433,10 @@ public class WebObjectType implements Serializable{
 		
 	}
 
+	public static Annotation getAnnotationDeeply(ArrayList<Class> tryingClasses, Class annotationCls) throws Exception {
+		return getAnnotationDeeply(tryingClasses, (String)null, annotationCls);
+	}
+
 	private StringBuffer toJSONArrayExp(String[] strings) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("[");
@@ -1455,13 +1454,54 @@ public class WebObjectType implements Serializable{
 	static public Annotation getAnnotationDeeply(ArrayList<Class> tryingClasses, String symbol, Class annotationCls) throws Exception{
 		return getAnnotationDeeply(tryingClasses, symbol, annotationCls, true);
 	}
-	
 
-	static public Annotation getAnnotationDeeply(ArrayList<Class> tryingClasses, String symbol, Class annotationCls, boolean isField) throws Exception{
+	static public Annotation getAnnotationDeeply(ArrayList<Class> tryingClasses, Method symbol, Class annotationCls) throws Exception {
+		return getAnnotationDeeply(tryingClasses, symbol, annotationCls, false);
+	}
+
+	static public Annotation getAnnotationDeeply(ArrayList<Class> tryingClasses, Object methodOrFieldOrSymbol, Class annotationCls, boolean isField) throws Exception{
 		//		Class annotationCls = Thread.currentThread().getContextClassLoader().loadClass("org.metaworks." +annotationName);
 		Annotation annotation = null;
 		//Class[] tryingClasses = {cls, iDAOCls};
-		
+
+		String symbol = null;
+
+		if(methodOrFieldOrSymbol instanceof String){
+			symbol = (String)methodOrFieldOrSymbol;
+		}else if(methodOrFieldOrSymbol instanceof Field){
+			symbol = ((Field) methodOrFieldOrSymbol).getName();
+		}else if(methodOrFieldOrSymbol instanceof Method){
+			symbol = ((Method) methodOrFieldOrSymbol).getName();
+			isField = false;
+		}
+
+		//check if does the method has the annotation first.
+		{
+			if (!isField && symbol!=null) {
+				for(int i=0; i<tryingClasses.size(); i++) {
+					Class clazz = tryingClasses.get(i);
+
+					if(clazz==null) return null;
+
+					Method[] methods = clazz.getMethods();
+
+
+					for (Method method : methods) { //if there're two or more methods which has same name, which one is selected?
+						if (method.getDeclaringClass() != clazz)
+							continue; //only the method declared in the class is selected.
+
+						if (symbol.equals(method.getName()) && method.getAnnotation(annotationCls)!=null){
+							annotation = method.getAnnotation(annotationCls);
+
+							break;
+						}
+					}
+				}
+
+				if(annotation==null) return null;
+			}
+		}
+
 		for(int i=0; i<tryingClasses.size(); i++){
 			Class clazz = tryingClasses.get(i);
 			
@@ -1493,28 +1533,17 @@ public class WebObjectType implements Serializable{
 					}
 				}else{
 
-						Method[] methods = clazz.getMethods();
-						
-						for(Method method:methods){
+					Method[] methods = clazz.getMethods();
 
-							if(method.getName().equals(symbol) && (annotation = method.getAnnotation(annotationCls)) != null){
-								annotation = method.getAnnotation(annotationCls);
 
-								Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-								if(annotationCls == ServiceMethod.class && parameterAnnotations!=null){
-									ServiceMethodAnnotationWithParameterAnnotations serviceMethodAnnotationWithParameterAnnotations = new ServiceMethodAnnotationWithParameterAnnotations();
-									serviceMethodAnnotationWithParameterAnnotations.setMethodAnnotation((ServiceMethod)annotation);
-									serviceMethodAnnotationWithParameterAnnotations.setParameterAnnotations(parameterAnnotations);
-									serviceMethodAnnotationWithParameterAnnotations.setMethod(method);
-									
-									return serviceMethodAnnotationWithParameterAnnotations;
-								}else
-									return annotation;
-								
-								
-							}
-							
-						}
+					for(Method method:methods){ //if there're two or more methods which has same name, which one is selected?
+						if(method.getDeclaringClass() != clazz) continue; //only the method declared in the class is selected.
+
+						Annotation annotationIfMatch = getAnnotationIfMatch(method, methodOrFieldOrSymbol, annotationCls, annotation);
+
+						if(annotationIfMatch!=null)
+							return annotationIfMatch;
+					}
 					
 				}
 			}else{//in case that class level's annotation
@@ -1617,6 +1646,37 @@ public class WebObjectType implements Serializable{
 		
 		return annotation;
 	}
+
+	static private Annotation getAnnotationIfMatch(Method method, Object methodOrSymbol, Class annotationCls, Annotation annotation){
+
+		boolean match = false;
+
+		if(methodOrSymbol instanceof Method ){
+			match = method.equals(methodOrSymbol);
+		}else{
+			match = method.getName().equals(methodOrSymbol);
+		}
+
+		if(match
+			//&& (annotation = method.getAnnotation(annotationCls)) != null
+				){
+			//annotation = method.getAnnotation(annotationCls);
+
+			Annotation[][] parameterAnnotations = method.getParameterAnnotations();
+			if(annotationCls == ServiceMethod.class && parameterAnnotations!=null){
+				ServiceMethodAnnotationWithParameterAnnotations serviceMethodAnnotationWithParameterAnnotations = new ServiceMethodAnnotationWithParameterAnnotations();
+				serviceMethodAnnotationWithParameterAnnotations.setMethodAnnotation((ServiceMethod)annotation);
+				serviceMethodAnnotationWithParameterAnnotations.setParameterAnnotations(parameterAnnotations);
+				serviceMethodAnnotationWithParameterAnnotations.setMethod(method);
+
+				return serviceMethodAnnotationWithParameterAnnotations;
+			}else
+				return annotation;
+		}
+
+		return null;
+	}
+
 
 	static public String getClassNameOnly(Class activityCls){
 		return getClassNameOnly(activityCls.getName());

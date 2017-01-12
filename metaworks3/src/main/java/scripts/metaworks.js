@@ -3956,6 +3956,9 @@ com.abc.ClassA.methodA=입력
 
 				}
 
+				if(isHidden) return true; //hidden has first priority.
+
+
 				if((methodContext.when && methodContext.when.indexOf('whenever|') == -1) || 
 				   (methodContext.where && methodContext.where.indexOf('wherever|') == -1) || 
 				   (methodContext.how) || 
