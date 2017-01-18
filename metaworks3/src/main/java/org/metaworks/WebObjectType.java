@@ -1496,6 +1496,8 @@ public class WebObjectType implements Serializable{
 							break;
 						}
 					}
+
+					if(annotation!=null) break;
 				}
 
 				if(annotation==null) return null;
