@@ -2,16 +2,22 @@
 
 <div class="panel <%=value.selected ? "panel-primary" : "panel-default"%>">
     <%
-     var lastIndexOfDot = value.value.__className.lastIndexOf(".");
-        var classNameOnly;
-        if(lastIndexOfDot > -1){
-            classNameOnly = value.value.__className.substr(lastIndexOfDot + 1);
-        }else{
-            classNameOnly = value.value.__className;
-        }
 
+        if(value.value.__className) {
+            var classNameOnly;
+
+            var lastIndexOfDot = value.value.__className.lastIndexOf(".");
+            if (lastIndexOfDot > -1) {
+                classNameOnly = value.value.__className.substr(lastIndexOfDot + 1);
+            } else {
+                classNameOnly = value.value.__className;
+            }
+
+        %>
+        <div class="panel-heading" onclick="<%=methods.select.caller()%>"><%=classNameOnly%></div>
+<%
+        }
        %>
-    <div class="panel-heading" onclick="<%=methods.select.caller()%>"><%=classNameOnly%></div>
     <div class="panel-body"><%=fields.value.here()%></div>
 </div>
 
