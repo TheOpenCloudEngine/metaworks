@@ -2920,7 +2920,7 @@ com.abc.ClassA.methodA=입력
 								var autowiredBeanPaths;
 								eval("autowiredBeanPaths = " + autowiredBeanPath);
 
-                                autowiredObjects[fieldName] = mw3.___copyBeanPathsOnly(autowiredObjects[fieldName]);
+                                autowiredObjects[fieldName] = mw3.___copyBeanPathsOnly(autowiredObjects[fieldName], autowiredBeanPaths);
 
 							}catch(e){console.log(e);}
 						}
@@ -4932,7 +4932,7 @@ com.abc.ClassA.methodA=입력
 				}
 			}
 
-			
+
 			////// reference objects //////
 			
 			var FieldRef = function(object, objectId, fieldDescriptor){
