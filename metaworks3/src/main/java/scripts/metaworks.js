@@ -2699,7 +2699,9 @@ com.abc.ClassA.methodA=입력
 											beanPaths.push(key);
 									}
 
-									var objectForCall = mw3.___copyBeanPathsOnly(object, beanPaths);
+                                    if(beanPaths.length == 0) beanPaths = null;
+
+                                    var objectForCall = mw3.___copyBeanPathsOnly(object, beanPaths);
 
 									//var objectForCall = {__className: object.__className, metaworksContext: object.metaworksContext};
 									// for(var i in objectMetadata.fieldDescriptors){
