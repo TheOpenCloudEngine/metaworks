@@ -27,7 +27,9 @@ public class TransactionContext implements ConnectionFactory{
 	
 
 	String connectionGetterStackDump = null;
-		public String getConnectionGetterStackDump() {
+	private boolean MW3FaceOptionEnabled = false;
+
+	public String getConnectionGetterStackDump() {
 			return connectionGetterStackDump;
 		}
 		public void setConnectionGetterStackDump(String connectionGetterStackDump) {
@@ -68,6 +70,7 @@ public class TransactionContext implements ConnectionFactory{
 			throw new RuntimeException("There's uncommitted transactionContext remains.");
 		
 		local.set(this);
+
 	}
 	
 	public static TransactionContext getThreadLocalInstance(){
@@ -474,6 +477,13 @@ public class TransactionContext implements ConnectionFactory{
 		super.finalize();
 	}
 
+	public boolean isMW3FaceOptionEnabled() {
+		return MW3FaceOptionEnabled;
+	}
+
+	public void setMW3FaceOptionEnabled(boolean MW3FaceOptionEnabled) {
+		this.MW3FaceOptionEnabled = MW3FaceOptionEnabled;
+	}
 }
 
 

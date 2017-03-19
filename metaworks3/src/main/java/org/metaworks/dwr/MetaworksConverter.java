@@ -553,7 +553,7 @@ public class MetaworksConverter extends BeanConverter {
 				{
 					boolean thisStackDisabledChildFaceSwapping = false;
 
-					Map<String, Property> properties = getPropertyMapFromObject(data, true, false);
+					Map<String, Property> properties = getPropertyMapFromObject(data, true, true); //last option requires the property must have setter/getter either.
 					for (Entry<String, Property> entry : properties.entrySet())
 					{
 						String name = entry.getKey();
@@ -562,7 +562,7 @@ public class MetaworksConverter extends BeanConverter {
 						Object value = property.getValue(data);
 						Face faceForProperty = null;
 
-						if(wot!=null && faceReplacingEnabled){
+						if(wot!=null && faceReplacingEnabled && TransactionContext.getThreadLocalInstance().isMW3FaceOptionEnabled()){
 							WebFieldDescriptor wfd = wot.getFieldDescriptor(name);
 							if(wfd!=null){
 
