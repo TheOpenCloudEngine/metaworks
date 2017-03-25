@@ -46,14 +46,14 @@ public class WebObjectType implements Serializable{
 		this.isInterface = isInterface;
 	}
 
-	boolean isAlwaysSubmitted;
+	boolean alwaysSubmitted;
 
 	public boolean isAlwaysSubmitted() {
-		return isAlwaysSubmitted;
+		return alwaysSubmitted;
 	}
 
-	public void setIsAlwaysSubmitted(boolean isAlwaysSubmitted) {
-		this.isAlwaysSubmitted = isAlwaysSubmitted;
+	public void setAlwaysSubmitted(boolean isAlwaysSubmitted) {
+		this.alwaysSubmitted = isAlwaysSubmitted;
 	}
 
 	boolean isSubmittedOnDrag;
@@ -319,7 +319,7 @@ public class WebObjectType implements Serializable{
 			if(alwaysSubmitted.onDrag()) {
 				setSubmittedOnDrag(true);
 			}else
-				setIsAlwaysSubmitted(true);
+				setAlwaysSubmitted(true);
 		}
 
 //		else

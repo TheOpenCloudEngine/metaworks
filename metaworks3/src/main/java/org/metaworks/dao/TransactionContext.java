@@ -27,7 +27,7 @@ public class TransactionContext implements ConnectionFactory{
 	
 
 	String connectionGetterStackDump = null;
-	private boolean MW3FaceOptionEnabled = false;
+	private boolean MW3FaceOptionEnabled = true;
 
 	public String getConnectionGetterStackDump() {
 			return connectionGetterStackDump;
