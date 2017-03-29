@@ -16,6 +16,7 @@ import org.metaworks.dao.IDAO;
 import org.metaworks.dao.MetaworksDAO;
 import org.metaworks.dao.TransactionContext;
 import org.metaworks.model.MetaworksList;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
 public class MetaworksConverter extends BeanConverter {
 
@@ -408,16 +409,15 @@ public class MetaworksConverter extends BeanConverter {
 
 		}else{
 			try {
-				return paramType.newInstance();
-			} catch(java.lang.InstantiationException e){
+				return MetaworksRemoteService.getComponent(paramType);
+			}catch (Exception e) {
+				// TODO Auto-generated catch block
+
 				if(paramType == java.lang.StackTraceElement.class){
 					return null;
 				}
 
 				throw new ConversionException(paramType, "Service Object should have constructor with empty parameter. Add new Constructor with no argument into " + paramType.getName() + ". " + paramType.getName(), e);
-			}catch (Exception e) {
-				// TODO Auto-generated catch block
-				throw new ConversionException(paramType, "Service Object couldn't be instantiated due to : " +  e.getClass(), e);
 			}
 		}
 
@@ -452,7 +452,7 @@ public class MetaworksConverter extends BeanConverter {
 
 			WebObjectType wot = null;
 
-			if(faceForData==null)
+			if(faceForData==null  && TransactionContext.getThreadLocalInstance().isMW3FaceOptionEnabled())
 			try {
 				try {
 					wot = MetaworksRemoteService.getInstance().getMetaworksType(data.getClass().getName());
