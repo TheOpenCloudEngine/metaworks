@@ -2922,7 +2922,7 @@ com.abc.ClassA.methodA=입력
 								var autowiredBeanPaths;
 								eval("autowiredBeanPaths = " + autowiredBeanPath);
 
-                                autowiredObjects[fieldName] = mw3.___copyBeanPathsOnly(autowiredObjects[fieldName], autowiredBeanPaths);
+                                autowiredObjects[fieldName] = mw3.___copyBeanPathsOnly(autowiredObjects[fieldName], autowiredBeanPaths, object);
 
 							}catch(e){console.log(e);}
 						}
@@ -2995,7 +2995,7 @@ com.abc.ClassA.methodA=입력
 
 			};
 
-			Metaworks3.prototype.___copyBeanPathsOnly = function(origValue, autowiredBeanPaths){
+			Metaworks3.prototype.___copyBeanPathsOnly = function(origValue, autowiredBeanPaths, caller){
 				if(autowiredBeanPaths){
 
 					var filteredValue = {__className: origValue.__className, metaworksContext: origValue.metaworksContext};
@@ -3024,7 +3024,7 @@ com.abc.ClassA.methodA=입력
 							for(var j=0; j<arrayOfOrigValue.length; j++){
 
 								var accept = false;
-								var value = origValue;
+								var value = (caller ? caller : origValue);
 								var __index = j;
 
 								with(arrayOfOrigValue[j]){
@@ -3094,10 +3094,15 @@ com.abc.ClassA.methodA=입력
 
 						if(existingValue && eval("elem" + fullPath)) continue;
 
-						if(pathIdx == paths.length -1) {
-							eval("elem" + fullPath + " = origValue" + fullPath);
-						}else{
-							eval("elem" + fullPath + " = {__className: origValue" + fullPath + ".__className}");
+						try{
+							if(pathIdx == paths.length -1) {
+								eval("elem" + fullPath + " = origValue" + fullPath);
+							}else{
+								eval("elem" + fullPath + " = {__className: origValue" + fullPath + ".__className}");
+							}
+
+						}catch(e) {
+							return elem; //if null property, return just the container object
 						}
 					}
 
@@ -5534,14 +5539,16 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 		var loaded = false;
 		
 		if(mw3.debugMode){
-			console.log("metaworks call:");
-			console.log("	className: "+ className);
-			console.log("	object: ");
+
+			console.log("---  metaworks call -----------------------------------------------------");
+			console.log("svcNameAndMethodName: "+ svcNameAndMethodName);
+			console.log("className: "+ className);
+			console.log("arguments: ");
 			console.log(object);
-			console.log("	svcNameAndMethodName: "+ svcNameAndMethodName);
-			console.log("	autowiredObjects: ");
+			console.log("autowiredObjects: ");
 			console.log(autowiredObjects);
-			
+			console.log("-------------------------------------------------------------------------");
+
 		}
 
 		if(!serviceMethodContext.clientSide){
