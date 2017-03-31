@@ -346,6 +346,16 @@ public class MetaworksConverter extends BeanConverter {
 								if (faceValue != null) {
 									//						Object realValue = face.createValueFromFace();
 
+									if(faceValue.getClass().isArray() && property.getPropertyType().isAssignableFrom(List.class)){
+										List aList = new ArrayList();//(List) property.getPropertyType().newInstance();
+
+										Object[] faceValues = (Object[]) faceValue;
+										for(Object aFaceValue : faceValues){
+											aList.add(aFaceValue);
+										}
+
+										realValue = aList;
+									}else
 									if(property.getPropertyType().isAssignableFrom(faceValue.getClass())) {
 										realValue = faceValue;
 									}else{
@@ -386,8 +396,10 @@ public class MetaworksConverter extends BeanConverter {
 //			}
 
 
+			//if(property.getPropertyType() != org.metaworks.Face.class || (property.getPropertyType() == org.metaworks.Face.class && TransactionContext.getThreadLocalInstance().isMW3FaceOptionEnabled())) { //this logic is not applicable
 			Object output = convert(entry.getValue(), property.getPropertyType(), data.getContext(), property);
 			property.setValue(bean, output);
+			//}
 		}
 
 		return bean;
