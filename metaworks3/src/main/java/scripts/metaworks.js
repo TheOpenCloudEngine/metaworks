@@ -318,27 +318,6 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 			}
 			
 			Metaworks3.prototype.loadFaceHelper = function(objectId, actualface){
-				//console.log('loadFaceHelper : ' + actualface);
-
-//				if(!mw3.objects[objectId]){
-//					return null;
-//				}
-
-//				var clsName = mw3.objects[objectId].__className;
-//				
-//				return this.loadFaceHelperWithClsName(clsName);
-//				
-//			}
-//			
-//			Metaworks3.prototype.loadFaceHelperWithClsName = function(clsName){
-
-				/*
-				 * 2012-04-05 cjw 임시 주석 처리
-				 */
-				/*
-				if(this.objects[objectId]==null)
-					return null;
-				*/
 
 				if(!this.face_ObjectIdMapping[objectId])
 					return null;
@@ -363,6 +342,52 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 					return false;
 				else if(faceHelperClass == null)
 					return true;
+
+				var thereIsHelperClass = false;
+				try{
+					//console.debug('eval faceHelper [' + objectId + '] -> ' + face);
+					eval(faceHelperClass);
+					thereIsHelperClass = true;
+					var returnValue = false;
+
+					if(thereIsHelperClass){
+						try{
+							var faceHelper = eval("new " + faceHelperClass + "('" + objectId + "', '"+ className + "')");
+
+							if(faceHelper){
+								this.faceHelpers[objectId] = faceHelper;
+
+								if(faceHelper && faceHelper.loaded){
+									faceHelper.loaded();
+								}
+
+								if(this.objects[objectId]!=null)
+									this.objects[objectId]['__faceHelper'] = faceHelper;
+
+								returnValue = true;
+							}
+						}catch(faceHelperLoadException){
+							//TODO:
+							var errMsg = "";
+
+							if(faceHelperLoadException.lineNumber)
+								errMsg += '(line ' + faceHelperLoadException.lineNumber + ')';
+
+							errMsg += ' : ' + faceHelperLoadException.message;
+
+							errMsg += ". Error when to intialize the faceHelper [" + faceHelperClass + "]. Detail error message is " + errMsg;
+
+
+							throw new Error(errMsg + " : Stack is "+ faceHelperLoadException.stack);
+
+						}
+					}
+
+				}catch(e){
+					console.log("Error when to load facehelper [" + faceHelperClass + "] :");
+					console.log(e);
+				}
+
 
 				//try @ServiceMethod(onLoad=true)
 				if(this.objects[objectId]!=null && !this.objectLoaded[objectId]){
@@ -392,53 +417,9 @@ var Metaworks3 = function(errorDiv, dwr_caption, mwProxy){
 						console.log("Failed to invoke @ServiceMethod(onload) for "+ className +"(objectId:" + objectId + ")\n" + e.message);
 					}
 				}
-				//else{
-				//	mw3.loaded[objectId] = null;
-				//}
 
-				var thereIsHelperClass = false;
-				try{
-					//console.debug('eval faceHelper [' + objectId + '] -> ' + face);
-					eval(faceHelperClass);
-					thereIsHelperClass = true;
+				return returnValue;
 
-					if(thereIsHelperClass){
-						try{
-							var faceHelper = eval("new " + faceHelperClass + "('" + objectId + "', '"+ className + "')");
-
-							if(faceHelper){
-								this.faceHelpers[objectId] = faceHelper;
-
-								if(faceHelper && faceHelper.loaded){
-									faceHelper.loaded();
-								}
-
-								if(this.objects[objectId]!=null)
-									this.objects[objectId]['__faceHelper'] = faceHelper;
-
-								return true;
-							}
-						}catch(faceHelperLoadException){
-							//TODO:
-							var errMsg = "";
-
-							if(faceHelperLoadException.lineNumber)
-								errMsg += '(line ' + faceHelperLoadException.lineNumber + ')';
-
-							errMsg += ' : ' + faceHelperLoadException.message;
-
-							errMsg += ". Error when to intialize the faceHelper [" + faceHelperClass + "]. Detail error message is " + errMsg;
-
-
-							throw new Error(errMsg + " : Stack is "+ faceHelperLoadException.stack);
-
-						}
-					}
-
-				}catch(e){
-					console.log("Error when to load facehelper [" + faceHelperClass + "] :");
-					console.log(e);
-				}
 			}
 			
 			
@@ -1589,19 +1570,19 @@ com.abc.ClassA.methodA=입력
 								actualFace = "dwr/metaworks/" + actualFace;
 							}
 							
-							var faceInfo = {
-									face: actualFace,
-									className: objectTypeName
-							};
-							
-							mw3.face_ObjectIdMapping[objectId].push(faceInfo);
-							
-							if(mw3.objectIds_FaceMapping [actualFace] == null){
-								mw3.objectIds_FaceMapping [actualFace]={};
-							}							
-							mw3.objectIds_FaceMapping [actualFace][objectId] = faceInfo;
-							
-							mw3._importFaceHelper(actualFace);
+							//var faceInfo = {
+							//		face: actualFace,
+							//		className: objectTypeName
+							//};
+							//
+							//mw3.face_ObjectIdMapping[objectId].push(faceInfo);
+							//
+							//if(mw3.objectIds_FaceMapping [actualFace] == null){
+							//	mw3.objectIds_FaceMapping [actualFace]={};
+							//}
+							//mw3.objectIds_FaceMapping [actualFace][objectId] = faceInfo;
+							//
+							//mw3._importFaceHelper(actualFace);
 							
 							var url = mw3.base + (actualFace.indexOf('dwr') == 0 ? '/':'/metaworks/') + actualFace;
 
@@ -5600,8 +5581,20 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 			var facehelper = mw3.getFaceHelper(objId);
 
 			if(facehelper && facehelper[serviceMethodContext.methodName]){
-				var clientSideFunc = facehelper[serviceMethodContext.methodName];
-				clientSideFunc(object, autowiredObjects);
+				//var clientSideFunc = facehelper[serviceMethodContext.methodName];
+				//clientSideFunc(object, autowiredObjects);
+				try{
+					eval("facehelper." + serviceMethodContext.methodName + "(object, autowiredObjects)");
+				}catch(ex){
+					console.log("error when to run client-side service method");
+					console.log(ex);
+				}
+
+				if(facehelper.endLoading)
+					facehelper.endLoading();
+				else
+					mw3.endLoading(objId);
+
 			}else{
 				alert("you have defined your service method as clientSide=true but, there's no defined javascript function in your ejs.js (facehelper)");
 			}
