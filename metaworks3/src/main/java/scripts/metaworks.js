@@ -5584,7 +5584,18 @@ var MetaworksService = function(className, object, svcNameAndMethodName, autowir
 				//var clientSideFunc = facehelper[serviceMethodContext.methodName];
 				//clientSideFunc(object, autowiredObjects);
 				try{
-					eval("facehelper." + serviceMethodContext.methodName + "(object, autowiredObjects)");
+					var result;
+					eval("result = facehelper." + serviceMethodContext.methodName + "(object, autowiredObjects)");
+
+					if(serviceMethodContext.target != "none"){
+
+						var metaworksService = mw3.metaworksServices[metaworksServiceIndex];
+
+						mw3.fireEvent("after call:" + className + "." + svcNameAndMethodName, result);
+
+						metaworksService.__showResult(object, result, objId, svcNameAndMethodName, serviceMethodContext, placeholder, divId, callback);
+						mw3.metaworksServices[metaworksServiceIndex] = null;
+					}
 				}catch(ex){
 					console.log("error when to run client-side service method");
 					console.log(ex);
