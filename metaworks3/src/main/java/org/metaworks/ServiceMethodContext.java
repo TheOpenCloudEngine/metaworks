@@ -294,10 +294,14 @@ public class ServiceMethodContext{
 				Map<String, Integer> payloadParameterIndexes) {
 			this.payloadParameterIndexes = payloadParameterIndexes;
 		}
-		
-	
-				
-	 
-	
-		
+
+
+	public Object getAttribute(String name){
+		if(attributes != null)
+			return attributes.get(name);
+
+		return null;
+	}
+
+
 }

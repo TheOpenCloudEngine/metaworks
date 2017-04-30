@@ -2618,13 +2618,13 @@ com.abc.ClassA.methodA=입력
 				if(test){
 					var object = mw3.objects[objId];
 				}else{
-//					var objectFromUI = this.getObjectFromUI(objId);
-					
-//					if(objectFromUI.__faceHelper && getAgain){
-					var object = mw3.getObject(objId);
-					//}else{
-					//	var object = objectFromUI;
-					//}
+                    var objectFromUI = this.getObjectFromUI(objId);
+
+                    if(objectFromUI.__faceHelper && getAgain){  //this may call the facehelper twice
+                        var object = mw3.getObject(objId);
+                    }else{
+                        var object = objectFromUI;
+                    }
 				}
 
 				var originalObject = object;
@@ -4921,7 +4921,10 @@ com.abc.ClassA.methodA=입력
 			}
 
 
-			////// reference objects //////
+
+
+
+////// reference objects //////
 			
 			var FieldRef = function(object, objectId, fieldDescriptor){
 				this.object = object;
@@ -5663,3 +5666,4 @@ var extend = function (target, parentClassName) {
 
 	target.prototype = Object.create(parent.prototype);
 };
+

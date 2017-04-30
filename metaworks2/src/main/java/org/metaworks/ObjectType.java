@@ -72,13 +72,16 @@ public class ObjectType extends Type{
                                     if((setter = actCls.getMethod("set" + fieldName, new Class[]{retType})) != null){
                                     	
                                     	setterMethods.put(setter.getName(), setter);
-                                    	
+
                                     	FieldDescriptor fd = new FieldDescriptor( fieldName, fieldName);
-					                	fd.setType(retType);							            
-                                    	
-                                    	try{
+					                	fd.setType(retType);
+
+										if(setter.getDeclaringClass()==actCls){
+											fd.setAttribute("extended", true);
+										}
+
+										try{
                                         	Inputter inputter = getDefaultInputter(retType);
-//System.out.println("> ret type = " + retType + "  and inputter = " + inputter);	   
 
                                         	fd.setInputter(inputter);
                                         }catch(Exception e){

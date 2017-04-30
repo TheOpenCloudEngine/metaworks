@@ -991,6 +991,7 @@ public class WebObjectType implements Serializable{
 			if(defaultValue != null){
 				webFieldDescriptors[i].setDefaultValue(defaultValue.value());
 			}
+
 		}
 		
 		
@@ -1394,6 +1395,13 @@ public class WebObjectType implements Serializable{
 						
 						testMap.put(testContext.getScenario(), testContext);
 					}
+				}
+
+				if(method.getDeclaringClass() == actCls){
+					if(smc.getAttributes()==null)
+						smc.setAttributes(new HashMap<String, Object>());
+
+					smc.getAttributes().put("extended", "true");
 				}
 				
 				serviceMethodContexts.add(smc);				

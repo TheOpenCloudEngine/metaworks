@@ -1,2 +1,56 @@
 <!--replace-->
-<li id="objDiv_<%=objectId%>"><%=here("value")%></li>
+<li id="objDiv_<%=objectId%>">
+
+    <%if(value){%>
+
+    <div class="panel <%=value.selected ? "panel-primary" : "panel-default"%>">
+        <%
+
+        if(value.value.__className) {
+//            var classNameOnly;
+//
+//            var lastIndexOfDot = value.value.__className.lastIndexOf(".");
+//            if (lastIndexOfDot > -1) {
+//                classNameOnly = value.value.__className.substr(lastIndexOfDot + 1);
+//            } else {
+//                classNameOnly = value.value.__className;
+//            }
+//
+            var meta = mw3.getMetadata(value.value.__className);
+
+            var objectName;
+
+            if(value.value.__toString == null) {
+                mw3._armObject(null, value.value);
+            }
+
+
+            if(value.value.__toString != null){
+                objectName = value.value.__toString();
+            }
+            if(!objectName){
+                objectName = meta.displayName;
+            }
+
+
+        %>
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" href="#collapse<%=objectId%>"><%=objectName%></a>
+                </h4>
+
+            </div>
+        <%
+        }
+        %>
+        <div id="collapse<%=objectId%>" class="panel-collapse collapse">
+            <div class="panel-body"><%=fields.value.here()%></div>
+        </div>
+    </div>
+
+    <%
+    }
+    %>
+
+
+</li>
