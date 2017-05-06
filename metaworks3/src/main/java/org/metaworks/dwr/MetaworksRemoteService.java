@@ -194,6 +194,10 @@ public class MetaworksRemoteService {
 	}
 
 
+	public Object newObject(String className) throws Exception{
+		return Thread.currentThread().getContextClassLoader().loadClass(className).newInstance();
+	}
+
 	public WebObjectType getMetaworksType(String className) throws Exception {
 		try{
 				

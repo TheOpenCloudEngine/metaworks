@@ -51,11 +51,10 @@ org_metaworks_model_SortableList.prototype.addNew = function() {
     var object = mw3.objects[this.objectId];
     var ul = $("#objDiv_" + this.objectId).find("ul").first();
 
+    var elemVal = mw3.newObject( object.elementClassName );
     var newEl = {
         __className: 'org.metaworks.model.SortableElement',
-        value:{
-            __className: object.elementClassName
-        },
+        value: elemVal,
         metaworksContext:{
             when: 'edit'
         }

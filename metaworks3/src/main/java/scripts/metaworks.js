@@ -4882,6 +4882,34 @@ com.abc.ClassA.methodA=입력
 				}
 			};
 
+			Metaworks3.prototype.newObject = function(className){
+				var classDef = this.getMetadata(className);
+				if(classDef.defaultObject) {
+                    return JSON.parse(JSON.stringify(classDef.defaultObject)); //return cloned one.
+                }else{
+
+                    this.metaworksProxy.newObject(className,
+                        {
+                            callback: function( defaultObject ){
+                                //alert(webObjectType.name + "=" + dwr.util.toDescriptiveString(webObjectType, 5))
+
+                                classDef.defaultObject = defaultObject;
+                                defaultObject.__className = className;
+
+                            },
+
+                            async: false,
+
+                            timeout:10000,
+
+                            errorHandler:function(errorString, exception) {
+                                throw new Error(exception.javaClassName + ": " + exception.message);
+                            }
+                        }
+                    );
+
+				}
+			}
 
 ///// event handling framework ///////
 
