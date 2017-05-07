@@ -487,9 +487,15 @@ public class Database<T extends IDAO> implements IDAO, Serializable, Cloneable{
 				
 				String selectedTypeClassName = typeSelector.get(typeName);
 				
-				if(selectedTypeClassName==null)
-					return null;
-				
+				if(selectedTypeClassName==null){
+
+					try{
+						return Thread.currentThread().getContextClassLoader().loadClass(typeName);
+					}catch (Exception e){
+						new Exception("No such @TypeSelector name like " + typeName);
+					}
+				}
+
 				return Thread.currentThread().getContextClassLoader().loadClass(selectedTypeClassName);
 			}
 		}
