@@ -794,7 +794,7 @@ public class MetaworksRemoteService {
 	}
 
 	public static Map<Class, Object> getAutowiredFromClientClassMap() {
-		if(TransactionContext.getThreadLocalInstance().getSharedContext("autowiredFromClientClassMap") != null){
+		if(TransactionContext.getThreadLocalInstance()!=null && TransactionContext.getThreadLocalInstance().getSharedContext("autowiredFromClientClassMap") != null){
 			return (Map<Class, Object>) TransactionContext.getThreadLocalInstance().getSharedContext("autowiredFromClientClassMap");
 		}
 

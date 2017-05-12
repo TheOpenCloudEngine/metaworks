@@ -83,8 +83,8 @@ public class ObjectInstance extends Instance{
 			
 			((Method)(setterMethods).get("set"+keyStr)).invoke(getObject(), new Object[]{val});
 		}catch(Exception e){
-//System.err.println("[Exception in ObjectInstance::set] value = " +val + ", field = " + keyStr);
-//System.err.println("	type = " + ((ObjectType)getType()).getClassType() + "  exception = " + e.getMessage());
+System.err.println("[Exception in ObjectInstance::set] value = " +val + ", field = " + keyStr);
+System.err.println("	type = " + ((ObjectType)getType()).getClassType() + "  exception = " + e.getMessage());
 
 			//
 			if(e instanceof IllegalArgumentException){

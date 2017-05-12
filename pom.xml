@@ -14,6 +14,8 @@
 		<module>metaworks2</module>
 		<module>metaworks-dwr</module>
 		<module>metaworks3</module>
+		<module>metaworks4</module>
+		<module>metaworks-multitenancy</module>
 	</modules>
 
 	<properties>

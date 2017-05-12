@@ -6,7 +6,7 @@
     <div class="panel <%=value.selected ? "panel-primary" : "panel-default"%>">
         <%
 
-        if(value.value.__className) {
+        if(value.value && value.value.__className) {
 //            var classNameOnly;
 //
 //            var lastIndexOfDot = value.value.__className.lastIndexOf(".");

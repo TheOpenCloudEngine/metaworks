@@ -154,4 +154,13 @@ public class WebFieldDescriptor implements Serializable{
 		
 		return null;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if(!(obj instanceof WebFieldDescriptor)) return false;
+
+		if(((WebFieldDescriptor)obj).getName().equals(getName())) return true;
+
+		return false;
+	}
 }

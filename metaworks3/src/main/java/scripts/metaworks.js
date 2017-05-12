@@ -2335,6 +2335,10 @@ com.abc.ClassA.methodA=입력
 				}else
 					var message = "["+actualFace+"] "+e.message;
 
+				if(e.stack){
+					message = message + "\n" + e.stack;
+				}
+
 				if(e.targetObjectId) {
 					message = message + "\n - objectId is [" + e.targetObjectId + "]";
 					//mw3.debugPoint = actualFace;

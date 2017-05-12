@@ -92,7 +92,7 @@ public class MetaworksConverter extends BeanConverter {
 				//when unknown object from javascript, metaworks need to get the class Information from the JSON's property value '__className'
 				String value = data.getValue();
 
-				if(value.length() >= 2 && !("null".equals(value))) {
+				if(value.length() >= 2 && !("null".equals(value)) && (value.startsWith("{") && value.endsWith("}"))) {
 					value = value.substring(1, value.length() - 1);
 
 					Map<String, String> tokens = extractInboundTokens(paramType, value);
