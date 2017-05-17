@@ -824,6 +824,12 @@ public class MetaworksRemoteService {
 	}
 
 	public static <T> T getComponent(Class<T> clazz) {
+
+		return getComponent(clazz, null);
+	}
+
+
+	public static <T> T getComponent(Class<T> clazz, String qualifier) {
 		T t = null;
 
 		try {
@@ -831,26 +837,32 @@ public class MetaworksRemoteService {
 				throw new RuntimeException("There's no configured Spring application context. if you invoke this in some Test Code, Please declare \"new TestMetaworksRemoteService(new ClassPathXmlApplicationContext(...));\" in the beginning of the 'setUp()' method in the test.");
 			}
 
-			Map beans = getInstance().getBeanFactory().getBeansOfType(clazz);
+			Map beans;
 
-			int minOrder = 10000000;
+			if(qualifier!=null) {
+				t = (T) getInstance().getBeanFactory().getBean(qualifier);
+			}else {
+				beans = getInstance().getBeanFactory().getBeansOfType(clazz);
 
-			Iterator iterator = beans.values().iterator();
-			while(iterator.hasNext()){
-				T bean = (T) iterator.next();
-				Order order = AnnotationUtils.findAnnotation(bean.getClass(),
-				Order.class);
+				int minOrder = 10000000;
+
+				Iterator iterator = beans.values().iterator();
+				while (iterator.hasNext()) {
+					T bean = (T) iterator.next();
+					Order order = AnnotationUtils.findAnnotation(bean.getClass(),
+							Order.class);
 
 
-				Integer orderValue = 9999999;
+					Integer orderValue = 9999999;
 
-				if(order!=null){
-					orderValue = (Integer) AnnotationUtils.getValue(order);
-				}
+					if (order != null) {
+						orderValue = (Integer) AnnotationUtils.getValue(order);
+					}
 
-				if(minOrder > orderValue){
-					minOrder = orderValue;
-					t = bean;
+					if (minOrder > orderValue) {
+						minOrder = orderValue;
+						t = bean;
+					}
 				}
 			}
 
