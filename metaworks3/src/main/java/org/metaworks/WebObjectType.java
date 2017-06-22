@@ -374,12 +374,13 @@ public class WebObjectType implements Serializable{
 			
 		};
 
+		//Map<String, Field> javaReflectFieldMap = new HashMap<String, Field>();
 		
 		//analyzing 'autowiredFromClient' fields
 		Field[] fields = actCls.getFields();
 		for(int i=0; i<fields.length; i++){
 			AutowiredFromClient autowiredFromClient = (AutowiredFromClient) fields[i].getAnnotation(AutowiredFromClient.class);
-			
+
 			if(autowiredFromClient!=null){
 				
 				if(autowiredFromClient.onDrop()){
@@ -412,8 +413,9 @@ public class WebObjectType implements Serializable{
 					
 				}
 			}
+
 		}
-		
+
 		
 		//analyzing setter/getter bean properties
 		WebFieldDescriptor[] webFieldDescriptors = new WebFieldDescriptor[objectType.getFieldDescriptors().length];
@@ -476,7 +478,6 @@ public class WebObjectType implements Serializable{
 					fd.setClassType(Boolean.class);
 				}//TODO: consider other primitive class types as well
 			}
-
 			
 			
 			WebViewer viewer = new WebViewer();

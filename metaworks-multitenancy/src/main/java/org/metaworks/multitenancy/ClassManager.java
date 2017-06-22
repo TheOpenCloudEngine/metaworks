@@ -5,7 +5,9 @@ import org.metaworks.WebObjectType;
 import org.metaworks.annotation.Id;
 import org.metaworks.annotation.ServiceMethod;
 import org.metaworks.dwr.MetaworksRemoteService;
+import org.oce.garuda.multitenancy.TenantContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.uengine.uml.model.Attribute;
 import org.uengine.uml.model.ClassDefinition;
 
@@ -13,6 +15,7 @@ import org.uengine.uml.model.ClassDefinition;
 /**
  * Created by uengine on 2017. 5. 8..
  */
+@Component
 public class ClassManager {
 
     ClassDefinition classDefinition;
@@ -34,7 +37,7 @@ public class ClassManager {
 
     @ServiceMethod(callByContent = true)
     public void save() throws Exception {
-        metadataService.setClassDefinition(getClassDefinition(), "tenantA");
+        metadataService.setClassDefinition(getClassDefinition(), TenantContext.getThreadLocalInstance().getTenantId());
     }
 
     @ServiceMethod
@@ -65,7 +68,7 @@ public class ClassManager {
 
     @ServiceMethod
     public void load() throws Exception {
-        ClassDefinition classDefinition = metadataService.getClassDefinition(Thread.currentThread().getContextClassLoader().loadClass(getClassName()), "tenantA");
+        ClassDefinition classDefinition = metadataService.getClassDefinition(Thread.currentThread().getContextClassLoader().loadClass(getClassName()), TenantContext.getThreadLocalInstance().getTenantId());
 
         setClassDefinition(classDefinition);
     }

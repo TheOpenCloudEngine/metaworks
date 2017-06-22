@@ -24,7 +24,9 @@ import java.util.List;
  */
 public class CouchbaseMetadataService implements MetadataService {
     private String couchbaseServerIp;
-        public String getCouchbaseServerIp() {
+    private String bucketPassword;
+
+    public String getCouchbaseServerIp() {
             return couchbaseServerIp;
         }
         public void setCouchbaseServerIp(String couchbaseServerIp) {
@@ -43,7 +45,7 @@ public class CouchbaseMetadataService implements MetadataService {
 
 
     protected Bucket getBucket(){
-        return cluster.openBucket(getBucketName());
+        return cluster.openBucket(getBucketName(), getBucketPassword());
     }
 
 
@@ -131,7 +133,7 @@ public class CouchbaseMetadataService implements MetadataService {
 
                 Attribute attribute = new Attribute();
                 org.springframework.beans.BeanUtils.copyProperties(fieldDescriptor, attribute);
-                attribute.setAttributes(null); //TODO: this occurs some Serialization error for Map<String, Object> for boolean value
+                //attribute.setAttributes(null); //TODO: this occurs some Serialization error for Map<String, Object> for boolean value
 
                 classDefinition.getFieldDescriptors()[i] = attribute;
 
@@ -142,6 +144,8 @@ public class CouchbaseMetadataService implements MetadataService {
 
             classDefinition.setServiceMethodContexts(webObjectType.getServiceMethodContexts());
             classDefinition.setName(clazz.getName());
+            classDefinition.setDisplayName(webObjectType.getDisplayName());
+            classDefinition.setKeyFieldDescriptor(webObjectType.getKeyFieldDescriptor());
 
         }
 
@@ -154,6 +158,7 @@ public class CouchbaseMetadataService implements MetadataService {
 
         ClassDefinition overriderClassDefinition = (ClassDefinition) Serializer.deserialize(xml);
 
+        if(overriderClassDefinition.getFieldDescriptors()!=null)
         for(Attribute attribute : overriderClassDefinition.getFieldDescriptors()){
             if(!attributeList.contains(attribute)){
                 attribute.setAttributes(new HashMap<String, Object>());
@@ -194,11 +199,20 @@ public class CouchbaseMetadataService implements MetadataService {
     @PostConstruct
     public void init() {
         CouchbaseEnvironment env = DefaultCouchbaseEnvironment.builder()
-                .queryEnabled(true) //that's the important part
+//                .queryEnabled(true) //that's the important part
+                .kvTimeout(100000)
+                .socketConnectTimeout(100000)
                 .build();
 
         cluster = CouchbaseCluster.create(env, getCouchbaseServerIp());
 
     }
 
+    public void setBucketPassword(String bucketPassword) {
+        this.bucketPassword = bucketPassword;
+    }
+
+    public String getBucketPassword() {
+        return bucketPassword;
+    }
 }

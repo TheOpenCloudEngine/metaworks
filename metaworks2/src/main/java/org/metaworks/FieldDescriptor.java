@@ -83,7 +83,9 @@ public class FieldDescriptor extends AbstractPropertyDescriptor{
 
 
 	protected Inputter	inputter=null;
-		/**
+	private Class collectionClass;
+
+	/**
 		 * 이 필드에 값을 입력받을 때 사용할 Swing Component를 리턴
 		 */
 		public Component getInputComponent(){
@@ -612,5 +614,11 @@ System.out.println("method = "+m + "method.getParameters[0]" + m.getParameterTyp
 	}
 
 
+	public void setCollectionClass(Class collectionClass) {
+		this.collectionClass = collectionClass;
+	}
 
+	public Class getCollectionClass() {
+		return collectionClass;
+	}
 }

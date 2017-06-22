@@ -1,11 +1,13 @@
 package org.metaworks;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
 import org.metaworks.Type;
+import org.metaworks.annotation.*;
 import org.metaworks.inputter.CalendarInput;
 import org.metaworks.inputter.DateInput;
 import org.metaworks.inputter.NumberInput;
@@ -20,7 +22,13 @@ public class WebFieldDescriptor implements Serializable{
 		setName(oldFd.getName().substring(0, 1).toLowerCase() + oldFd.getName().substring(1));
 		setDisplayName(oldFd.getDisplayName().replaceAll("(.)([A-Z])", "$1 $2"));
 		setClassName(oldFd.getClassType().getName());
-		
+
+
+		if(oldFd.getCollectionClass()!=null){
+			setCollectionClass(oldFd.getCollectionClass().getName());
+		}
+
+
 		if(oldFd.getViewer()!=null){
 			if(oldFd.getViewer() instanceof WebViewer){
 				setViewFace(((WebViewer)oldFd.getViewer()).getFace());
@@ -67,6 +75,7 @@ public class WebFieldDescriptor implements Serializable{
 	}
 	
 	String name;
+	@Order(10)
 		public String getName() {
 			return name;
 		}
@@ -75,6 +84,7 @@ public class WebFieldDescriptor implements Serializable{
 		}
 
 	String displayName;
+	@Order(20)
 		public String getDisplayName() {
 			return displayName;
 		}
@@ -83,6 +93,8 @@ public class WebFieldDescriptor implements Serializable{
 		}
 
 	String className;
+	@Order(30)
+	@org.metaworks.annotation.Face(options={"vue-component"}, values={"class-selector"})
 		public String getClassName() {
 			return className;
 		}
@@ -91,6 +103,7 @@ public class WebFieldDescriptor implements Serializable{
 		}
 
 	String viewFace;
+	@Hidden
 		public String getViewFace() {
 			return viewFace;
 		}
@@ -99,6 +112,7 @@ public class WebFieldDescriptor implements Serializable{
 		}
 
 	String inputFace;
+	@Hidden
 		public String getInputFace() {
 			return inputFace;
 		}
@@ -107,6 +121,7 @@ public class WebFieldDescriptor implements Serializable{
 		}
 
 	Object[] options;
+	@Hidden
 		public Object[] getOptions() {
 			return options;
 		}
@@ -115,6 +130,7 @@ public class WebFieldDescriptor implements Serializable{
 		}
 
 	Object[] values;
+	@Hidden
 		public Object[] getValues() {
 			return values;
 		}
@@ -123,6 +139,7 @@ public class WebFieldDescriptor implements Serializable{
 		}
 		
 	String defaultValue;
+	@Hidden
 		public String getDefaultValue() {
 			return defaultValue;
 		}
@@ -130,6 +147,17 @@ public class WebFieldDescriptor implements Serializable{
 		public void setDefaultValue(String defaultValue) {
 			this.defaultValue = defaultValue;
 		}
+
+
+	String collectionClass;
+	@Hidden
+		public String getCollectionClass() {
+			return collectionClass;
+		}
+		public void setCollectionClass(String collectionClass) {
+			this.collectionClass = collectionClass;
+		}
+
 
 //	Map<String, Boolean> boolOptions;
 //		public Map<String, Boolean> getBoolOptions() {
@@ -141,6 +169,7 @@ public class WebFieldDescriptor implements Serializable{
 		
 
 	Map<String, Object> attributes;
+	@Hidden
 		public Map<String, Object> getAttributes() {
 			return attributes;
 		}

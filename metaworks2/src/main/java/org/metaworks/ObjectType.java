@@ -99,7 +99,15 @@ public class ObjectType extends Type{
 	                                			fd.setInputter(new ObjectInput(retType));
 	                                		}
                                     	}
-                                	    
+
+
+                                    	if(Collection.class.isAssignableFrom(retType)){
+
+											Class elementClass = (Class) ((ParameterizedType)methods[i].getGenericReturnType()).getActualTypeArguments()[0];
+
+											fd.setCollectionClass(elementClass);
+										}
+
                                 	    bThereIsField = true;                                  	
                                         setFieldDescriptor(fd);
                                     }

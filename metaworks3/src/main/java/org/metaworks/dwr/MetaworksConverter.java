@@ -542,7 +542,9 @@ public class MetaworksConverter extends BeanConverter {
 					}
 
 				}catch(Exception e){
-					throw new ConversionException(((IDAO) data).getImplementationObject().getClass(), e.getMessage());
+					e.printStackTrace();
+					throw new ConversionException(((IDAO) data).getImplementationObject().getClass(), e);
+
 				}
 
 				// if(ovs.size()>0)
