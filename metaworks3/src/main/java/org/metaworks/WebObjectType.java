@@ -993,6 +993,15 @@ public class WebObjectType implements Serializable{
 				webFieldDescriptors[i].setDefaultValue(defaultValue.value());
 			}
 
+
+			//TODO: could be automated
+			RestAssociation restAssociation = (RestAssociation) getAnnotationDeeply(tryingClasses, fd.getName(), RestAssociation.class);
+			if(restAssociation !=null){
+
+				String json = "{path: '" + restAssociation.path() + "', role: '" + restAssociation.role() + "'}";
+				fd.setAttribute(RestAssociation.class.getSimpleName(), json);
+			}
+
 		}
 		
 		
