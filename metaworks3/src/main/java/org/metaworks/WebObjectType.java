@@ -993,6 +993,15 @@ public class WebObjectType implements Serializable{
 				webFieldDescriptors[i].setDefaultValue(defaultValue.value());
 			}
 
+
+			//TODO: could be automated
+			RestAggregator restAggregator = (RestAggregator) getAnnotationDeeply(tryingClasses, fd.getName(), RestAggregator.class);
+			if(restAggregator!=null){
+
+				String json = "{path: '" + restAggregator.path() + "', role: '" + restAggregator.role() + "'}";
+				fd.setAttribute(RestAggregator.class.getSimpleName(), json);
+			}
+
 		}
 		
 		

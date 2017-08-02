@@ -3795,13 +3795,13 @@ com.abc.ClassA.methodA=입력
 					if(fields[name]) return fields[name].here();
 					if(methods[name]) return methods[name].here();
 
-					throw new Error("No Field or Method [" + name + "] is not defined in your class: " + object.__className + ".");
+					throw new Error("No Field or Method [" + name + "] is defined in your class: " + object.__className + ".");
 				};
 
 				var caller = function(name){
 					if(methods[name]) return methods[name].caller();
 
-					throw new Error("No Method [" + name + "] is not defined in your class: " + object.__className + ".");
+					throw new Error("No Method [" + name + "] is defined in your class: " + object.__className + ".");
 				};
 
 
