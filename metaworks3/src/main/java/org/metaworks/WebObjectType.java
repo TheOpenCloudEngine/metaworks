@@ -998,7 +998,7 @@ public class WebObjectType implements Serializable{
 			RestAssociation restAssociation = (RestAssociation) getAnnotationDeeply(tryingClasses, fd.getName(), RestAssociation.class);
 			if(restAssociation !=null){
 
-				String json = "{path: '" + restAssociation.path() + "', role: '" + restAssociation.role() + "'}";
+				String json = "{path: '" + restAssociation.path() + "', role: '" + restAssociation.serviceId() + "'}";
 				fd.setAttribute(RestAssociation.class.getSimpleName(), json);
 			}
 

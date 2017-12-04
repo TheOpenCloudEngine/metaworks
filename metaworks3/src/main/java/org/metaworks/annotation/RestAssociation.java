@@ -12,5 +12,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RestAssociation {
     String path();
-    String role();
+    String serviceId() default "self";
+    boolean validateLink() default false;
 }
