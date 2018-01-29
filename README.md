@@ -1,4 +1,9 @@
-metaworks
+# Announcement on Retirement and Introduction to New Project
+- Metaworks3 framework will not be upgraded anymore and moved to new project - https://github.com/TheOpenCloudEngine/metaworks4
+- 메타웍스3는 더이상 업그래이드 되지않습니다. 신규프로젝트인 metaworks4 를 방문하세요 - https://github.com/TheOpenCloudEngine/metaworks4
+- 기존 메타웍스의 문서를 보시려면 이하의 문서를 읽어주세요.
+
+Old documentation on metaworks3
 =========
 
 
