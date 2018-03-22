@@ -218,6 +218,10 @@ public class WebObjectType implements Serializable{
 		this.keyFieldDescriptor = keyFieldDescriptor;
 	}
 
+	transient
+	Map<String, Field> rawFieldMap = new HashMap<>();
+
+
 	public WebObjectType() {}
 
 	public WebObjectType(Class clazz) throws Exception {
@@ -230,7 +234,12 @@ public class WebObjectType implements Serializable{
 		
 		setName(objectType.getName());
 		setInterface(actCls.isInterface());
-		
+
+		Field[] fields = actCls.getDeclaredFields();
+		for(int i=0; i<fields.length; i++) {
+			rawFieldMap.put(fields[i].getName().substring(0, 1).toUpperCase() + fields[i].getName().substring(1), fields[i]);
+		}
+
 		final ArrayList<Class> tryingClasses = new ArrayList<Class>();
 		superClasses = new ArrayList<String>();
 		Class superCls = actCls;
@@ -377,8 +386,8 @@ public class WebObjectType implements Serializable{
 		//Map<String, Field> javaReflectFieldMap = new HashMap<String, Field>();
 		
 		//analyzing 'autowiredFromClient' fields
-		Field[] fields = actCls.getFields();
 		for(int i=0; i<fields.length; i++){
+
 			AutowiredFromClient autowiredFromClient = (AutowiredFromClient) fields[i].getAnnotation(AutowiredFromClient.class);
 
 			if(autowiredFromClient!=null){
@@ -413,6 +422,7 @@ public class WebObjectType implements Serializable{
 					
 				}
 			}
+
 
 		}
 
@@ -461,6 +471,7 @@ public class WebObjectType implements Serializable{
 		for(int i=0; i<fieldDescriptors.length; i++){
 			
 			FieldDescriptor fd = fieldDescriptors[i];
+
 			
 			//TODO: change to vector or hashmap the fieldDescriptor. will need to study the field order differences
 			//ignores meta-meta data  
@@ -972,7 +983,8 @@ public class WebObjectType implements Serializable{
 
 
 			if(getAnnotationDeeply(tryingClasses, fd.getName(), Id.class)!=null 
-					|| getAnnotationDeeply(tryingClasses, fd.getName(), javax.persistence.Id.class)!=null){
+					|| getAnnotationDeeply(tryingClasses, fd.getName(), javax.persistence.Id.class)!=null
+					){
 				isKeyField = true;
 				keyField = fd;
 			}
@@ -994,13 +1006,13 @@ public class WebObjectType implements Serializable{
 			}
 
 
-			//TODO: could be automated
-			RestAssociation restAssociation = (RestAssociation) getAnnotationDeeply(tryingClasses, fd.getName(), RestAssociation.class);
-			if(restAssociation !=null){
-
-				String json = "{path: '" + restAssociation.path() + "', role: '" + restAssociation.serviceId() + "'}";
-				fd.setAttribute(RestAssociation.class.getSimpleName(), json);
-			}
+//			//TODO: could be automated
+//			RestAssociation restAssociation = (RestAssociation) getAnnotationDeeply(tryingClasses, fd.getName(), RestAssociation.class);
+//			if(restAssociation !=null){
+//
+//				String json = "{path: '" + restAssociation.path() + "', role: '" + restAssociation.serviceId() + "'}";
+//				fd.setAttribute(RestAssociation.class.getSimpleName(), json);
+//			}
 
 		}
 		
@@ -1451,7 +1463,7 @@ public class WebObjectType implements Serializable{
 		
 	}
 
-	public static Annotation getAnnotationDeeply(ArrayList<Class> tryingClasses, Class annotationCls) throws Exception {
+	public Annotation getAnnotationDeeply(ArrayList<Class> tryingClasses, Class annotationCls) throws Exception {
 		return getAnnotationDeeply(tryingClasses, (String)null, annotationCls);
 	}
 
@@ -1469,15 +1481,15 @@ public class WebObjectType implements Serializable{
 		return sb;
 	}
 
-	static public Annotation getAnnotationDeeply(ArrayList<Class> tryingClasses, String symbol, Class annotationCls) throws Exception{
+	public Annotation getAnnotationDeeply(ArrayList<Class> tryingClasses, String symbol, Class annotationCls) throws Exception{
 		return getAnnotationDeeply(tryingClasses, symbol, annotationCls, true);
 	}
 
-	static public Annotation getAnnotationDeeply(ArrayList<Class> tryingClasses, Method symbol, Class annotationCls) throws Exception {
+	public Annotation getAnnotationDeeply(ArrayList<Class> tryingClasses, Method symbol, Class annotationCls) throws Exception {
 		return getAnnotationDeeply(tryingClasses, symbol, annotationCls, false);
 	}
 
-	static public Annotation getAnnotationDeeply(ArrayList<Class> tryingClasses, Object methodOrFieldOrSymbol, Class annotationCls, boolean isField) throws Exception{
+	public Annotation getAnnotationDeeply(ArrayList<Class> tryingClasses, Object methodOrFieldOrSymbol, Class annotationCls, boolean isField) throws Exception{
 		//		Class annotationCls = Thread.currentThread().getContextClassLoader().loadClass("org.metaworks." +annotationName);
 		Annotation annotation = null;
 		//Class[] tryingClasses = {cls, iDAOCls};
@@ -1492,6 +1504,14 @@ public class WebObjectType implements Serializable{
 			symbol = ((Method) methodOrFieldOrSymbol).getName();
 			isField = false;
 		}
+
+		if(isField && rawFieldMap.containsKey(symbol)){
+			Annotation annotation1 = rawFieldMap.get(symbol).getAnnotation(annotationCls);
+
+			if(annotation1!=null)
+				return annotation1;
+		}
+
 
 		//check if does the method has the annotation first.
 		{
@@ -1895,7 +1915,7 @@ public class WebObjectType implements Serializable{
 	
 	public WebFieldDescriptor getFieldDescriptorByAttribute(String attributName){
 		for(WebFieldDescriptor fd : this.getFieldDescriptors()){
-			if(fd.getAttribute("namefield") != null && (Boolean)fd.getAttribute("namefield"))
+			if(fd.getAttribute("namefield") != null && "true".equals(fd.getAttribute("namefield")))
 				return fd;
 		}
 

@@ -1,10 +1,7 @@
 package org.metaworks;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.*;
 
 import org.metaworks.Type;
 import org.metaworks.annotation.*;
@@ -65,9 +62,9 @@ public class WebFieldDescriptor implements Serializable{
 				Object attr = oldFd.getAttribute((String) key);
 				//if(attr instanceof Boolean && ((Boolean)attr).booleanValue() == true){
 				if(attributes==null)
-					attributes = new HashMap<String, Object>();
+					attributes = new Properties();
 				
-				attributes.put(((String) key).toLowerCase(), attr);//Boolean.valueOf(true));
+				attributes.put(((String) key).toLowerCase(), attr.toString());//Boolean.valueOf(true));
 				//}
 			}
 		}
@@ -168,20 +165,29 @@ public class WebFieldDescriptor implements Serializable{
 //		}
 		
 
-	Map<String, Object> attributes;
+	Properties attributes;
 	@Hidden
-		public Map<String, Object> getAttributes() {
+		public Properties getAttributes() {
 			return attributes;
 		}
-		public void setAttributes(Map<String, Object> attributes) {
+		public void setAttributes(Properties attributes) {
 			this.attributes = attributes;
 		}
 
-	public Object getAttribute(String name){
+	public String getAttribute(String name){
 		if(attributes != null)
-			return attributes.get(name);
+			return attributes.getProperty(name);
 		
 		return null;
+	}
+
+
+	public void setAttribute(String propertyName, String s) {
+
+		if(getAttributes()==null) setAttributes(new Properties());
+
+		getAttributes().setProperty(propertyName, s);
+
 	}
 
 	@Override
@@ -192,4 +198,5 @@ public class WebFieldDescriptor implements Serializable{
 
 		return false;
 	}
+
 }
